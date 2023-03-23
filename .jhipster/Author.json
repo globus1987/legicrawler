@@ -12,6 +12,10 @@
     {
       "fieldName": "name",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "String"
     }
   ],
   "fluentMethods": true,

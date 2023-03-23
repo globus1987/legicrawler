@@ -41,6 +41,9 @@ class AuthorResourceIT {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
+    private static final String DEFAULT_URL = "AAAAAAAAAA";
+    private static final String UPDATED_URL = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/authors";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -68,7 +71,7 @@ class AuthorResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Author createEntity(EntityManager em) {
-        Author author = new Author().name(DEFAULT_NAME);
+        Author author = new Author().name(DEFAULT_NAME).url(DEFAULT_URL);
         return author;
     }
 
@@ -79,7 +82,7 @@ class AuthorResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Author createUpdatedEntity(EntityManager em) {
-        Author author = new Author().name(UPDATED_NAME);
+        Author author = new Author().name(UPDATED_NAME).url(UPDATED_URL);
         return author;
     }
 
@@ -102,6 +105,7 @@ class AuthorResourceIT {
         assertThat(authorList).hasSize(databaseSizeBeforeCreate + 1);
         Author testAuthor = authorList.get(authorList.size() - 1);
         assertThat(testAuthor.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testAuthor.getUrl()).isEqualTo(DEFAULT_URL);
     }
 
     @Test
@@ -135,7 +139,8 @@ class AuthorResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(author.getId())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -168,7 +173,8 @@ class AuthorResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(author.getId()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
+            .andExpect(jsonPath("$.url").value(DEFAULT_URL));
     }
 
     @Test
@@ -191,7 +197,7 @@ class AuthorResourceIT {
         Author updatedAuthor = authorRepository.findById(author.getId()).get();
         // Disconnect from session so that the updates on updatedAuthor are not directly saved in db
         em.detach(updatedAuthor);
-        updatedAuthor.name(UPDATED_NAME);
+        updatedAuthor.name(UPDATED_NAME).url(UPDATED_URL);
 
         restAuthorMockMvc
             .perform(
@@ -206,6 +212,7 @@ class AuthorResourceIT {
         assertThat(authorList).hasSize(databaseSizeBeforeUpdate);
         Author testAuthor = authorList.get(authorList.size() - 1);
         assertThat(testAuthor.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testAuthor.getUrl()).isEqualTo(UPDATED_URL);
     }
 
     @Test
@@ -277,6 +284,8 @@ class AuthorResourceIT {
         Author partialUpdatedAuthor = new Author();
         partialUpdatedAuthor.setId(author.getId());
 
+        partialUpdatedAuthor.url(UPDATED_URL);
+
         restAuthorMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedAuthor.getId())
@@ -290,6 +299,7 @@ class AuthorResourceIT {
         assertThat(authorList).hasSize(databaseSizeBeforeUpdate);
         Author testAuthor = authorList.get(authorList.size() - 1);
         assertThat(testAuthor.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testAuthor.getUrl()).isEqualTo(UPDATED_URL);
     }
 
     @Test
@@ -305,7 +315,7 @@ class AuthorResourceIT {
         Author partialUpdatedAuthor = new Author();
         partialUpdatedAuthor.setId(author.getId());
 
-        partialUpdatedAuthor.name(UPDATED_NAME);
+        partialUpdatedAuthor.name(UPDATED_NAME).url(UPDATED_URL);
 
         restAuthorMockMvc
             .perform(
@@ -320,6 +330,7 @@ class AuthorResourceIT {
         assertThat(authorList).hasSize(databaseSizeBeforeUpdate);
         Author testAuthor = authorList.get(authorList.size() - 1);
         assertThat(testAuthor.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testAuthor.getUrl()).isEqualTo(UPDATED_URL);
     }
 
     @Test
