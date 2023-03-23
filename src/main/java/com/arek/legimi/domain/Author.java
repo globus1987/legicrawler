@@ -27,6 +27,9 @@ public class Author implements Serializable, Persistable<String> {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "url")
+    private String url;
+
     @Transient
     private boolean isPersisted;
 
@@ -74,6 +77,19 @@ public class Author implements Serializable, Persistable<String> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public Author url(String url) {
+        this.setUrl(url);
+        return this;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Transient
@@ -144,6 +160,7 @@ public class Author implements Serializable, Persistable<String> {
         return "Author{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", url='" + getUrl() + "'" +
             "}";
     }
 }
