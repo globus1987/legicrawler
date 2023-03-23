@@ -42,9 +42,10 @@ public class Author implements Serializable, Persistable<String> {
     @JsonIgnoreProperties(value = { "cycles", "collections", "authors" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
-    public Author(String id, String name) {
+    public Author(String id, String name, String url) {
         this.name = name;
         this.id = id;
+        this.url = url;
     }
 
     public Author() {

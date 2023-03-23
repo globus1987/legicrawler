@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
 import { Translate, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { isNumber, ValidatedField, ValidatedForm } from 'react-jhipster';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
@@ -10,7 +11,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IAuthor } from 'app/shared/model/author.model';
-import { getEntities } from './author.reducer';
+import { getEntities, getFilteredEntities } from './author.reducer';
 
 export const Author = () => {
   const dispatch = useAppDispatch();
@@ -32,10 +33,20 @@ export const Author = () => {
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
+        query: '',
       })
     );
   };
-
+  let filterEntities = values => {
+    dispatch(
+      getFilteredEntities({
+        page: paginationState.activePage - 1,
+        size: paginationState.itemsPerPage,
+        sort: `${paginationState.sort},${paginationState.order}`,
+        query: values.name ? values.name : '',
+      })
+    );
+  };
   const sortEntities = () => {
     getAllEntities();
     const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
@@ -90,6 +101,15 @@ export const Author = () => {
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
         </div>
+        <div className="d-flex flex-row">
+          <ValidatedForm onSubmit={filterEntities}>
+            <ValidatedField label="Filter" id="cycle-name" name="name" data-cy="name" type="text" />
+            <Button color="primary" id="search-entity" data-cy="entitySearchButton" type="submit">
+              {loading ? <FontAwesomeIcon icon="sync" spin={loading} /> : <FontAwesomeIcon icon="search" />}
+              &nbsp; Search
+            </Button>
+          </ValidatedForm>
+        </div>
       </h2>
       <div className="table-responsive">
         {authorList && authorList.length > 0 ? (
@@ -114,11 +134,11 @@ export const Author = () => {
                     </a>
                   </td>
                   <td>
-                    {' '}
                     <a href={author.url} color="link">
                       {author.name}
                     </a>
                   </td>
+                  <td>{author.books.length}</td>
                 </tr>
               ))}
             </tbody>

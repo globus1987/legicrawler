@@ -4,6 +4,7 @@ import { createAsyncThunk, isFulfilled, isPending, isRejected } from '@reduxjs/t
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { IQueryParams, createEntitySlice, EntityState, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IAuthor, defaultValue } from 'app/shared/model/author.model';
+import { ICycle } from 'app/shared/model/cycle.model';
 
 const initialState: EntityState<IAuthor> = {
   loading: false,
@@ -19,9 +20,18 @@ const apiUrl = 'api/authors';
 
 // Actions
 
-export const getEntities = createAsyncThunk('author/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
-  return axios.get<IAuthor[]>(requestUrl);
+export const getEntities = createAsyncThunk('author/fetch_entity_list', async ({ query, page, size, sort }: IQueryParams) => {
+  const requestUrl = `${apiUrl}${
+    sort ? `?page=${page}&size=${size}&sort=${sort}&query=${query}&` : '?'
+  }cacheBuster=${new Date().getTime()}`;
+  return axios.get<ICycle[]>(requestUrl);
+});
+
+export const getFilteredEntities = createAsyncThunk('author/fetch_entity_list', async ({ query, page, size, sort }: IQueryParams) => {
+  const requestUrl = `${apiUrl}${
+    sort ? `?page=${page}&size=${size}&sort=${sort}&query=${query}&` : '?'
+  }cacheBuster=${new Date().getTime()}`;
+  return axios.get<ICycle[]>(requestUrl);
 });
 
 export const getEntity = createAsyncThunk(

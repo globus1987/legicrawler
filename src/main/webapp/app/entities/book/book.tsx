@@ -9,8 +9,7 @@ import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.cons
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { IBook } from 'app/shared/model/book.model';
-import { getEntities } from './book.reducer';
+import { getEntities, reload } from './book.reducer';
 
 export const Book = () => {
   const dispatch = useAppDispatch();
@@ -42,6 +41,10 @@ export const Book = () => {
     if (location.search !== endURL) {
       navigate(`${location.pathname}${endURL}`);
     }
+  };
+
+  const doReload = () => {
+    dispatch(reload);
   };
 
   useEffect(() => {
@@ -81,6 +84,10 @@ export const Book = () => {
     sortEntities();
   };
 
+  const handleReload = () => {
+    doReload();
+  };
+
   return (
     <div>
       <h2 id="book-heading" data-cy="BookHeading">
@@ -89,10 +96,10 @@ export const Book = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          <Link to="/book/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Book
-          </Link>
+          <Button onClick={handleReload} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="right-left" />
+            &nbsp; Reload
+          </Button>
         </div>
       </h2>
       <div className="table-responsive">
@@ -100,88 +107,59 @@ export const Book = () => {
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('id')}>
-                  Id <FontAwesomeIcon icon="sort" />
-                </th>
                 <th className="hand" onClick={sort('title')}>
                   Title <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand">Authors</th>
                 <th className="hand" onClick={sort('url')}>
                   Url <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand" onClick={sort('category')}>
+                  Category <FontAwesomeIcon icon="sort" />
+                </th>
+                <th>Cycle</th>
                 <th className="hand" onClick={sort('ebook')}>
                   Ebook <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('audiobook')}>
                   Audiobook <FontAwesomeIcon icon="sort" />
                 </th>
-                <th className="hand" onClick={sort('category')}>
-                  Category <FontAwesomeIcon icon="sort" />
-                </th>
                 <th className="hand" onClick={sort('added')}>
                   Added <FontAwesomeIcon icon="sort" />
                 </th>
-                <th className="hand" onClick={sort('kindleSubscription')}>
-                  Kindle Subscription <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('libraryPass')}>
-                  Library Pass <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('librarySubscription')}>
-                  Library Subscription <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('subscription')}>
-                  Subscription <FontAwesomeIcon icon="sort" />
-                </th>
-                <th>
-                  Cycle <FontAwesomeIcon icon="sort" />
-                </th>
-                <th />
+                <th className="hand">Subscription</th>
               </tr>
             </thead>
             <tbody>
               {bookList.map((book, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
-                    <Button tag={Link} to={`/book/${book.id}`} color="link" size="sm">
-                      {book.id}
-                    </Button>
+                    <a href={`/book/${book.id}`} color="link">
+                      {book.title}
+                    </a>
                   </td>
-                  <td>{book.title}</td>
-                  <td>{book.url}</td>
+                  <td>
+                    {book.authors?.map(item => (
+                      <a href={`/author/${item.id}`} color="link">
+                        {item.name}
+                      </a>
+                    ))}
+                  </td>
+                  <td>
+                    <a href={book.url} color="link">
+                      {book.url}
+                    </a>
+                  </td>
+                  <td>{book.category}</td>
+                  <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
                   <td>{book.ebook ? 'true' : 'false'}</td>
                   <td>{book.audiobook ? 'true' : 'false'}</td>
-                  <td>{book.category}</td>
                   <td>{book.added ? <TextFormat type="date" value={book.added} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
-                  <td>{book.kindleSubscription ? 'true' : 'false'}</td>
-                  <td>{book.libraryPass ? 'true' : 'false'}</td>
-                  <td>{book.librarySubscription ? 'true' : 'false'}</td>
-                  <td>{book.subscription ? 'true' : 'false'}</td>
-                  <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/book/${book.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/book/${book.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                      </Button>
-                      <Button
-                        tag={Link}
-                        to={`/book/${book.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                      </Button>
-                    </div>
+                  <td>
+                    <p>Kindle: {book.kindleSubscription ? 'true' : 'false'}</p>
+                    <p>Library Pass: {book.libraryPass ? 'true' : 'false'}</p>
+                    <p>Library Sub: {book.librarySubscription ? 'true' : 'false'}</p>
+                    <p>Subs: {book.subscription ? 'true' : 'false'}</p>
                   </td>
                 </tr>
               ))}

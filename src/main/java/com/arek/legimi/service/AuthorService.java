@@ -37,17 +37,19 @@ public interface AuthorService {
      * Get all the authors.
      *
      * @param pageable the pagination information.
+     * @param query
      * @return the list of entities.
      */
-    Page<Author> findAll(Pageable pageable);
+    Page<Author> findAll(Pageable pageable, String query);
 
     /**
      * Get all the authors with eager load of many-to-many relationships.
      *
      * @param pageable the pagination information.
+     * @param query
      * @return the list of entities.
      */
-    Page<Author> findAllWithEagerRelationships(Pageable pageable);
+    Page<Author> findAllWithEagerRelationships(Pageable pageable, String query);
 
     /**
      * Get the "id" author.

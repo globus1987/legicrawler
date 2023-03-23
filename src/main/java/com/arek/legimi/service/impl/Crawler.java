@@ -130,7 +130,9 @@ public class Crawler {
                         if (authorDb.isPresent()) {
                             authorList.add(authorDb.get());
                         } else {
-                            authorList.add(new Author(authorId, author.get("name").getAsString()));
+                            authorList.add(
+                                new Author(authorId, author.get("name").getAsString(), legimiUrl + author.get("url").getAsString())
+                            );
                         }
                     }
                 }

@@ -104,7 +104,7 @@ export const Cycle = () => {
         </div>
         <div className="d-flex flex-row">
           <ValidatedForm onSubmit={filterEntities}>
-            <ValidatedField label="Name" id="cycle-name" name="name" data-cy="name" type="text" />
+            <ValidatedField label="Filter" id="cycle-name" name="name" data-cy="name" type="text" />
             <Button color="primary" id="search-entity" data-cy="entitySearchButton" type="submit">
               {loading ? <FontAwesomeIcon icon="sync" spin={loading} /> : <FontAwesomeIcon icon="search" />}
               &nbsp; Search

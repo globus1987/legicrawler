@@ -141,14 +141,15 @@ public class AuthorResource {
     @GetMapping("/authors")
     public ResponseEntity<List<Author>> getAllAuthors(
         @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload,
+        @RequestParam(required = false) String query
     ) {
         log.debug("REST request to get a page of Authors");
         Page<Author> page;
         if (eagerload) {
-            page = authorService.findAllWithEagerRelationships(pageable);
+            page = authorService.findAllWithEagerRelationships(pageable, query);
         } else {
-            page = authorService.findAll(pageable);
+            page = authorService.findAll(pageable, query);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

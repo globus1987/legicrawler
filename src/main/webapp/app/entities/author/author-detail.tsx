@@ -38,17 +38,15 @@ export const AuthorDetail = () => {
           <dd>{authorEntity.url}</dd>
           <dt>Books</dt>
           <dd>
-            {authorEntity.books?.map(item => (
-              <dd>{item.title}</dd>
+            {authorEntity.books.map(item => (
+              <a href={`/book/${item.id}`} color="link">
+                {item.title}
+              </a>
             ))}
           </dd>
         </dl>
         <Button tag={Link} to="/author" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
-        </Button>
-        &nbsp;
-        <Button tag={Link} to={`/author/${authorEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
         </Button>
       </Col>
     </Row>

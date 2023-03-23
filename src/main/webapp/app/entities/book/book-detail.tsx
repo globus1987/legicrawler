@@ -33,9 +33,10 @@ export const BookDetail = () => {
           </dt>
           <dd>{bookEntity.title}</dd>
           <dt>
-            <span id="url">Url</span>
+            <a href={bookEntity.url} color="link">
+              {bookEntity.url}
+            </a>{' '}
           </dt>
-          <dd>{bookEntity.url}</dd>
           <dt>
             <span id="ebook">Ebook</span>
           </dt>
@@ -69,11 +70,22 @@ export const BookDetail = () => {
           </dt>
           <dd>{bookEntity.subscription ? 'true' : 'false'}</dd>
           <dt>Cycle</dt>
-          <dd>{bookEntity.cycle ? bookEntity.cycle.id : ''}</dd>
+          <dd>
+            {' '}
+            {bookEntity.cycle ? (
+              <a href={`/cycle/${bookEntity.cycle.id}`} color="link">
+                {bookEntity.cycle.name}
+              </a>
+            ) : (
+              ''
+            )}
+          </dd>
           <dt>Authors</dt>
           <dd>
             {bookEntity.authors?.map(item => (
-              <dd>{item.name}</dd>
+              <a href={`/author/${item.id}`} color="link">
+                {item.name}
+              </a>
             ))}
           </dd>
         </dl>

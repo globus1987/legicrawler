@@ -24,6 +24,11 @@ export const getEntities = createAsyncThunk('book/fetch_entity_list', async ({ p
   return axios.get<IBook[]>(requestUrl);
 });
 
+export const reload = async () => {
+  const requestUrl = `${apiUrl}/reload`;
+  axios.get<IBook[]>(requestUrl);
+};
+
 export const getEntity = createAsyncThunk(
   'book/fetch_entity',
   async (id: string | number) => {

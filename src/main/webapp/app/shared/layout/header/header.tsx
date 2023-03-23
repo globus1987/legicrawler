@@ -5,8 +5,9 @@ import React, { useState } from 'react';
 import { Navbar, Nav, NavbarToggler, Collapse } from 'reactstrap';
 import LoadingBar from 'react-redux-loading-bar';
 
-import { Home, Brand } from './header-components';
+import { Home, Brand, Reload } from './header-components';
 import { AdminMenu, EntitiesMenu, AccountMenu } from '../menus';
+import MenuItem from 'app/shared/layout/menus/menu-item';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;

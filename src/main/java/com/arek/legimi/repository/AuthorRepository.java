@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -21,8 +20,10 @@ public interface AuthorRepository extends AuthorRepositoryWithBagRelationships, 
         return this.fetchBagRelationships(this.findById(id));
     }
 
-    default List<Author> findAllWithEagerRelationships() {
-        return this.fetchBagRelationships(this.findAll());
+    Page<Author> findAllByNameContainingIgnoreCase(Pageable pageable, String name);
+
+    default Page<Author> findAllWithEagerRelationships(Pageable pageable, String query) {
+        return this.fetchBagRelationships(this.findAllByNameContainingIgnoreCase(pageable, query));
     }
 
     default Page<Author> findAllWithEagerRelationships(Pageable pageable) {

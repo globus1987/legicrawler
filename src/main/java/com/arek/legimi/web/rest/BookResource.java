@@ -167,12 +167,9 @@ public class BookResource {
     }
 
     @GetMapping("/books/reload")
-    public ResponseEntity<List<Book>> reloadBooks(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
-        log.debug("REST request to get a page of Books");
+    public ResponseEntity<String> reloadBooks() {
         bookService.reload(cycleService, authorService);
-        Page<Book> page = bookService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        return ResponseEntity.ok().body("Reloaded");
     }
 
     /**

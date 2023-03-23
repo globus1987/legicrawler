@@ -4,14 +4,6 @@ import React from 'react';
 
 import { Col, Row } from 'reactstrap';
 
-const Footer = () => (
-  <div className="footer page-content">
-    <Row>
-      <Col md="12">
-        <p>This is your footer</p>
-      </Col>
-    </Row>
-  </div>
-);
+const Footer = () => <div className="footer page-content"></div>;
 
 export default Footer;
