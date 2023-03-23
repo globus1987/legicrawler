@@ -7,6 +7,10 @@ import LoadingBar from 'react-redux-loading-bar';
 
 import { Home, Brand } from './header-components';
 import { AdminMenu, EntitiesMenu, AccountMenu } from '../menus';
+import Book from 'app/entities/book';
+import Cycle from 'app/entities/cycle';
+import Author from 'app/entities/author';
+import Collection from 'app/entities/collection';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
