@@ -1,0 +1,32 @@
+{
+  "applications": ["legimi"],
+  "changelogDate": "20230321104700",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "author",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Author",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "book",
+      "otherEntityRelationshipName": "authors",
+      "ownerSide": true,
+      "relationshipName": "books",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

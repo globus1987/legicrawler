@@ -16,6 +16,7 @@ import com.arek.legimi.web.rest.vm.ManagedUserVM;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
+import javax.persistence.EntityManager;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration tests for the {@link UserResource} REST controller.
@@ -36,7 +38,7 @@ class UserResourceIT {
     private static final String DEFAULT_LOGIN = "johndoe";
     private static final String UPDATED_LOGIN = "jhipster";
 
-    private static final String DEFAULT_ID = "id1";
+    private static final Long DEFAULT_ID = 1L;
 
     private static final String DEFAULT_PASSWORD = "passjohndoe";
     private static final String UPDATED_PASSWORD = "passjhipster";
@@ -63,6 +65,9 @@ class UserResourceIT {
     private UserMapper userMapper;
 
     @Autowired
+    private EntityManager em;
+
+    @Autowired
     private MockMvc restUserMockMvc;
 
     private User user;
@@ -73,12 +78,12 @@ class UserResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which has a required relationship to the User entity.
      */
-    public static User createEntity() {
+    public static User createEntity(EntityManager em) {
         User user = new User();
-        user.setLogin(DEFAULT_LOGIN);
+        user.setLogin(DEFAULT_LOGIN + RandomStringUtils.randomAlphabetic(5));
         user.setPassword(RandomStringUtils.randomAlphanumeric(60));
         user.setActivated(true);
-        user.setEmail(DEFAULT_EMAIL);
+        user.setEmail(RandomStringUtils.randomAlphabetic(5) + DEFAULT_EMAIL);
         user.setFirstName(DEFAULT_FIRSTNAME);
         user.setLastName(DEFAULT_LASTNAME);
         user.setImageUrl(DEFAULT_IMAGEURL);
@@ -89,18 +94,21 @@ class UserResourceIT {
     /**
      * Setups the database with one user.
      */
-    public static User initTestUser(UserRepository userRepository) {
+    public static User initTestUser(UserRepository userRepository, EntityManager em) {
         userRepository.deleteAll();
-        User user = createEntity();
+        User user = createEntity(em);
+        user.setLogin(DEFAULT_LOGIN);
+        user.setEmail(DEFAULT_EMAIL);
         return user;
     }
 
     @BeforeEach
     public void initTest() {
-        user = initTestUser(userRepository);
+        user = initTestUser(userRepository, em);
     }
 
     @Test
+    @Transactional
     void createUser() throws Exception {
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
@@ -133,15 +141,15 @@ class UserResourceIT {
             assertThat(testUser.getImageUrl()).isEqualTo(DEFAULT_IMAGEURL);
             assertThat(testUser.getLangKey()).isEqualTo(DEFAULT_LANGKEY);
         });
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void createUserWithExistingId() throws Exception {
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
-        managedUserVM.setId("1L");
+        managedUserVM.setId(DEFAULT_ID);
         managedUserVM.setLogin(DEFAULT_LOGIN);
         managedUserVM.setPassword(DEFAULT_PASSWORD);
         managedUserVM.setFirstName(DEFAULT_FIRSTNAME);
@@ -161,13 +169,13 @@ class UserResourceIT {
 
         // Validate the User in the database
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeCreate));
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void createUserWithExistingLogin() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
@@ -190,13 +198,13 @@ class UserResourceIT {
 
         // Validate the User in the database
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeCreate));
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void createUserWithExistingEmail() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
         int databaseSizeBeforeCreate = userRepository.findAll().size();
 
         ManagedUserVM managedUserVM = new ManagedUserVM();
@@ -219,17 +227,17 @@ class UserResourceIT {
 
         // Validate the User in the database
         assertPersistedUsers(users -> assertThat(users).hasSize(databaseSizeBeforeCreate));
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void getAllUsers() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
 
         // Get all the users
         restUserMockMvc
-            .perform(get("/api/admin/users").accept(MediaType.APPLICATION_JSON))
+            .perform(get("/api/admin/users?sort=id,desc").accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].login").value(hasItem(DEFAULT_LOGIN)))
@@ -238,13 +246,13 @@ class UserResourceIT {
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
             .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGEURL)))
             .andExpect(jsonPath("$.[*].langKey").value(hasItem(DEFAULT_LANGKEY)));
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void getUser() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
 
         // Get the user
         restUserMockMvc
@@ -257,19 +265,19 @@ class UserResourceIT {
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
             .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGEURL))
             .andExpect(jsonPath("$.langKey").value(DEFAULT_LANGKEY));
-
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void getNonExistingUser() throws Exception {
         restUserMockMvc.perform(get("/api/admin/users/unknown")).andExpect(status().isNotFound());
     }
 
     @Test
+    @Transactional
     void updateUser() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
@@ -307,13 +315,13 @@ class UserResourceIT {
             assertThat(testUser.getImageUrl()).isEqualTo(UPDATED_IMAGEURL);
             assertThat(testUser.getLangKey()).isEqualTo(UPDATED_LANGKEY);
         });
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void updateUserLogin() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
         int databaseSizeBeforeUpdate = userRepository.findAll().size();
 
         // Update the user
@@ -352,13 +360,13 @@ class UserResourceIT {
             assertThat(testUser.getImageUrl()).isEqualTo(UPDATED_IMAGEURL);
             assertThat(testUser.getLangKey()).isEqualTo(UPDATED_LANGKEY);
         });
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void updateUserExistingEmail() throws Exception {
         // Initialize the database with 2 users
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
 
         User anotherUser = new User();
         anotherUser.setLogin("jhipster");
@@ -369,7 +377,7 @@ class UserResourceIT {
         anotherUser.setLastName("hipster");
         anotherUser.setImageUrl("");
         anotherUser.setLangKey("en");
-        userRepository.save(anotherUser);
+        userRepository.saveAndFlush(anotherUser);
 
         // Update the user
         User updatedUser = userRepository.findById(user.getId()).get();
@@ -395,13 +403,13 @@ class UserResourceIT {
                 put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(managedUserVM))
             )
             .andExpect(status().isBadRequest());
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void updateUserExistingLogin() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
 
         User anotherUser = new User();
         anotherUser.setLogin("jhipster");
@@ -412,7 +420,7 @@ class UserResourceIT {
         anotherUser.setLastName("hipster");
         anotherUser.setImageUrl("");
         anotherUser.setLangKey("en");
-        userRepository.save(anotherUser);
+        userRepository.saveAndFlush(anotherUser);
 
         // Update the user
         User updatedUser = userRepository.findById(user.getId()).get();
@@ -438,13 +446,13 @@ class UserResourceIT {
                 put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(managedUserVM))
             )
             .andExpect(status().isBadRequest());
-        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void deleteUser() throws Exception {
         // Initialize the database
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
         int databaseSizeBeforeDelete = userRepository.findAll().size();
 
         // Delete the user
@@ -464,7 +472,7 @@ class UserResourceIT {
         User user2 = new User();
         user2.setId(user1.getId());
         assertThat(user1).isEqualTo(user2);
-        user2.setId("id2");
+        user2.setId(2L);
         assertThat(user1).isNotEqualTo(user2);
         user1.setId(null);
         assertThat(user1).isNotEqualTo(user2);

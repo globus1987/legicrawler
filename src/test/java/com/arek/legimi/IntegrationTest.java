@@ -2,7 +2,7 @@ package com.arek.legimi;
 
 import com.arek.legimi.LegimiApp;
 import com.arek.legimi.config.AsyncSyncConfiguration;
-import com.arek.legimi.config.EmbeddedMongo;
+import com.arek.legimi.config.EmbeddedSQL;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,7 +16,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest(classes = { LegimiApp.class, AsyncSyncConfiguration.class })
-@EmbeddedMongo
+@EmbeddedSQL
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public @interface IntegrationTest {
 }

@@ -1,3 +1,8 @@
+dependencies {
+    implementation "org.postgresql:postgresql"
+    liquibaseRuntime "org.postgresql:postgresql"
+    testImplementation "org.testcontainers:postgresql"
+}
 
 def profiles = "prod"
 if (project.hasProperty("no-liquibase")) {

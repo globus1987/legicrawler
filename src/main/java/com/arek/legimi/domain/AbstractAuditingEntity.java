@@ -3,16 +3,21 @@ package com.arek.legimi.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.Instant;
+import javax.persistence.Column;
+import javax.persistence.EntityListeners;
+import javax.persistence.MappedSuperclass;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Base abstract class for entities which will hold definitions for created, last modified, created by,
  * last modified by attributes.
  */
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(value = { "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate" }, allowGetters = true)
 public abstract class AbstractAuditingEntity<T> implements Serializable {
 
@@ -21,19 +26,19 @@ public abstract class AbstractAuditingEntity<T> implements Serializable {
     public abstract T getId();
 
     @CreatedBy
-    @Field("created_by")
+    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
     private String createdBy;
 
     @CreatedDate
-    @Field("created_date")
+    @Column(name = "created_date", updatable = false)
     private Instant createdDate = Instant.now();
 
     @LastModifiedBy
-    @Field("last_modified_by")
+    @Column(name = "last_modified_by", length = 50)
     private String lastModifiedBy;
 
     @LastModifiedDate
-    @Field("last_modified_date")
+    @Column(name = "last_modified_date")
     private Instant lastModifiedDate = Instant.now();
 
     public String getCreatedBy() {

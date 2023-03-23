@@ -1,0 +1,38 @@
+{
+  "applications": ["legimi"],
+  "changelogDate": "20230321104703",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "collection",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "5000"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Collection",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "book",
+      "otherEntityRelationshipName": "collections",
+      "ownerSide": true,
+      "relationshipName": "books",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}

@@ -1,0 +1,83 @@
+{
+  "applications": ["legimi"],
+  "changelogDate": "20230321104701",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "book",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "title",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "5000"
+    },
+    {
+      "fieldName": "ebook",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "audiobook",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "category",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "added",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "kindleSubscription",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "libraryPass",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "librarySubscription",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "subscription",
+      "fieldType": "Boolean"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Book",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "cycle",
+      "otherEntityRelationshipName": "books",
+      "relationshipName": "cycle",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "collection",
+      "otherEntityRelationshipName": "books",
+      "ownerSide": false,
+      "relationshipName": "collections",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "author",
+      "otherEntityRelationshipName": "books",
+      "ownerSide": false,
+      "relationshipName": "authors",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "service": "serviceImpl"
+}
