@@ -32,6 +32,10 @@ export const AuthorDetail = () => {
             <span id="name">Name</span>
           </dt>
           <dd>{authorEntity.name}</dd>
+          <dt>
+            <span id="url">Url</span>
+          </dt>
+          <dd>{authorEntity.url}</dd>
           <dt>Books</dt>
           <dd>
             {authorEntity.books?.map(item => (

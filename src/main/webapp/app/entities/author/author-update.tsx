@@ -86,6 +86,7 @@ export const AuthorUpdate = () => {
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="author-id" label="Id" validate={{ required: true }} /> : null}
               <ValidatedField label="Name" id="author-name" name="name" data-cy="name" type="text" />
+              <ValidatedField label="Url" id="author-url" name="url" data-cy="url" type="text" />
               <ValidatedField label="Books" id="author-books" data-cy="books" type="select" multiple name="books">
                 <option value="" key="0" />
                 {books

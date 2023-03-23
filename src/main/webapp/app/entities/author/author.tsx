@@ -119,7 +119,6 @@ export const Author = () => {
                       {author.name}
                     </a>
                   </td>
-                  <td>{author.books.length}</td>
                 </tr>
               ))}
             </tbody>
