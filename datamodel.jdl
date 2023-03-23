@@ -46,6 +46,7 @@ application {
 entity Author {
     id String
     name String
+    url String
 }
 entity Book {
     id String
