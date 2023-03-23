@@ -49,6 +49,9 @@ public class AuthorServiceImpl implements AuthorService {
                 if (author.getName() != null) {
                     existingAuthor.setName(author.getName());
                 }
+                if (author.getUrl() != null) {
+                    existingAuthor.setUrl(author.getUrl());
+                }
 
                 return existingAuthor;
             })
