@@ -1,6 +1,7 @@
 package com.arek.legimi.service;
 
 import com.arek.legimi.domain.Author;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ public interface AuthorService {
      * @return the persisted entity.
      */
     Author save(Author author);
+    List<Author> saveAll(List<Author> authors);
 
     /**
      * Updates a author.

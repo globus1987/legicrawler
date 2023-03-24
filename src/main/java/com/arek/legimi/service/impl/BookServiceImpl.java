@@ -119,7 +119,7 @@ public class BookServiceImpl implements BookService {
         var gsonValue = gson.fromJson(response, JsonObject.class);
         var pageCount = gsonValue.get("bookList").getAsJsonObject().get("pagination").getAsJsonObject().get("totalPages").getAsInt();
         var crawler = new Crawler(this, authorService, cycleService);
-        crawler.setDatabaseBooks(bookRepository.findAll());
+        crawler.setExistingIds(bookRepository.findAllIds());
         crawler.parse(pageCount);
         crawler.bookStats();
     }

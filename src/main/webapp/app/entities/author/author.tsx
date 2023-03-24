@@ -11,7 +11,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IAuthor } from 'app/shared/model/author.model';
-import { getEntities, getFilteredEntities } from './author.reducer';
+import { getEntities } from './author.reducer';
 
 export const Author = () => {
   const dispatch = useAppDispatch();
@@ -39,7 +39,7 @@ export const Author = () => {
   };
   let filterEntities = values => {
     dispatch(
-      getFilteredEntities({
+      getEntities({
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
@@ -129,9 +129,9 @@ export const Author = () => {
               {authorList.map((author, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
-                    <a href={`/author/${author.id}`} color="link">
+                    <Button tag={Link} to={`/author/${author.id}`} color="black" size="sm">
                       {author.id}
-                    </a>
+                    </Button>
                   </td>
                   <td>
                     <a href={author.url} color="link">

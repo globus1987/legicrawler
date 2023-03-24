@@ -11,7 +11,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { ICycle } from 'app/shared/model/cycle.model';
-import { getEntities, getFilteredEntities } from './cycle.reducer';
+import { getEntities } from './cycle.reducer';
 
 export const Cycle = () => {
   const dispatch = useAppDispatch();
@@ -27,13 +27,15 @@ export const Cycle = () => {
   const loading = useAppSelector(state => state.cycle.loading);
   const totalItems = useAppSelector(state => state.cycle.totalItems);
 
+  const [filterValue, setFilterValue] = useState('');
+
   const getAllEntities = () => {
     dispatch(
       getEntities({
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
-        query: '',
+        query: filterValue,
       })
     );
   };
@@ -83,16 +85,12 @@ export const Cycle = () => {
     sortEntities();
   };
 
-  let filterEntities = values => {
-    dispatch(
-      getFilteredEntities({
-        page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
-        sort: `${paginationState.sort},${paginationState.order}`,
-        query: values.name ? values.name : '',
-      })
-    );
+  const handleFilter = () => {
+    sortEntities();
   };
+
+  const doNothing = () => {};
+
   return (
     <div>
       <h2 id="cycle-heading" data-cy="CycleHeading">
@@ -102,23 +100,27 @@ export const Cycle = () => {
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
         </div>
-        <div className="d-flex flex-row">
-          <ValidatedForm onSubmit={filterEntities}>
-            <ValidatedField label="Filter" id="cycle-name" name="name" data-cy="name" type="text" />
-            <Button color="primary" id="search-entity" data-cy="entitySearchButton" type="submit">
-              {loading ? <FontAwesomeIcon icon="sync" spin={loading} /> : <FontAwesomeIcon icon="search" />}
-              &nbsp; Search
-            </Button>
-          </ValidatedForm>
-        </div>
       </h2>
       <div className="table-responsive">
         {cycleList && cycleList.length > 0 ? (
           <Table responsive>
             <thead>
               <tr>
-                <th className="hand" onClick={sort('name')}>
-                  Name <FontAwesomeIcon icon="sort" />
+                <th className="hand">
+                  <ValidatedForm onSubmit={handleFilter}>
+                    <ValidatedField
+                      type="text"
+                      name="name"
+                      placeholder="Filter"
+                      value={filterValue}
+                      onChange={e => setFilterValue(e.target.value)}
+                      data-cy="cycleNameFilter"
+                    />
+                  </ValidatedForm>
+                  <div onClick={sort('name')}>
+                    {' '}
+                    Name <FontAwesomeIcon icon="sort" />
+                  </div>
                 </th>
                 <th className="hand" onClick={sort('url')}>
                   Url <FontAwesomeIcon icon="sort" />

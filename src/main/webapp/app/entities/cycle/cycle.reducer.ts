@@ -26,13 +26,6 @@ export const getEntities = createAsyncThunk('cycle/fetch_entity_list', async ({ 
   return axios.get<ICycle[]>(requestUrl);
 });
 
-export const getFilteredEntities = createAsyncThunk('cycle/fetch_entity_list', async ({ query, page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${
-    sort ? `?page=${page}&size=${size}&sort=${sort}&query=${query}&` : '?'
-  }cacheBuster=${new Date().getTime()}`;
-  return axios.get<ICycle[]>(requestUrl);
-});
-
 export const getAllEntities = createAsyncThunk('cycle/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
   const requestUrl = `${apiUrl}/all?cacheBuster=${new Date().getTime()}`;
   return axios.get<ICycle[]>(requestUrl);

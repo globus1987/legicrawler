@@ -33,6 +33,9 @@ export const BookDetail = () => {
           </dt>
           <dd>{bookEntity.title}</dd>
           <dt>
+            <span id="url">Url</span>
+          </dt>
+          <dt>
             <a href={bookEntity.url} color="link">
               {bookEntity.url}
             </a>{' '}
@@ -73,9 +76,9 @@ export const BookDetail = () => {
           <dd>
             {' '}
             {bookEntity.cycle ? (
-              <a href={`/cycle/${bookEntity.cycle.id}`} color="link">
+              <Button href={`/cycle/${bookEntity.cycle.id}`} color="link">
                 {bookEntity.cycle.name}
-              </a>
+              </Button>
             ) : (
               ''
             )}
@@ -83,9 +86,9 @@ export const BookDetail = () => {
           <dt>Authors</dt>
           <dd>
             {bookEntity.authors?.map(item => (
-              <a href={`/author/${item.id}`} color="link">
+              <Button tag={Link} to={`/author/${item.id}`} color="black" size="sm">
                 {item.name}
-              </a>
+              </Button>
             ))}
           </dd>
         </dl>

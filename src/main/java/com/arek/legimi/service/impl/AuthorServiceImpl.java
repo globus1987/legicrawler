@@ -3,7 +3,9 @@ package com.arek.legimi.service.impl;
 import com.arek.legimi.domain.Author;
 import com.arek.legimi.repository.AuthorRepository;
 import com.arek.legimi.service.AuthorService;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,12 @@ public class AuthorServiceImpl implements AuthorService {
     public Author save(Author author) {
         log.debug("Request to save Author : {}", author);
         return authorRepository.save(author);
+    }
+
+    @Override
+    public List<Author> saveAll(List<Author> authors) {
+        log.debug("Request to save Authors : {}", authors);
+        return authorRepository.saveAll(authors);
     }
 
     @Override

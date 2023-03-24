@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
 import { Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { isNumber, ValidatedField, ValidatedForm } from 'react-jhipster';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
@@ -31,10 +32,20 @@ export const Book = () => {
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
+        query: '',
       })
     );
   };
-
+  let filterEntities = values => {
+    dispatch(
+      getEntities({
+        page: paginationState.activePage - 1,
+        size: paginationState.itemsPerPage,
+        sort: `${paginationState.sort},${paginationState.order}`,
+        query: values.name ? values.name : '',
+      })
+    );
+  };
   const sortEntities = () => {
     getAllEntities();
     const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
@@ -101,6 +112,15 @@ export const Book = () => {
             &nbsp; Reload
           </Button>
         </div>
+        <div className="d-flex flex-row">
+          <ValidatedForm onSubmit={filterEntities}>
+            <ValidatedField label="Filter" id="cycle-name" name="name" data-cy="name" type="text" />
+            <Button color="primary" id="search-entity" data-cy="entitySearchButton" type="submit">
+              {loading ? <FontAwesomeIcon icon="sync" spin={loading} /> : <FontAwesomeIcon icon="search" />}
+              &nbsp; Search
+            </Button>
+          </ValidatedForm>
+        </div>
       </h2>
       <div className="table-responsive">
         {bookList && bookList.length > 0 ? (
@@ -118,12 +138,8 @@ export const Book = () => {
                   Category <FontAwesomeIcon icon="sort" />
                 </th>
                 <th>Cycle</th>
-                <th className="hand" onClick={sort('ebook')}>
-                  Ebook <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('audiobook')}>
-                  Audiobook <FontAwesomeIcon icon="sort" />
-                </th>
+                <th>Ebook</th>
+                <th>Audiobook</th>
                 <th className="hand" onClick={sort('added')}>
                   Added <FontAwesomeIcon icon="sort" />
                 </th>
@@ -152,14 +168,45 @@ export const Book = () => {
                   </td>
                   <td>{book.category}</td>
                   <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
-                  <td>{book.ebook ? 'true' : 'false'}</td>
-                  <td>{book.audiobook ? 'true' : 'false'}</td>
+                  <td>
+                    {<FontAwesomeIcon style={book.ebook ? { color: 'green' } : { color: 'red' }} icon={book.ebook ? 'check' : 'xmark'} />}
+                  </td>
+                  <td>
+                    <FontAwesomeIcon
+                      style={book.audiobook ? { color: 'green' } : { color: 'red' }}
+                      icon={book.audiobook ? 'check' : 'xmark'}
+                    />
+                  </td>
                   <td>{book.added ? <TextFormat type="date" value={book.added} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
                   <td>
-                    <p>Kindle: {book.kindleSubscription ? 'true' : 'false'}</p>
-                    <p>Library Pass: {book.libraryPass ? 'true' : 'false'}</p>
-                    <p>Library Sub: {book.librarySubscription ? 'true' : 'false'}</p>
-                    <p>Subs: {book.subscription ? 'true' : 'false'}</p>
+                    <p>
+                      <FontAwesomeIcon
+                        style={book.kindleSubscription ? { color: 'green' } : { color: 'red' }}
+                        icon={book.kindleSubscription ? 'check' : 'xmark'}
+                      />
+                      Kindle
+                    </p>
+                    <p>
+                      <FontAwesomeIcon
+                        style={book.libraryPass ? { color: 'green' } : { color: 'red' }}
+                        icon={book.libraryPass ? 'check' : 'xmark'}
+                      />
+                      Library Pass
+                    </p>
+                    <p>
+                      <FontAwesomeIcon
+                        style={book.librarySubscription ? { color: 'green' } : { color: 'red' }}
+                        icon={book.librarySubscription ? 'check' : 'xmark'}
+                      />
+                      Library Subscription
+                    </p>
+                    <p>
+                      <FontAwesomeIcon
+                        style={book.subscription ? { color: 'green' } : { color: 'red' }}
+                        icon={book.subscription ? 'check' : 'xmark'}
+                      />
+                      Subscription
+                    </p>
                   </td>
                 </tr>
               ))}
