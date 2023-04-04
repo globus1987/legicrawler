@@ -24,7 +24,7 @@ export const getEntities = createAsyncThunk('author/fetch_entity_list', async ({
   const requestUrl = `${apiUrl}${
     sort ? `?page=${page}&size=${size}&sort=${sort}&query=${query}&` : '?'
   }cacheBuster=${new Date().getTime()}`;
-  return axios.get<ICycle[]>(requestUrl);
+  return axios.get<IAuthor[]>(requestUrl);
 });
 
 export const getEntity = createAsyncThunk(
