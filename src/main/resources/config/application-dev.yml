@@ -32,9 +32,9 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/legimi
-    username: legimi
-    password:
+    url: jdbc:postgresql://localhost:5431/legimi
+    username: postgres
+    password: postgres
     hikari:
       poolName: Hikari
       auto-commit: false

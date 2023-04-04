@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './book.reducer';
 
 export const BookDetail = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { id } = useParams<'id'>();
 
@@ -22,16 +21,40 @@ export const BookDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="bookDetailsHeading">Book</h2>
+        <h2 data-cy="bookDetailsHeading">Book {bookEntity.id}</h2>
         <dl className="jh-entity-details">
-          <dt>
-            <span id="id">Id</span>
-          </dt>
-          <dd>{bookEntity.id}</dd>
           <dt>
             <span id="title">Title</span>
           </dt>
           <dd>{bookEntity.title}</dd>
+          <dt>Authors</dt>
+          <dd>
+            {bookEntity.authors?.map(item => (
+              <Button onClick={() => navigate(`/author/${item.id}`)} color="light" size="sm">
+                {item.name}
+              </Button>
+            ))}
+          </dd>
+          <dt>
+            <span id="category">Category</span>
+          </dt>
+          <dd>{bookEntity.category}</dd>
+          {bookEntity.cycle ? (
+            <dt>
+              <span id="Cycle"> Cycle</span>
+            </dt>
+          ) : (
+            ''
+          )}
+          {bookEntity.cycle ? (
+            <dd>
+              <Button onClick={() => navigate(`/cycle/${bookEntity.cycle.id}`)} color="light">
+                {bookEntity.cycle.name}
+              </Button>
+            </dd>
+          ) : (
+            ''
+          )}
           <dt>
             <span id="url">Url</span>
           </dt>
@@ -40,57 +63,49 @@ export const BookDetail = () => {
               {bookEntity.url}
             </a>{' '}
           </dt>
+          <dd></dd>
           <dt>
+            <FontAwesomeIcon style={bookEntity.ebook ? { color: 'green' } : { color: 'red' }} icon={bookEntity.ebook ? 'check' : 'xmark'} />
             <span id="ebook">Ebook</span>
           </dt>
-          <dd>{bookEntity.ebook ? 'true' : 'false'}</dd>
+
           <dt>
+            <FontAwesomeIcon
+              style={bookEntity.audiobook ? { color: 'green' } : { color: 'red' }}
+              icon={bookEntity.audiobook ? 'check' : 'xmark'}
+            />
             <span id="audiobook">Audiobook</span>
           </dt>
-          <dd>{bookEntity.audiobook ? 'true' : 'false'}</dd>
+          <dd></dd>
+
           <dt>
-            <span id="category">Category</span>
+            <FontAwesomeIcon
+              style={bookEntity.subscription ? { color: 'green' } : { color: 'red' }}
+              icon={bookEntity.subscription ? 'check' : 'xmark'}
+            />
+            <span id="subscription"> Subscription</span>
           </dt>
-          <dd>{bookEntity.category}</dd>
           <dt>
-            <span id="added">Added</span>
+            <FontAwesomeIcon
+              style={bookEntity.kindleSubscription ? { color: 'green' } : { color: 'red' }}
+              icon={bookEntity.kindleSubscription ? 'check' : 'xmark'}
+            />
+            <span id="kindleSubscription"> Kindle Subscription</span>
           </dt>
-          <dd>{bookEntity.added ? <TextFormat value={bookEntity.added} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}</dd>
           <dt>
-            <span id="kindleSubscription">Kindle Subscription</span>
+            <FontAwesomeIcon
+              style={bookEntity.libraryPass ? { color: 'green' } : { color: 'red' }}
+              icon={bookEntity.libraryPass ? 'check' : 'xmark'}
+            />
+            <span id="libraryPass"> Library Pass</span>
           </dt>
-          <dd>{bookEntity.kindleSubscription ? 'true' : 'false'}</dd>
           <dt>
-            <span id="libraryPass">Library Pass</span>
+            <FontAwesomeIcon
+              style={bookEntity.librarySubscription ? { color: 'green' } : { color: 'red' }}
+              icon={bookEntity.librarySubscription ? 'check' : 'xmark'}
+            />
+            <span id="librarySubscription"> Library Subscription</span>
           </dt>
-          <dd>{bookEntity.libraryPass ? 'true' : 'false'}</dd>
-          <dt>
-            <span id="librarySubscription">Library Subscription</span>
-          </dt>
-          <dd>{bookEntity.librarySubscription ? 'true' : 'false'}</dd>
-          <dt>
-            <span id="subscription">Subscription</span>
-          </dt>
-          <dd>{bookEntity.subscription ? 'true' : 'false'}</dd>
-          <dt>Cycle</dt>
-          <dd>
-            {' '}
-            {bookEntity.cycle ? (
-              <Button href={`/cycle/${bookEntity.cycle.id}`} color="link">
-                {bookEntity.cycle.name}
-              </Button>
-            ) : (
-              ''
-            )}
-          </dd>
-          <dt>Authors</dt>
-          <dd>
-            {bookEntity.authors?.map(item => (
-              <Button tag={Link} to={`/author/${item.id}`} color="black" size="sm">
-                {item.name}
-              </Button>
-            ))}
-          </dd>
         </dl>
         <Button tag={Link} to="/book" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

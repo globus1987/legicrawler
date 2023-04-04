@@ -7,7 +7,7 @@ import axios from 'axios';
 
 export const BrandIcon = props => (
   <div {...props} className="brand-icon">
-    <img src="content/images/logo-jhipster.png" alt="Logo" />
+    <img src="content/images/logo-jhipster.svg" alt="Logo" />
   </div>
 );
 
@@ -24,6 +24,38 @@ export const Home = () => (
     <NavLink tag={Link} to="/" className="d-flex align-items-center">
       <FontAwesomeIcon icon="home" />
       <span>Home</span>
+    </NavLink>
+  </NavItem>
+);
+
+export const Authors = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/author" className="d-flex align-items-center">
+      <span>Authors</span>
+    </NavLink>
+  </NavItem>
+);
+
+export const Books = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/book" className="d-flex align-items-center">
+      <span>Books</span>
+    </NavLink>
+  </NavItem>
+);
+
+export const Cycles = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/cycle" className="d-flex align-items-center">
+      <span>Cycles</span>
+    </NavLink>
+  </NavItem>
+);
+
+export const Collections = () => (
+  <NavItem>
+    <NavLink tag={Link} to="/collection" className="d-flex align-items-center">
+      <span>Collections</span>
     </NavLink>
   </NavItem>
 );

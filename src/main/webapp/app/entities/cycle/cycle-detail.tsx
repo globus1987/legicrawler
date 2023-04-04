@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
 import {} from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +11,7 @@ import { getEntity } from './cycle.reducer';
 
 export const CycleDetail = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { id } = useParams<'id'>();
 
@@ -19,16 +20,11 @@ export const CycleDetail = () => {
   }, []);
 
   const cycleEntity = useAppSelector(state => state.cycle.entity);
-  console.log(cycleEntity);
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="cycleDetailsHeading">Cycle</h2>
+        <h2 data-cy="cycleDetailsHeading">Cycle {cycleEntity.id}</h2>
         <dl className="jh-entity-details">
-          <dt>
-            <span id="id">Id</span>
-          </dt>
-          <dd>{cycleEntity.id}</dd>
           <dt>
             <span id="name">Name</span>
           </dt>
@@ -43,10 +39,10 @@ export const CycleDetail = () => {
             <span id="url">Books</span>
           </dt>
           {cycleEntity.books?.map(item => (
-            <dd>
-              <a href={`/book/${item.id}`} color="link">
+            <dd key={item.id}>
+              <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
                 {item.title}
-              </a>
+              </Button>
             </dd>
           ))}
         </dl>
