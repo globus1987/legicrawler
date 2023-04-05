@@ -30,14 +30,16 @@ export const Cycle = () => {
   const [filterValue, setFilterValue] = useState('');
 
   const getAllEntities = () => {
-    dispatch(
-      getEntities({
-        page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
-        sort: `${paginationState.sort},${paginationState.order}`,
-        query: filterValue,
-      })
-    );
+    if (filterValue.length > 0) {
+      dispatch(
+        getEntities({
+          page: paginationState.activePage - 1,
+          size: paginationState.itemsPerPage,
+          sort: `${paginationState.sort},${paginationState.order}`,
+          query: filterValue,
+        })
+      );
+    }
   };
 
   const sortEntities = () => {
@@ -89,8 +91,6 @@ export const Cycle = () => {
     sortEntities();
   };
 
-  const doNothing = () => {};
-
   return (
     <div>
       <h2 id="cycle-heading" data-cy="CycleHeading">
@@ -102,32 +102,32 @@ export const Cycle = () => {
         </div>
       </h2>
       <div className="table-responsive">
-        {cycleList && cycleList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand">
-                  <ValidatedForm onSubmit={handleFilter}>
-                    <ValidatedField
-                      type="text"
-                      name="name"
-                      placeholder="Filter"
-                      value={filterValue}
-                      onChange={e => setFilterValue(e.target.value)}
-                      data-cy="cycleNameFilter"
-                    />
-                  </ValidatedForm>
-                  <div onClick={sort('name')}>
-                    {' '}
-                    Name <FontAwesomeIcon icon="sort" />
-                  </div>
-                </th>
-                <th className="hand" onClick={sort('url')}>
-                  Url <FontAwesomeIcon icon="sort" />
-                </th>
-                <th>Books</th>
-              </tr>
-            </thead>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th className="hand">
+                <ValidatedForm onSubmit={handleFilter}>
+                  <ValidatedField
+                    type="text"
+                    name="name"
+                    placeholder="Filter"
+                    value={filterValue}
+                    onChange={e => setFilterValue(e.target.value)}
+                    data-cy="cycleNameFilter"
+                  />
+                </ValidatedForm>
+                <div onClick={sort('name')}>
+                  {' '}
+                  Name <FontAwesomeIcon icon="sort" />
+                </div>
+              </th>
+              <th className="hand" onClick={sort('url')}>
+                Url <FontAwesomeIcon icon="sort" />
+              </th>
+              <th>Books</th>
+            </tr>
+          </thead>
+          {cycleList && cycleList.length > 0 ? (
             <tbody>
               {cycleList.map((cycle, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
@@ -145,10 +145,10 @@ export const Cycle = () => {
                 </tr>
               ))}
             </tbody>
-          </Table>
-        ) : (
-          !loading && <div className="alert alert-warning">No Cycles found</div>
-        )}
+          ) : (
+            !loading && <tbody></tbody>
+          )}
+        </Table>
       </div>
       {totalItems ? (
         <div className={cycleList && cycleList.length > 0 ? '' : 'd-none'}>

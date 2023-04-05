@@ -15,6 +15,8 @@
         The initial schema has the '00000000000001' id, so that it is over-written if we re-generate it.
     -->
     <changeSet id="00000000000001" author="jhipster">
+        <validCheckSum>8:f8730c9f021be0067f82b8df6ffeaca6</validCheckSum>
+
         <createTable tableName="jhi_user">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>

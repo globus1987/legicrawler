@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Row, Col, Button } from 'reactstrap';
 import { Grid, Typography, Link, createMuiTheme } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
@@ -54,8 +55,8 @@ export const AuthorDetail = () => {
             </>
           )}
         </dl>
-        <Button component={Link} to="/author" replace color="primary" data-cy="entityDetailsBackButton">
-          <span className="d-none d-md-inline">Back</span>
+        <Button tag={Link} navigate="/author" replace color="info" data-cy="entityDetailsBackButton">
+          <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
       </Grid>
     </Grid>

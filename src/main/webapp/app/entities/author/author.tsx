@@ -27,26 +27,21 @@ export const Author = () => {
   const loading = useAppSelector(state => state.author.loading);
   const totalItems = useAppSelector(state => state.author.totalItems);
 
+  const [filterValue, setFilterValue] = useState('');
+
   const getAllEntities = () => {
-    dispatch(
-      getEntities({
-        page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
-        sort: `${paginationState.sort},${paginationState.order}`,
-        query: '',
-      })
-    );
+    if (filterValue.length > 0) {
+      dispatch(
+        getEntities({
+          page: paginationState.activePage - 1,
+          size: paginationState.itemsPerPage,
+          sort: `${paginationState.sort},${paginationState.order}`,
+          query: filterValue,
+        })
+      );
+    }
   };
-  let filterEntities = values => {
-    dispatch(
-      getEntities({
-        page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
-        sort: `${paginationState.sort},${paginationState.order}`,
-        query: values.name ? values.name : '',
-      })
-    );
-  };
+
   const sortEntities = () => {
     getAllEntities();
     const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
@@ -92,6 +87,10 @@ export const Author = () => {
     sortEntities();
   };
 
+  const handleFilter = () => {
+    sortEntities();
+  };
+
   return (
     <div>
       <h2 id="author-heading" data-cy="AuthorHeading">
@@ -101,37 +100,38 @@ export const Author = () => {
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
         </div>
-        <div className="d-flex flex-row">
-          <ValidatedForm onSubmit={filterEntities}>
-            <ValidatedField label="Filter" id="cycle-name" name="name" data-cy="name" type="text" />
-            <Button color="primary" id="search-entity" data-cy="entitySearchButton" type="submit">
-              {loading ? <FontAwesomeIcon icon="sync" spin={loading} /> : <FontAwesomeIcon icon="search" />}
-              &nbsp; Search
-            </Button>
-          </ValidatedForm>
-        </div>
       </h2>
       <div className="table-responsive">
-        {authorList && authorList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  Id <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('name')}>
-                  Name <FontAwesomeIcon icon="sort" />
-                </th>
-                <th>Books</th>
-              </tr>
-            </thead>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th className="hand" onClick={sort('id')}>
+                <ValidatedForm onSubmit={handleFilter}>
+                  <ValidatedField
+                    type="text"
+                    name="name"
+                    placeholder="Filter"
+                    value={filterValue}
+                    onChange={e => setFilterValue(e.target.value)}
+                    data-cy="cycleNameFilter"
+                  />
+                </ValidatedForm>
+                Id <FontAwesomeIcon icon="sort" />
+              </th>
+              <th className="hand" onClick={sort('name')}>
+                Name <FontAwesomeIcon icon="sort" />
+              </th>
+              <th>Books</th>
+            </tr>
+          </thead>
+          {authorList && authorList.length > 0 ? (
             <tbody>
               {authorList.map((author, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
-                    <Button tag={Link} to={`/author/${author.id}`} color="black" size="sm">
+                    <a href={`/author/${author.id}`} color="link">
                       {author.id}
-                    </Button>
+                    </a>
                   </td>
                   <td>
                     <a href={author.url} color="link">
@@ -142,10 +142,10 @@ export const Author = () => {
                 </tr>
               ))}
             </tbody>
-          </Table>
-        ) : (
-          !loading && <div className="alert alert-warning">No Authors found</div>
-        )}
+          ) : (
+            !loading && <tbody></tbody>
+          )}
+        </Table>
       </div>
       {totalItems ? (
         <div className={authorList && authorList.length > 0 ? '' : 'd-none'}>
