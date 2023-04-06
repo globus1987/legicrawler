@@ -17,8 +17,8 @@ logging:
   level:
     ROOT: INFO
     tech.jhipster: INFO
-    org.hibernate.SQL: INFO
-    com.arek.legimi: INFO
+    org.hibernate.SQL: DEBUG
+    com.arek.legimi: DEBUG
 
 spring:
   devtools:

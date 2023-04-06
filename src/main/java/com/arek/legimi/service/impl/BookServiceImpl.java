@@ -1,5 +1,6 @@
 package com.arek.legimi.service.impl;
 
+import com.arek.legimi.domain.Author;
 import com.arek.legimi.domain.Book;
 import com.arek.legimi.repository.BookRepository;
 import com.arek.legimi.service.AuthorService;
@@ -7,10 +8,10 @@ import com.arek.legimi.service.BookService;
 import com.arek.legimi.service.CycleService;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -93,6 +94,27 @@ public class BookServiceImpl implements BookService {
     public Page<Book> findAll(Pageable pageable) {
         log.debug("Request to get all Books");
         return bookRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Book> findAllByAuthor(Pageable pageable, List<Author> authors) {
+        log.debug("Request to get all Books");
+        return bookRepository.findAllByAuthors(pageable, authors);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Book> findAllByTitle(Pageable pageable, String filterTitle) {
+        log.debug("Request to get all Books");
+        return bookRepository.findAllByTitleContainingIgnoreCase(pageable, filterTitle);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Book> findAllByAuthorAndTitle(Pageable pageable, List<Author> authors, String filterTitle) {
+        log.debug("Request to get all Books");
+        return bookRepository.findAllByTitleContainingIgnoreCaseAndAuthorsContainingIgnoreCase(pageable, authors, filterTitle);
     }
 
     @Override

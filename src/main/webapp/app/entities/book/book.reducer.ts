@@ -19,10 +19,17 @@ const apiUrl = 'api/books';
 
 // Actions
 
-export const getEntities = createAsyncThunk('book/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
-  return axios.get<IBook[]>(requestUrl);
-});
+export const getEntities = createAsyncThunk(
+  'book/fetch_entity_list',
+  async ({ page, size, sort, filterTitle, filterAuthor }: IQueryParams) => {
+    console.log('author ' + filterAuthor);
+    console.log('title ' + filterTitle);
+    const requestUrl = `${apiUrl}${
+      sort ? `?filterTitle=${filterTitle}&filterAuthor=${filterAuthor}&page=${page}&size=${size}&sort=${sort}&` : '?'
+    }cacheBuster=${new Date().getTime()}`;
+    return axios.get<IBook[]>(requestUrl);
+  }
+);
 
 export const reload = async () => {
   const requestUrl = `${apiUrl}/reload`;

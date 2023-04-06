@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.websocket.server.PathParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,7 +78,7 @@ public class BookResource {
     /**
      * {@code PUT  /books/:id} : Updates an existing book.
      *
-     * @param id the id of the book to save.
+     * @param id   the id of the book to save.
      * @param book the book to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated book,
      * or with status {@code 400 (Bad Request)} if the book is not valid,
@@ -109,7 +110,7 @@ public class BookResource {
     /**
      * {@code PATCH  /books/:id} : Partial updates given fields of an existing book, field will ignore if it is null
      *
-     * @param id the id of the book to save.
+     * @param id   the id of the book to save.
      * @param book the book to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated book,
      * or with status {@code 400 (Bad Request)} if the book is not valid,
@@ -146,9 +147,24 @@ public class BookResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of books in body.
      */
     @GetMapping("/books")
-    public ResponseEntity<List<Book>> getAllBooks(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<Book>> getAllBooks(
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = true) final String filterAuthor,
+        @RequestParam(required = true) final String filterTitle
+    ) {
         log.debug("REST request to get a page of Books");
-        Page<Book> page = bookService.findAll(pageable);
+        Page<Book> page;
+        if (filterAuthor.isEmpty() && filterTitle.isEmpty()) {
+            page = bookService.findAll(pageable);
+        } else if (!filterAuthor.isEmpty() && filterTitle.isEmpty()) {
+            var authors = authorService.findAll(filterAuthor);
+            page = bookService.findAllByAuthor(pageable, authors);
+        } else if (filterAuthor.isEmpty() && !filterTitle.isEmpty()) {
+            page = bookService.findAllByTitle(pageable, filterTitle);
+        } else {
+            var authors = authorService.findAll(filterAuthor);
+            page = bookService.findAllByAuthorAndTitle(pageable, authors, filterTitle);
+        }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

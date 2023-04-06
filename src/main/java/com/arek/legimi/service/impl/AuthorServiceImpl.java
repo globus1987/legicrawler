@@ -73,6 +73,13 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.findAllByNameContainingIgnoreCase(pageable, query);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Author> findAll(String query) {
+        log.debug("Request to get all Authors");
+        return authorRepository.findAllByNameContainingIgnoreCase(query);
+    }
+
     public Page<Author> findAllWithEagerRelationships(Pageable pageable, String query) {
         return authorRepository.findAllWithEagerRelationships(pageable, query);
     }

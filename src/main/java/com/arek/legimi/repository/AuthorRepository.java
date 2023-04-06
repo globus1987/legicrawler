@@ -21,6 +21,7 @@ public interface AuthorRepository extends AuthorRepositoryWithBagRelationships, 
     }
 
     Page<Author> findAllByNameContainingIgnoreCase(Pageable pageable, String name);
+    List<Author> findAllByNameContainingIgnoreCase(String name);
 
     default Page<Author> findAllWithEagerRelationships(Pageable pageable, String query) {
         return this.fetchBagRelationships(this.findAllByNameContainingIgnoreCase(pageable, query));

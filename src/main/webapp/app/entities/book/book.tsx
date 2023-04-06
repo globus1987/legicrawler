@@ -25,27 +25,23 @@ export const Book = () => {
   const bookList = useAppSelector(state => state.book.entities);
   const loading = useAppSelector(state => state.book.loading);
   const totalItems = useAppSelector(state => state.book.totalItems);
+  const [filterTitle, setFilterTitle] = useState('');
+  const [filterAuthor, setFilterAuthor] = useState('');
 
   const getAllEntities = () => {
+    // if (filterTitle.length > 0 || filterAuthor.length > 0) {
     dispatch(
       getEntities({
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
-        query: '',
+        filterTitle: filterTitle,
+        filterAuthor: filterAuthor,
       })
     );
+    // }
   };
-  let filterEntities = values => {
-    dispatch(
-      getEntities({
-        page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
-        sort: `${paginationState.sort},${paginationState.order}`,
-        query: values.name ? values.name : '',
-      })
-    );
-  };
+
   const sortEntities = () => {
     getAllEntities();
     const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
@@ -91,61 +87,54 @@ export const Book = () => {
       activePage: currentPage,
     });
 
-  const handleSyncList = () => {
-    sortEntities();
-  };
-
   const handleReload = () => {
     doReload();
   };
-
+  const handleFilter = () => {
+    sortEntities();
+  };
   return (
     <div>
       <h2 id="book-heading" data-cy="BookHeading">
         Books
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
-          </Button>
           <Button onClick={handleReload} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
             <FontAwesomeIcon icon="right-left" />
             &nbsp; Reload
           </Button>
         </div>
-        <div className="d-flex flex-row">
-          <ValidatedForm onSubmit={filterEntities}>
-            <ValidatedField label="Filter" id="cycle-name" name="name" data-cy="name" type="text" />
-            <Button color="primary" id="search-entity" data-cy="entitySearchButton" type="submit">
-              {loading ? <FontAwesomeIcon icon="sync" spin={loading} /> : <FontAwesomeIcon icon="search" />}
-              &nbsp; Search
-            </Button>
-          </ValidatedForm>
-        </div>
       </h2>
+      <ValidatedForm onSubmit={handleFilter}>
+        <ValidatedField type="text" name="title" label="Title" value={filterTitle} onChange={e => setFilterTitle(e.target.value)} />
+        <ValidatedField type="text" name="author" label="Author" value={filterAuthor} onChange={e => setFilterAuthor(e.target.value)} />
+      </ValidatedForm>
+      <Button className="me-2" color="info" onClick={handleFilter} disabled={loading}>
+        <FontAwesomeIcon icon="search" spin={loading} /> Search
+      </Button>
       <div className="table-responsive">
-        {bookList && bookList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('title')}>
-                  Title <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand">Authors</th>
-                <th className="hand" onClick={sort('url')}>
-                  Url <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('category')}>
-                  Category <FontAwesomeIcon icon="sort" />
-                </th>
-                <th>Cycle</th>
-                <th>Ebook</th>
-                <th>Audiobook</th>
-                <th className="hand" onClick={sort('added')}>
-                  Added <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand">Subscription</th>
-              </tr>
-            </thead>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th className="hand" onClick={sort('title')}>
+                Title <FontAwesomeIcon icon="sort" />
+              </th>
+              <th className="hand">Authors</th>
+              <th className="hand" onClick={sort('url')}>
+                Url <FontAwesomeIcon icon="sort" />
+              </th>
+              <th className="hand" onClick={sort('category')}>
+                Category <FontAwesomeIcon icon="sort" />
+              </th>
+              <th>Cycle</th>
+              <th>Ebook</th>
+              <th>Audiobook</th>
+              <th className="hand" onClick={sort('added')}>
+                Added <FontAwesomeIcon icon="sort" />
+              </th>
+              <th className="hand">Subscription</th>
+            </tr>
+          </thead>
+          {bookList && bookList.length > 0 ? (
             <tbody>
               {bookList.map((book, i) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
@@ -211,10 +200,10 @@ export const Book = () => {
                 </tr>
               ))}
             </tbody>
-          </Table>
-        ) : (
-          !loading && <div className="alert alert-warning">No Books found</div>
-        )}
+          ) : (
+            !loading && <tbody></tbody>
+          )}
+        </Table>
       </div>
       {totalItems ? (
         <div className={bookList && bookList.length > 0 ? '' : 'd-none'}>

@@ -43,6 +43,7 @@ public interface AuthorService {
      * @return the list of entities.
      */
     Page<Author> findAll(Pageable pageable, String query);
+    List<Author> findAll(String query);
 
     /**
      * Get all the authors with eager load of many-to-many relationships.

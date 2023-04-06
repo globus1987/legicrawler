@@ -1,6 +1,8 @@
 package com.arek.legimi.service;
 
+import com.arek.legimi.domain.Author;
 import com.arek.legimi.domain.Book;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,10 @@ public interface BookService {
      * @return the list of entities.
      */
     Page<Book> findAll(Pageable pageable);
+
+    Page<Book> findAllByAuthor(Pageable pageable, List<Author> authors);
+    Page<Book> findAllByTitle(Pageable pageable, String title);
+    Page<Book> findAllByAuthorAndTitle(Pageable pageable, List<Author> authors, String title);
 
     /**
      * Get the "id" book.
