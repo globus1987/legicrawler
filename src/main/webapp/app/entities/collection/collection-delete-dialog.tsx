@@ -44,7 +44,9 @@ export const CollectionDeleteDialog = () => {
       <ModalHeader toggle={handleClose} data-cy="collectionDeleteDialogHeading">
         Confirm delete operation
       </ModalHeader>
-      <ModalBody id="legimiApp.collection.delete.question">Are you sure you want to delete Collection {collectionEntity.id}?</ModalBody>
+      <ModalBody id="LegicrawlerApp.collection.delete.question">
+        Are you sure you want to delete Collection {collectionEntity.id}?
+      </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={handleClose}>
           <FontAwesomeIcon icon="ban" />

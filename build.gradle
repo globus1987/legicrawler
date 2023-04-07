@@ -24,8 +24,8 @@ plugins {
     //jhipster-needle-gradle-plugins - JHipster will add additional gradle plugins here
 }
 
-group = "com.arek.legimi"
-version = "0.0.1-SNAPSHOT"
+group = "com.arek.legicrawler"
+version = "1.0"
 
 description = ""
 
@@ -80,7 +80,7 @@ eclipse {
 defaultTasks "bootRun"
 
 springBoot {
-    mainClass = "com.arek.legimi.LegimiApp"
+    mainClass = "com.arek.legicrawler.LegicrawlerApp"
 }
 
 test {
@@ -138,7 +138,7 @@ liquibase {
             username "postgres"
             password "postgres"
             changeLogFile project.ext.diffChangelogFile
-            referenceUrl "hibernate:spring:com.arek.legimi.domain?dialect=tech.jhipster.domain.util.FixedPostgreSQL10Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
+            referenceUrl "hibernate:spring:com.arek.legicrawler.domain?dialect=tech.jhipster.domain.util.FixedPostgreSQL10Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
             defaultSchemaName ""
             logLevel "debug"
             classpath "$buildDir/classes/java/main"

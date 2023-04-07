@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { ICycle } from 'app/shared/model/cycle.model';
 import { getEntities } from './cycle.reducer';
+import SyncLoader from 'react-spinners/SyncLoader';
 
 export const Cycle = () => {
   const dispatch = useAppDispatch();
@@ -27,7 +28,10 @@ export const Cycle = () => {
   const loading = useAppSelector(state => state.cycle.loading);
   const totalItems = useAppSelector(state => state.cycle.totalItems);
 
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState(() => {
+    const savedValue = window.localStorage.getItem('cycle-filter');
+    return savedValue !== null ? savedValue : '';
+  });
 
   const getAllEntities = () => {
     if (filterValue.length > 0) {
@@ -41,7 +45,9 @@ export const Cycle = () => {
       );
     }
   };
-
+  useEffect(() => {
+    window.localStorage.setItem('cycle-filter', filterValue);
+  }, [filterValue]);
   const sortEntities = () => {
     getAllEntities();
     const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
@@ -83,10 +89,6 @@ export const Cycle = () => {
       activePage: currentPage,
     });
 
-  const handleSyncList = () => {
-    sortEntities();
-  };
-
   const handleFilter = () => {
     sortEntities();
   };
@@ -95,27 +97,17 @@ export const Cycle = () => {
     <div>
       <h2 id="cycle-heading" data-cy="CycleHeading">
         Cycles
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
-          </Button>
-        </div>
       </h2>
+      <ValidatedForm onSubmit={handleFilter}>
+        <ValidatedField type="text" name="name" placeholder="Filter" value={filterValue} onChange={e => setFilterValue(e.target.value)} />
+      </ValidatedForm>
+      {loading ? <SyncLoader></SyncLoader> : <div></div>}
+
       <div className="table-responsive">
         <Table responsive>
           <thead>
             <tr>
               <th className="hand">
-                <ValidatedForm onSubmit={handleFilter}>
-                  <ValidatedField
-                    type="text"
-                    name="name"
-                    placeholder="Filter"
-                    value={filterValue}
-                    onChange={e => setFilterValue(e.target.value)}
-                    data-cy="cycleNameFilter"
-                  />
-                </ValidatedForm>
                 <div onClick={sort('name')}>
                   {' '}
                   Name <FontAwesomeIcon icon="sort" />

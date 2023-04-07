@@ -32,6 +32,7 @@ export const AuthorDetail = () => {
               Name
             </Typography>
           </dt>
+          <dd>{authorEntity.name}</dd>
           <dt>
             <span id="url">Url</span>
           </dt>
@@ -55,7 +56,7 @@ export const AuthorDetail = () => {
             </>
           )}
         </dl>
-        <Button tag={Link} navigate="/author" replace color="info" data-cy="entityDetailsBackButton">
+        <Button tag={Link} to="/author" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
       </Grid>

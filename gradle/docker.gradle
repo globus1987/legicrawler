@@ -9,7 +9,7 @@ jib {
         }
     }
     to {
-        image = "legimi:latest"
+        image = "legicrawler:latest"
     }
     container {
         entrypoint = ["bash", "-c", "/entrypoint.sh"]

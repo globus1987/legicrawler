@@ -1,5 +1,5 @@
 {
-  "applications": ["legimi"],
+  "applications": ["legicrawler"],
   "changelogDate": "20230321104700",
   "dto": "no",
   "embedded": false,

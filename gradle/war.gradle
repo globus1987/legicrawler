@@ -1,7 +1,7 @@
 apply plugin: "war"
 
 bootWar {
-    mainClass = "com.arek.legimi.LegimiApp"
+    mainClass = "com.arek.legicrawler.LegicrawlerApp"
     includes = ["WEB-INF/**", "META-INF/**"]
     webXml = file("${project.rootDir}/src/main/webapp/WEB-INF/web.xml")
 }

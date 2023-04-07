@@ -1,7 +1,7 @@
 {
   "generator-jhipster:7.9.3": {
     "promptValues": {
-      "packageName": "com.arek.legimi",
+      "packageName": "com.arek.legicrawler",
       "nativeLanguage": "en"
     }
   }

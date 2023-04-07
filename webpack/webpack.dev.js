@@ -66,37 +66,37 @@ module.exports = async options =>
         : new SimpleProgressWebpackPlugin({
             format: options.stats === 'minimal' ? 'compact' : 'expanded',
           }),
-      new BrowserSyncPlugin(
-        {
-          https: options.tls,
-          host: 'localhost',
-          port: 9000,
-          proxy: {
-            target: `http${options.tls ? 's' : ''}://localhost:${options.watch ? '9999' : '9060'}`,
-            ws: true,
-            proxyOptions: {
-              changeOrigin: false, //pass the Host header to the backend unchanged  https://github.com/Browsersync/browser-sync/issues/430
-            },
-          },
-          socket: {
-            clients: {
-              heartbeatTimeout: 60000,
-            },
-          },
-          /*
-      ,ghostMode: { // uncomment this part to disable BrowserSync ghostMode; https://github.com/jhipster/generator-jhipster/issues/11116
-        clicks: false,
-        location: false,
-        forms: false,
-        scroll: false
-      } */
-        },
-        {
-          reload: false,
-        }
-      ),
+      // new BrowserSyncPlugin(
+      //   {
+      //     https: options.tls,
+      //     host: 'localhost',
+      //     port: 9000,
+      //     proxy: {
+      //       target: `http${options.tls ? 's' : ''}://localhost:${options.watch ? '9999' : '9060'}`,
+      //       ws: true,
+      //       proxyOptions: {
+      //         changeOrigin: false, //pass the Host header to the backend unchanged  https://github.com/Browsersync/browser-sync/issues/430
+      //       },
+      //     },
+      //     socket: {
+      //       clients: {
+      //         heartbeatTimeout: 60000,
+      //       },
+      //     },
+      //     /*
+      // ,ghostMode: { // uncomment this part to disable BrowserSync ghostMode; https://github.com/jhipster/generator-jhipster/issues/11116
+      //   clicks: false,
+      //   location: false,
+      //   forms: false,
+      //   scroll: false
+      // } */
+      //   },
+      //   {
+      //     reload: false,
+      //   }
+      // ),
       new WebpackNotifierPlugin({
-        title: 'Legimi',
+        title: 'legicrawler',
         contentImage: path.join(__dirname, 'logo-jhipster.svg'),
       }),
     ].filter(Boolean),

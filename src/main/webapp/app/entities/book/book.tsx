@@ -4,13 +4,15 @@ import { Button, Table } from 'reactstrap';
 import { Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { isNumber, ValidatedField, ValidatedForm } from 'react-jhipster';
-
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities, reload } from './book.reducer';
+import SyncLoader from 'react-spinners/SyncLoader';
 
 export const Book = () => {
   const dispatch = useAppDispatch();
@@ -25,21 +27,53 @@ export const Book = () => {
   const bookList = useAppSelector(state => state.book.entities);
   const loading = useAppSelector(state => state.book.loading);
   const totalItems = useAppSelector(state => state.book.totalItems);
-  const [filterTitle, setFilterTitle] = useState('');
-  const [filterAuthor, setFilterAuthor] = useState('');
+  const [filterTitle, setFilterTitle] = useState(() => {
+    const savedValue = window.localStorage.getItem('book-title');
+    return savedValue !== null ? savedValue : '';
+  });
+  const [filterAuthor, setFilterAuthor] = useState(() => {
+    const savedValue = window.localStorage.getItem('book-author');
+    return savedValue !== null ? savedValue : '';
+  });
+  const [filterCycle, setFilterCycle] = useState(() => {
+    const savedValue = window.localStorage.getItem('book-cycle');
+    return savedValue !== null ? savedValue : '';
+  });
+  const [added, setAdded] = useState(() => {
+    const savedValue = window.localStorage.getItem('book-added');
+    return savedValue !== null ? new Date(savedValue) : undefined;
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem('book-title', filterTitle);
+  }, [filterTitle]);
+  useEffect(() => {
+    window.localStorage.setItem('book-cycle', filterCycle);
+  }, [filterCycle]);
+  useEffect(() => {
+    window.localStorage.setItem('book-author', filterAuthor);
+  }, [filterAuthor]);
+  useEffect(() => {
+    if (added !== undefined && added !== null) {
+      window.localStorage.setItem('book-added', added.toISOString());
+      handleFilter();
+    }
+  }, [added]);
 
   const getAllEntities = () => {
-    // if (filterTitle.length > 0 || filterAuthor.length > 0) {
-    dispatch(
-      getEntities({
-        page: paginationState.activePage - 1,
-        size: paginationState.itemsPerPage,
-        sort: `${paginationState.sort},${paginationState.order}`,
-        filterTitle: filterTitle,
-        filterAuthor: filterAuthor,
-      })
-    );
-    // }
+    if (filterTitle.length > 0 || filterAuthor.length > 0 || formatAdded(added).length > 0 || filterCycle.length > 0) {
+      dispatch(
+        getEntities({
+          page: paginationState.activePage - 1,
+          size: paginationState.itemsPerPage,
+          sort: `${paginationState.sort},${paginationState.order}`,
+          filterTitle: filterTitle,
+          filterAuthor: filterAuthor,
+          filterCycle: filterCycle,
+          added: formatAdded(added),
+        })
+      );
+    }
   };
 
   const sortEntities = () => {
@@ -56,7 +90,7 @@ export const Book = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort, added]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -93,24 +127,74 @@ export const Book = () => {
   const handleFilter = () => {
     sortEntities();
   };
+  const handleKeyDown = (e, callback) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      callback();
+    }
+  };
+  const formatAdded = date => {
+    return date !== undefined && date !== null && typeof date === 'object'
+      ? `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+      : '';
+  };
+  const handleClearClick = () => {
+    window.localStorage.removeItem('book-added');
+    setAdded(undefined);
+  };
   return (
     <div>
       <h2 id="book-heading" data-cy="BookHeading">
         Books
         <div className="d-flex justify-content-end">
-          <Button onClick={handleReload} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+          <Button onClick={handleReload} className="me-2" color="warning">
             <FontAwesomeIcon icon="right-left" />
-            &nbsp; Reload
+            &nbsp; Reload books
           </Button>
         </div>
       </h2>
       <ValidatedForm onSubmit={handleFilter}>
-        <ValidatedField type="text" name="title" label="Title" value={filterTitle} onChange={e => setFilterTitle(e.target.value)} />
-        <ValidatedField type="text" name="author" label="Author" value={filterAuthor} onChange={e => setFilterAuthor(e.target.value)} />
+        <ValidatedField
+          type="text"
+          name="title"
+          label="Title"
+          value={filterTitle}
+          onChange={e => setFilterTitle(e.target.value)}
+          onKeyDown={e => handleKeyDown(e, handleFilter)}
+          onBlur={handleFilter}
+        />
+        <ValidatedField
+          type="text"
+          name="author"
+          label="Author"
+          value={filterAuthor}
+          onChange={e => setFilterAuthor(e.target.value)}
+          onKeyDown={e => handleKeyDown(e, handleFilter)}
+          onBlur={handleFilter}
+        />
+        <ValidatedField
+          type="text"
+          name="cycle"
+          label="Cycle"
+          value={filterCycle}
+          onChange={e => setFilterCycle(e.target.value)}
+          onKeyDown={e => handleKeyDown(e, handleFilter)}
+          onBlur={handleFilter}
+        />
+        <DatePicker
+          name="added"
+          selected={added}
+          onChange={date => setAdded(date)}
+          isClearable={true}
+          onClear={handleClearClick}
+          dateFormat="dd/MM/yyyy" // specify date format
+          label="Added"
+          showYearDropdown
+          scrollableYearDropdown // add these props to allow selecting year from dropdown
+        />{' '}
       </ValidatedForm>
-      <Button className="me-2" color="info" onClick={handleFilter} disabled={loading}>
-        <FontAwesomeIcon icon="search" spin={loading} /> Search
-      </Button>
+      {loading ? <SyncLoader></SyncLoader> : <div></div>}
+
       <div className="table-responsive">
         <Table responsive>
           <thead>
@@ -126,12 +210,9 @@ export const Book = () => {
                 Category <FontAwesomeIcon icon="sort" />
               </th>
               <th>Cycle</th>
-              <th>Ebook</th>
-              <th>Audiobook</th>
               <th className="hand" onClick={sort('added')}>
                 Added <FontAwesomeIcon icon="sort" />
               </th>
-              <th className="hand">Subscription</th>
             </tr>
           </thead>
           {bookList && bookList.length > 0 ? (
@@ -145,7 +226,7 @@ export const Book = () => {
                   </td>
                   <td>
                     {book.authors?.map(item => (
-                      <a href={`/author/${item.id}`} color="link">
+                      <a href={item.url} color="link">
                         {item.name}
                       </a>
                     ))}
@@ -157,46 +238,8 @@ export const Book = () => {
                   </td>
                   <td>{book.category}</td>
                   <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
-                  <td>
-                    {<FontAwesomeIcon style={book.ebook ? { color: 'green' } : { color: 'red' }} icon={book.ebook ? 'check' : 'xmark'} />}
-                  </td>
-                  <td>
-                    <FontAwesomeIcon
-                      style={book.audiobook ? { color: 'green' } : { color: 'red' }}
-                      icon={book.audiobook ? 'check' : 'xmark'}
-                    />
-                  </td>
+
                   <td>{book.added ? <TextFormat type="date" value={book.added} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
-                  <td>
-                    <p>
-                      <FontAwesomeIcon
-                        style={book.kindleSubscription ? { color: 'green' } : { color: 'red' }}
-                        icon={book.kindleSubscription ? 'check' : 'xmark'}
-                      />
-                      Kindle
-                    </p>
-                    <p>
-                      <FontAwesomeIcon
-                        style={book.libraryPass ? { color: 'green' } : { color: 'red' }}
-                        icon={book.libraryPass ? 'check' : 'xmark'}
-                      />
-                      Library Pass
-                    </p>
-                    <p>
-                      <FontAwesomeIcon
-                        style={book.librarySubscription ? { color: 'green' } : { color: 'red' }}
-                        icon={book.librarySubscription ? 'check' : 'xmark'}
-                      />
-                      Library Subscription
-                    </p>
-                    <p>
-                      <FontAwesomeIcon
-                        style={book.subscription ? { color: 'green' } : { color: 'red' }}
-                        icon={book.subscription ? 'check' : 'xmark'}
-                      />
-                      Subscription
-                    </p>
-                  </td>
                 </tr>
               ))}
             </tbody>

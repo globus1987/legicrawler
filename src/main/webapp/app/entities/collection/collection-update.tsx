@@ -73,7 +73,7 @@ export const CollectionUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="legimiApp.collection.home.createOrEditLabel" data-cy="CollectionCreateUpdateHeading">
+          <h2 id="LegicrawlerApp.collection.home.createOrEditLabel" data-cy="CollectionCreateUpdateHeading">
             Create or edit a Collection
           </h2>
         </Col>

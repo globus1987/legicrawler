@@ -19,6 +19,7 @@ export type IQueryParams = {
   sort?: string;
   filterTitle?: string;
   filterAuthor?: string;
+  filterCycle?: string;
   added?: string;
 };
 

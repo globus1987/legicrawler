@@ -66,7 +66,7 @@ export const CycleUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="legimiApp.cycle.home.createOrEditLabel" data-cy="CycleCreateUpdateHeading">
+          <h2 id="LegicrawlerApp.cycle.home.createOrEditLabel" data-cy="CycleCreateUpdateHeading">
             Create or edit a Cycle
           </h2>
         </Col>

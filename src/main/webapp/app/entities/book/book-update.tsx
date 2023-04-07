@@ -81,7 +81,7 @@ export const BookUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="legimiApp.book.home.createOrEditLabel" data-cy="BookCreateUpdateHeading">
+          <h2 id="LegicrawlerApp.book.home.createOrEditLabel" data-cy="BookCreateUpdateHeading">
             Create or edit a Book
           </h2>
         </Col>

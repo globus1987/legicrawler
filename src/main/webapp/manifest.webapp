@@ -1,6 +1,6 @@
 {
-  "name": "Legimi",
-  "short_name": "Legimi",
+  "name": "legicrawler",
+  "short_name": "legicrawler",
   "icons": [
     {
       "src": "./content/images/jhipster_family_member_1_head-192.png",

@@ -44,7 +44,7 @@ export const CycleDeleteDialog = () => {
       <ModalHeader toggle={handleClose} data-cy="cycleDeleteDialogHeading">
         Confirm delete operation
       </ModalHeader>
-      <ModalBody id="legimiApp.cycle.delete.question">Are you sure you want to delete Cycle {cycleEntity.id}?</ModalBody>
+      <ModalBody id="LegicrawlerApp.cycle.delete.question">Are you sure you want to delete Cycle {cycleEntity.id}?</ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={handleClose}>
           <FontAwesomeIcon icon="ban" />

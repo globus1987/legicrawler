@@ -44,7 +44,7 @@ export const BookDeleteDialog = () => {
       <ModalHeader toggle={handleClose} data-cy="bookDeleteDialogHeading">
         Confirm delete operation
       </ModalHeader>
-      <ModalBody id="legimiApp.book.delete.question">Are you sure you want to delete Book {bookEntity.id}?</ModalBody>
+      <ModalBody id="LegicrawlerApp.book.delete.question">Are you sure you want to delete Book {bookEntity.id}?</ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={handleClose}>
           <FontAwesomeIcon icon="ban" />

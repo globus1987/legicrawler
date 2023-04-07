@@ -2,7 +2,7 @@ application {
     config {
         applicationType monolith
         authenticationType jwt
-        baseName legimi
+        baseName legicrawler
         blueprints []
         buildTool gradle
         cacheProvider no
@@ -27,7 +27,7 @@ application {
         microfrontends []
         nativeLanguage en
         otherModules []
-        packageName com.arek.legimi
+        packageName com.arek.legicrawler
         prodDatabaseType postgresql
         reactive false
         searchEngine false
