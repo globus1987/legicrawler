@@ -58,7 +58,11 @@ public class Book implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
+    private Cycle cycle;
+
+    @ManyToMany
     @JoinTable(
         name = "rel_book__collections",
         joinColumns = @JoinColumn(name = "book_id"),
@@ -75,10 +79,6 @@ public class Book implements Serializable, Persistable<String> {
     )
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Author> authors = new HashSet<>();
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
-    private Cycle cycle;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -242,6 +242,19 @@ public class Book implements Serializable, Persistable<String> {
         this.setIsPersisted();
     }
 
+    public Cycle getCycle() {
+        return this.cycle;
+    }
+
+    public void setCycle(Cycle cycle) {
+        this.cycle = cycle;
+    }
+
+    public Book cycle(Cycle cycle) {
+        this.setCycle(cycle);
+        return this;
+    }
+
     public Set<Collection> getCollections() {
         return this.collections;
     }
@@ -289,19 +302,6 @@ public class Book implements Serializable, Persistable<String> {
     public Book removeAuthors(Author author) {
         this.authors.remove(author);
         author.getBooks().remove(this);
-        return this;
-    }
-
-    public Cycle getCycle() {
-        return this.cycle;
-    }
-
-    public void setCycle(Cycle cycle) {
-        this.cycle = cycle;
-    }
-
-    public Book cycle(Cycle cycle) {
-        this.setCycle(cycle);
         return this;
     }
 

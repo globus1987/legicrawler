@@ -59,6 +59,12 @@
   "readOnly": false,
   "relationships": [
     {
+      "otherEntityName": "cycle",
+      "otherEntityRelationshipName": "books",
+      "relationshipName": "cycle",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "collection",
       "otherEntityRelationshipName": "books",
       "ownerSide": true,
@@ -71,12 +77,6 @@
       "ownerSide": true,
       "relationshipName": "authors",
       "relationshipType": "many-to-many"
-    },
-    {
-      "otherEntityName": "cycle",
-      "otherEntityRelationshipName": "books",
-      "relationshipName": "cycle",
-      "relationshipType": "many-to-one"
     }
   ],
   "service": "serviceImpl"

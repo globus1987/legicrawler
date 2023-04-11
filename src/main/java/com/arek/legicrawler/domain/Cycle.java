@@ -35,7 +35,7 @@ public class Cycle implements Serializable, Persistable<String> {
     private boolean isPersisted;
 
     @OneToMany(mappedBy = "cycle", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "cycle", "collections", "authors" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
