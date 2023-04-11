@@ -47,6 +47,8 @@ public interface BookService {
     Page<Book> findAllByTitle(Pageable pageable, String title);
     Page<Book> findAllByAuthorAndTitle(Pageable pageable, List<Author> authors, String title);
     Page<Book> findAll(Pageable pageable, List<String> authors, List<String> cycles, String title, String added);
+    boolean existsByIdAndCycleIsNull(String id);
+    boolean existsByIdAndCycleIsNotNull(String id);
     /**
      * Get the "id" book.
      *
@@ -62,5 +64,7 @@ public interface BookService {
      */
     void delete(String id);
 
-    void reload(CycleService cycleService, AuthorService authorService);
+    void reload(CycleService cycleService, AuthorService authorService, CollectionService collectionService);
+    void reloadCycles(CycleService cycleService, AuthorService authorService);
+    void reloadCollections(CollectionService collectionService, AuthorService authorService);
 }

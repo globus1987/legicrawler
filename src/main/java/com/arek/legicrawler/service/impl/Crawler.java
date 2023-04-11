@@ -5,9 +5,13 @@ import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.domain.Cycle;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
+import com.arek.legicrawler.service.CollectionService;
 import com.arek.legicrawler.service.CycleService;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,11 +48,18 @@ public class Crawler {
     private CycleService cycleService;
     private BookService bookService;
     private AuthorService authorService;
+    private CollectionService collectionService;
 
-    public Crawler(BookService bookService, AuthorService authorService, CycleService cycleService) {
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private WebClient webClient = WebClient.builder().build();
+    private Map<String, com.arek.legicrawler.domain.Collection> collectionList = new HashMap<>();
+    private Map<String, com.arek.legicrawler.domain.Author> authorList = new HashMap<>();
+
+    public Crawler(BookService bookService, AuthorService authorService, CycleService cycleService, CollectionService collectionService) {
         this.cycleService = cycleService;
         this.bookService = bookService;
         this.authorService = authorService;
+        this.collectionService = collectionService;
     }
 
     public Crawler setBooks(List<Book> books) {
@@ -74,7 +85,6 @@ public class Crawler {
             );
             hrefList.add(url);
         }
-        var restTemplate = new RestTemplateBuilder().build();
         counter = new AtomicInteger(hrefList.size());
         Flux
             .fromIterable(hrefList)
@@ -88,6 +98,9 @@ public class Crawler {
 
     private Mono<String> fetchBooks(String url) {
         books.addAll(parseUrl(url));
+        collectionService.saveAll(new ArrayList<>(collectionList.values()));
+        authorService.saveAll(new ArrayList<>(authorList.values()));
+
         counter.getAndDecrement();
         if (counter.get() % 100 == 0) logger.info(counter.get() + " left to parse");
         return Mono.just("test");
@@ -105,10 +118,13 @@ public class Crawler {
             var bookObject = bookElement.getAsJsonObject();
             var bookElementId = bookObject.get("id").getAsString();
             if (existingIds.contains(bookElementId)) {
-                continue;
+                //                continue;
             }
             try {
-                var bookDetails = getBookDetails(client, bookElementId);
+                var bookDetailsJson = getBookDetails(client, bookElementId);
+                if (bookDetailsJson.isJsonNull()) continue;
+                if (!bookDetailsJson.has("book")) continue;
+                var bookDetails = bookDetailsJson.getAsJsonObject("book");
                 var audiobookFormat = bookObject.get("audiobookFormat").getAsBoolean();
                 var ebookFormat = bookObject.get("ebookFormat").getAsBoolean();
                 if (!ebookFormat && !audiobookFormat) {
@@ -118,8 +134,22 @@ public class Crawler {
                 setAudiobookSubscriptions(bookDetails, audiobookFormat, newBook);
                 setEbookSubscriptions(bookDetails, ebookFormat, newBook);
                 saveBook(newBook);
-                setAuthors(bookDetails, newBook);
-                setCycle(bookList, bookDetails, newBook);
+                try {
+                    setCycle(bookList, bookDetails, newBook);
+                } catch (Exception exception) {
+                    logger.error("Cannot set cycle for " + bookElementId);
+                }
+                try {
+                    setAuthors(bookDetails, newBook);
+                } catch (Exception exception) {
+                    logger.error("Cannot set authors for " + bookElementId);
+                }
+                try {
+                    setCollections(bookDetailsJson.getAsJsonArray("bookCollections"), newBook);
+                } catch (Exception exception) {
+                    logger.error("Cannot set collections for " + bookElementId);
+                    exception.printStackTrace();
+                }
             } catch (Exception e) {
                 logger.error(
                     "Cannot parse book {} {} {}",
@@ -128,10 +158,9 @@ public class Crawler {
                     bookObject.get("url").getAsString()
                 );
                 logger.error(e.getMessage());
-                logger.error(Arrays.toString(e.getStackTrace()));
+                e.printStackTrace();
             }
         }
-
         return bookList;
     }
 
@@ -141,8 +170,7 @@ public class Crawler {
             .fromJson(
                 client.get().uri("https://www.legimi.pl/api/catalogue/book/" + bookElementId).retrieve().bodyToMono(String.class).block(),
                 JsonObject.class
-            )
-            .getAsJsonObject("book");
+            );
     }
 
     private static Book createBookDetails(
@@ -189,25 +217,45 @@ public class Crawler {
     }
 
     private void setAuthors(JsonObject bookDetails, Book newBook) {
-        var authorList = new ArrayList<Author>();
         var authors = bookDetails.getAsJsonArray("authors");
         if (authors != null && !authors.isJsonNull()) {
             for (var authorElement : authors) {
                 var authorObject = authorElement.getAsJsonObject();
                 var authorId = authorObject.get("id").getAsString();
-                var author = authorService
-                    .findOne(authorId)
-                    .orElseGet(() ->
-                        new Author(authorId, authorObject.get("name").getAsString(), legimiUrl + authorObject.get("url").getAsString())
-                    );
-                authorList.add(author);
+                var author = authorList.containsKey(authorId)
+                    ? authorList.get(authorId)
+                    : authorService
+                        .findOne(authorId)
+                        .orElseGet(() ->
+                            new Author(authorId, authorObject.get("name").getAsString(), legimiUrl + authorObject.get("url").getAsString())
+                        );
+                author.addBooks(newBook);
+                if (!authorList.containsKey(authorId)) authorList.put(authorId, author);
+                newBook.addAuthors(author);
             }
         }
+    }
 
-        newBook.setAuthors(new HashSet<>(authorList));
-        authorList.forEach(e -> e.addBooks(newBook));
-        authorService.saveAll(authorList);
-        saveBook(newBook);
+    private void setCollections(JsonArray collections, Book newBook) {
+        if (collections.isEmpty()) return;
+        for (var collectionElement : collections) {
+            var collectionObject = collectionElement.getAsJsonObject();
+            var collectionId = collectionObject.get("id").getAsString();
+            var collection = collectionList.containsKey(collectionId)
+                ? collectionList.get(collectionId)
+                : collectionService
+                    .findOne(collectionId)
+                    .orElseGet(() ->
+                        new com.arek.legicrawler.domain.Collection(
+                            collectionId,
+                            collectionObject.get("name").getAsString(),
+                            legimiUrl + collectionObject.get("url").getAsString()
+                        )
+                    );
+            collection.addBooks(newBook);
+            if (!collectionList.containsKey(collectionId)) collectionList.put(collectionId, collection);
+            newBook.addCollections(collection);
+        }
     }
 
     private void setCycle(ArrayList<Book> bookList, JsonObject bookDetails, Book newBook) {
@@ -224,19 +272,52 @@ public class Crawler {
                 cycle.setId(cycleId);
             }
             cycle.addBooks(newBook);
+            saveBook(newBook);
+            bookList.add(newBook);
         }
-        saveBook(newBook);
-        bookList.add(newBook);
     }
 
     public void bookStats() {
         logger.info("Existing in database: " + existingIds.size());
         logger.info("Books parsed: " + books.size());
         var parsedIds = books.stream().map(Book::getId).collect(Collectors.toList());
-        var deletedBooks = existingIds.stream().filter(e -> !parsedIds.contains(e)).collect(Collectors.toList());
         var newBooks = books.stream().filter(e -> !existingIds.contains(e.getId())).collect(Collectors.toList());
-        var gson = new GsonBuilder().setPrettyPrinting().create();
         logger.info("New books: " + newBooks.size());
-        logger.info("Deleted books: " + deletedBooks.size());
+    }
+
+    public void reloadCycles(List<String> bookIds) {
+        this.counter = new AtomicInteger(bookIds.size());
+        Flux
+            .fromIterable(bookIds)
+            //            .parallel()
+            //            .runOn(Schedulers.boundedElastic())
+            .flatMap(this::fetchBooksById)
+            //            .ordered(String::compareTo)
+            .toStream()
+            .collect(Collectors.toList());
+    }
+
+    private Mono<String> fetchBooksById(String id) {
+        parseId(id);
+        counter.getAndDecrement();
+        if (counter.get() % 1000 == 0) logger.info(counter.get() + " left to parse");
+        return Mono.just("test");
+    }
+
+    private boolean parseId(String id) {
+        //        webClient = WebClient.builder().build();
+        var client = webClient;
+
+        var bookDetails = getBookDetails(client, id);
+
+        if (bookDetails.get("cycle").isJsonNull()) return true;
+        logger.info("2");
+        var book = bookService.findOne(id);
+        logger.info("3");
+        if (book.isEmpty()) return false;
+        var bookDb = book.get();
+        logger.info("4");
+        setCycle(new ArrayList<>(), bookDetails, bookDb);
+        return true;
     }
 }

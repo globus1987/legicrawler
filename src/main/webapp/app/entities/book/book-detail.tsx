@@ -55,6 +55,14 @@ export const BookDetail = () => {
           ) : (
             ''
           )}
+          <dt>Collections</dt>
+          <dd>
+            {bookEntity.collections?.map(item => (
+              <Button onClick={() => navigate(`/collections/${item.id}`)} color="light" size="sm">
+                {item.name}
+              </Button>
+            ))}
+          </dd>
           <dt>
             <span id="url">Url</span>
           </dt>

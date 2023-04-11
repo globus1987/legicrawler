@@ -19,6 +19,9 @@ public interface BookRepository extends JpaRepository<Book, String>, JpaSpecific
     @Query("select id from Book")
     List<String> findAllIds();
 
+    @Query("select id from Book where cycle is null")
+    List<String> findAllIdsWithNullCycle();
+
     Page<Book> findAllByTitleContainingIgnoreCase(Pageable pageable, String title);
 
     @Query("SELECT DISTINCT book from Book book JOIN book.authors author where author in :authors")
@@ -32,4 +35,7 @@ public interface BookRepository extends JpaRepository<Book, String>, JpaSpecific
     );
 
     Page<Book> findAll(Specification<Book> spec, Pageable pageable);
+
+    boolean existsByIdAndCycleIsNull(String id);
+    boolean existsByIdAndCycleIsNotNull(String id);
 }

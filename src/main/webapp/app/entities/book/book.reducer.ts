@@ -38,6 +38,16 @@ export const reload = async () => {
   axios.get<IBook[]>(requestUrl);
 };
 
+export const reloadCycles = async () => {
+  const requestUrl = `${apiUrl}/reloadCycles`;
+  axios.get<IBook[]>(requestUrl);
+};
+
+export const reloadCollections = async () => {
+  const requestUrl = `${apiUrl}/reloadCycles`;
+  axios.get<IBook[]>(requestUrl);
+};
+
 export const getEntity = createAsyncThunk(
   'book/fetch_entity',
   async (id: string | number) => {

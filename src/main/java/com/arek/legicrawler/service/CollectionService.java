@@ -17,6 +17,7 @@ public interface CollectionService {
      * @return the persisted entity.
      */
     Collection save(Collection collection);
+    List<Collection> saveAll(List<Collection> collections);
 
     /**
      * Updates a collection.

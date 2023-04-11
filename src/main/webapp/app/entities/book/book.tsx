@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { isNumber, ValidatedField, ValidatedForm } from 'react-jhipster';
+import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { getEntities, reload } from './book.reducer';
+import { getEntities, reload, reloadCycles, reloadCollections } from './book.reducer';
 import SyncLoader from 'react-spinners/SyncLoader';
 
 export const Book = () => {
@@ -84,10 +84,6 @@ export const Book = () => {
     }
   };
 
-  const doReload = () => {
-    dispatch(reload);
-  };
-
   useEffect(() => {
     sortEntities();
   }, [paginationState.activePage, paginationState.order, paginationState.sort, added]);
@@ -121,8 +117,14 @@ export const Book = () => {
       activePage: currentPage,
     });
 
-  const handleReload = () => {
-    doReload();
+  const handleReloadBooks = () => {
+    dispatch(reload);
+  };
+  const handleReloadCycles = () => {
+    dispatch(reloadCycles);
+  };
+  const handleReloadCollections = () => {
+    dispatch(reloadCollections);
   };
   const handleFilter = () => {
     sortEntities();
@@ -147,9 +149,17 @@ export const Book = () => {
       <h2 id="book-heading" data-cy="BookHeading">
         Books
         <div className="d-flex justify-content-end">
-          <Button onClick={handleReload} className="me-2" color="warning">
+          <Button onClick={handleReloadBooks} className="me-2" color="warning">
             <FontAwesomeIcon icon="right-left" />
             &nbsp; Reload books
+          </Button>
+          <Button onClick={handleReloadCycles} className="me-2" color="warning">
+            <FontAwesomeIcon icon="right-left" />
+            &nbsp; Reload cycles
+          </Button>
+          <Button onClick={handleReloadCollections} className="me-2" color="warning">
+            <FontAwesomeIcon icon="right-left" />
+            &nbsp; Reload collections
           </Button>
         </div>
       </h2>
@@ -210,6 +220,7 @@ export const Book = () => {
                 Category <FontAwesomeIcon icon="sort" />
               </th>
               <th>Cycle</th>
+              <th className="hand">Collections</th>
               <th className="hand" onClick={sort('added')}>
                 Added <FontAwesomeIcon icon="sort" />
               </th>
@@ -238,7 +249,11 @@ export const Book = () => {
                   </td>
                   <td>{book.category}</td>
                   <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
-
+                  <td>
+                    {book.collections?.map(item => (
+                      <Link to={`/collection/${item.id}`}>{item.name}</Link>
+                    ))}
+                  </td>
                   <td>{book.added ? <TextFormat type="date" value={book.added} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
                 </tr>
               ))}

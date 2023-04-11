@@ -4,6 +4,7 @@ import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.repository.BookRepository;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
+import com.arek.legicrawler.service.CollectionService;
 import com.arek.legicrawler.service.CycleService;
 import com.arek.legicrawler.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -38,6 +39,7 @@ public class BookResource {
 
     private static final String ENTITY_NAME = "book";
     private final CycleService cycleService;
+    private final CollectionService collectionService;
     private final AuthorService authorService;
 
     @Value("${jhipster.clientApp.name}")
@@ -47,11 +49,18 @@ public class BookResource {
 
     private final BookRepository bookRepository;
 
-    public BookResource(BookService bookService, BookRepository bookRepository, CycleService cycleService, AuthorService authorService) {
+    public BookResource(
+        BookService bookService,
+        BookRepository bookRepository,
+        CycleService cycleService,
+        AuthorService authorService,
+        CollectionService collectionService
+    ) {
         this.bookService = bookService;
         this.bookRepository = bookRepository;
         this.cycleService = cycleService;
         this.authorService = authorService;
+        this.collectionService = collectionService;
     }
 
     /**
@@ -177,7 +186,19 @@ public class BookResource {
     @GetMapping("/books/reload")
     @Scheduled(cron = "0 0 0 * * *")
     public ResponseEntity<String> reloadBooks() {
-        bookService.reload(cycleService, authorService);
+        bookService.reload(cycleService, authorService, collectionService);
+        return ResponseEntity.ok().body("Reloaded");
+    }
+
+    @GetMapping("/books/reloadCycles")
+    public ResponseEntity<String> reloadCycles() {
+        bookService.reloadCycles(cycleService, authorService);
+        return ResponseEntity.ok().body("Reloaded");
+    }
+
+    @GetMapping("/books/reloadCollections")
+    public ResponseEntity<String> reloadCollections() {
+        bookService.reloadCollections(collectionService, authorService);
         return ResponseEntity.ok().body("Reloaded");
     }
 

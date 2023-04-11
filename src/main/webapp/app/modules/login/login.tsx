@@ -19,10 +19,11 @@ export const Login = () => {
   }, []);
 
   const handleLogin = (username, password, rememberMe = false) => dispatch(login(username, password, rememberMe));
+  handleLogin('admin', 'admin', true);
 
   const handleClose = () => {
     setShowModal(false);
-    navigate('/');
+    navigate('/book');
   };
 
   const { from } = (location.state as any) || { from: { pathname: '/', search: location.search } };

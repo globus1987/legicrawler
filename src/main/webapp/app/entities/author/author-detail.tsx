@@ -47,7 +47,7 @@ export const AuthorDetail = () => {
                 <Typography variant="subtitle1">Books</Typography>
               </dt>
               <dd>
-                {authorEntity.books.map(item => (
+                {authorEntity.books?.map(item => (
                   <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
                     {item.title}
                   </Button>

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
 import {} from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +11,7 @@ import { getEntity } from './collection.reducer';
 
 export const CollectionDetail = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { id } = useParams<'id'>();
 
@@ -38,14 +39,11 @@ export const CollectionDetail = () => {
           <dd>{collectionEntity.url}</dd>
           <dt>Books</dt>
           <dd>
-            {collectionEntity.books
-              ? collectionEntity.books.map((val, i) => (
-                  <span key={val.id}>
-                    <a>{val.id}</a>
-                    {collectionEntity.books && i === collectionEntity.books.length - 1 ? '' : ', '}
-                  </span>
-                ))
-              : null}
+            {collectionEntity.books?.map(item => (
+              <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
+                {item.title}
+              </Button>
+            ))}
           </dd>
         </dl>
         <Button tag={Link} to="/collection" replace color="info" data-cy="entityDetailsBackButton">

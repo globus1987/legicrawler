@@ -62,11 +62,19 @@ public class Book implements Serializable, Persistable<String> {
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Cycle cycle;
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(
+        fetch = FetchType.EAGER,
+        mappedBy = "books",
+        cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH }
+    )
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Collection> collections = new HashSet<>();
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
+    @ManyToMany(
+        fetch = FetchType.EAGER,
+        mappedBy = "books",
+        cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH }
+    )
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Author> authors = new HashSet<>();
 

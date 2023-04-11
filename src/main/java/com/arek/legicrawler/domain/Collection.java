@@ -33,7 +33,9 @@ public class Collection implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    public Collection() {}
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
         name = "rel_collection__books",
         joinColumns = @JoinColumn(name = "collection_id"),
@@ -41,6 +43,12 @@ public class Collection implements Serializable, Persistable<String> {
     )
     @JsonIgnoreProperties(value = { "cycle", "collections", "authors" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
+
+    public Collection(String id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 

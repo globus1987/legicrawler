@@ -5,6 +5,7 @@ import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.repository.BookRepository;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
+import com.arek.legicrawler.service.CollectionService;
 import com.arek.legicrawler.service.CycleService;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -149,7 +150,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void reload(CycleService cycleService, AuthorService authorService) {
+    public void reload(CycleService cycleService, AuthorService authorService, CollectionService collectionService) {
         var restTemplate = new RestTemplateBuilder().build();
         var response = restTemplate.getForObject(
             "https://www.legimi.pl/api/catalogue?filters=[\"audiobooks\",\"ebooks\",\"epub\",\"mobi\",\"pdf\",\"synchrobooks\",\"unlimited\",\"unlimitedlegimi\"]&languages=[\"polish\"]&sort=latest&&&skip=0",
@@ -158,9 +159,29 @@ public class BookServiceImpl implements BookService {
         var gson = new GsonBuilder().create();
         var gsonValue = gson.fromJson(response, JsonObject.class);
         var pageCount = gsonValue.get("bookList").getAsJsonObject().get("pagination").getAsJsonObject().get("totalPages").getAsInt();
-        var crawler = new Crawler(this, authorService, cycleService);
+        var crawler = new Crawler(this, authorService, cycleService, collectionService);
         crawler.setExistingIds(bookRepository.findAllIds());
         crawler.parse(pageCount);
         crawler.bookStats();
+    }
+
+    @Override
+    public void reloadCycles(CycleService cycleService, AuthorService authorService) {
+        var bookIds = bookRepository.findAllIdsWithNullCycle();
+        var crawler = new Crawler(this, null, cycleService, null);
+        crawler.reloadCycles(bookIds);
+    }
+
+    @Override
+    public void reloadCollections(CollectionService collectionService, AuthorService authorService) {}
+
+    @Override
+    public boolean existsByIdAndCycleIsNull(String id) {
+        return bookRepository.existsByIdAndCycleIsNull(id);
+    }
+
+    @Override
+    public boolean existsByIdAndCycleIsNotNull(String id) {
+        return bookRepository.existsByIdAndCycleIsNotNull(id);
     }
 }

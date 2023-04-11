@@ -33,7 +33,7 @@ public class Author implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
         name = "rel_author__books",
         joinColumns = @JoinColumn(name = "author_id"),

@@ -34,6 +34,12 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
+    public List<Collection> saveAll(List<Collection> collections) {
+        log.debug("Request to save Collection : {}", collections);
+        return collectionRepository.saveAll(collections);
+    }
+
+    @Override
     public Collection update(Collection collection) {
         log.debug("Request to update Collection : {}", collection);
         collection.setIsPersisted();
