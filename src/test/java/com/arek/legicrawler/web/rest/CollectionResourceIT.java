@@ -2,27 +2,19 @@ package com.arek.legicrawler.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.arek.legicrawler.IntegrationTest;
 import com.arek.legicrawler.domain.Collection;
 import com.arek.legicrawler.repository.CollectionRepository;
-import com.arek.legicrawler.service.CollectionService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link CollectionResource} REST controller.
  */
 @IntegrationTest
-@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class CollectionResourceIT {
@@ -48,12 +39,6 @@ class CollectionResourceIT {
 
     @Autowired
     private CollectionRepository collectionRepository;
-
-    @Mock
-    private CollectionRepository collectionRepositoryMock;
-
-    @Mock
-    private CollectionService collectionServiceMock;
 
     @Autowired
     private EntityManager em;
@@ -140,23 +125,6 @@ class CollectionResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(collection.getId())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)));
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    void getAllCollectionsWithEagerRelationshipsIsEnabled() throws Exception {
-        when(collectionServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        restCollectionMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
-
-        verify(collectionServiceMock, times(1)).findAllWithEagerRelationships(any());
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    void getAllCollectionsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        when(collectionServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        restCollectionMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
-        verify(collectionRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test

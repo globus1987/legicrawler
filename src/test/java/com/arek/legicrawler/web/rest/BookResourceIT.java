@@ -2,21 +2,30 @@ package com.arek.legicrawler.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.arek.legicrawler.IntegrationTest;
 import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.repository.BookRepository;
+import com.arek.legicrawler.service.BookService;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Integration tests for the {@link BookResource} REST controller.
  */
 @IntegrationTest
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class BookResourceIT {
@@ -65,6 +75,12 @@ class BookResourceIT {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Mock
+    private BookRepository bookRepositoryMock;
+
+    @Mock
+    private BookService bookServiceMock;
 
     @Autowired
     private EntityManager em;
@@ -187,6 +203,23 @@ class BookResourceIT {
             .andExpect(jsonPath("$.[*].libraryPass").value(hasItem(DEFAULT_LIBRARY_PASS.booleanValue())))
             .andExpect(jsonPath("$.[*].librarySubscription").value(hasItem(DEFAULT_LIBRARY_SUBSCRIPTION.booleanValue())))
             .andExpect(jsonPath("$.[*].subscription").value(hasItem(DEFAULT_SUBSCRIPTION.booleanValue())));
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllBooksWithEagerRelationshipsIsEnabled() throws Exception {
+        when(bookServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restBookMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
+
+        verify(bookServiceMock, times(1)).findAllWithEagerRelationships(any());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllBooksWithEagerRelationshipsIsNotEnabled() throws Exception {
+        when(bookServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+
+        restBookMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
+        verify(bookRepositoryMock, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
