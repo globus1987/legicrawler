@@ -7,7 +7,13 @@
         Added the constraints for entity Book.
     -->
     <changeSet id="20230321104701-2" author="jhipster">
-<validCheckSum>8:d6caea300dd4a0c1c950bda4e7d2e76a</validCheckSum>
+
+        <addForeignKeyConstraint baseColumnNames="cycle_id"
+                                 baseTableName="book"
+                                 constraintName="fk_book__cycle_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cycle"/>
+
         <addForeignKeyConstraint baseColumnNames="book_id"
                                  baseTableName="rel_book__collections"
                                  constraintName="fk_rel_book__collections__book_id"
@@ -31,11 +37,5 @@
                                  constraintName="fk_rel_book__authors__authors_id"
                                  referencedColumnNames="id"
                                  referencedTableName="author"/>
-
-        <addForeignKeyConstraint baseColumnNames="cycle_id"
-                                 baseTableName="book"
-                                 constraintName="fk_book__cycle_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="cycle"/>
     </changeSet>
 </databaseChangeLog>
