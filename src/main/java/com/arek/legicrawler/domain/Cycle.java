@@ -34,7 +34,7 @@ public class Cycle implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @OneToMany(mappedBy = "cycle")
+    @OneToMany(mappedBy = "cycle", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 

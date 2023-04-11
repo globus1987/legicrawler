@@ -18,6 +18,7 @@ public interface BookService {
      * @return the persisted entity.
      */
     Book save(Book book);
+    List<Book> saveAll(List<Book> books);
 
     /**
      * Updates a book.

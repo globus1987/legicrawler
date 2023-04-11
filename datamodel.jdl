@@ -26,9 +26,10 @@ entity Cycle {
     name String
     url String maxlength(5000)
 }
-relationship OneToMany {
-    Cycle{books} to Book{cycle}
+relationship ManyToOne {
+    Book{cycle} to Cycle{books}
 }
+
 relationship ManyToMany {
     Book{collections} to Collection{books}
     Book{authors} to Author{books}

@@ -33,7 +33,7 @@ public class Author implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToMany(mappedBy = "authors")
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 

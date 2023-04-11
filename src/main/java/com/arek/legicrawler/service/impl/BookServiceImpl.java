@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -40,6 +41,11 @@ public class BookServiceImpl implements BookService {
     public Book save(Book book) {
         log.debug("Request to save Book : {}", book);
         return bookRepository.save(book);
+    }
+
+    public List<Book> saveAll(List<Book> book) {
+        log.debug("Request to save Book : {}", book);
+        return bookRepository.saveAll(book);
     }
 
     @Override
@@ -159,9 +165,11 @@ public class BookServiceImpl implements BookService {
         var gson = new GsonBuilder().create();
         var gsonValue = gson.fromJson(response, JsonObject.class);
         var pageCount = gsonValue.get("bookList").getAsJsonObject().get("pagination").getAsJsonObject().get("totalPages").getAsInt();
+        var bookList = new ArrayList<Book>();
         var crawler = new Crawler(this, authorService, cycleService, collectionService);
         crawler.setExistingIds(bookRepository.findAllIds());
-        crawler.parse(pageCount);
+        crawler.parse(pageCount, bookList);
+        bookRepository.saveAll(bookList);
         crawler.bookStats();
     }
 

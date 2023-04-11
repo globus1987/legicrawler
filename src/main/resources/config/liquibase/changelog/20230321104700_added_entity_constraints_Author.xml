@@ -6,18 +6,5 @@
     <!--
         Added the constraints for entity Author.
     -->
-    <changeSet id="20230321104700-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="author_id"
-                                 baseTableName="rel_author__books"
-                                 constraintName="fk_rel_author__books__author_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="author"/>
-
-        <addForeignKeyConstraint baseColumnNames="books_id"
-                                 baseTableName="rel_author__books"
-                                 constraintName="fk_rel_author__books__books_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="book"/>
-    </changeSet>
 </databaseChangeLog>

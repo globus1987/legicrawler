@@ -6,18 +6,5 @@
     <!--
         Added the constraints for entity Collection.
     -->
-    <changeSet id="20230321104703-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="collection_id"
-                                 baseTableName="rel_collection__books"
-                                 constraintName="fk_rel_collection__books__collection_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="collection"/>
-
-        <addForeignKeyConstraint baseColumnNames="books_id"
-                                 baseTableName="rel_collection__books"
-                                 constraintName="fk_rel_collection__books__books_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="book"/>
-    </changeSet>
 </databaseChangeLog>

@@ -58,7 +58,7 @@ public class Book implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_book__collections",
         joinColumns = @JoinColumn(name = "book_id"),
@@ -67,7 +67,7 @@ public class Book implements Serializable, Persistable<String> {
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Collection> collections = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_book__authors",
         joinColumns = @JoinColumn(name = "book_id"),
@@ -76,7 +76,7 @@ public class Book implements Serializable, Persistable<String> {
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Author> authors = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Cycle cycle;
 
