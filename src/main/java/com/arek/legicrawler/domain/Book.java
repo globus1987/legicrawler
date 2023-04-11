@@ -58,25 +58,27 @@ public class Book implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
-    private Cycle cycle;
-
-    @ManyToMany(
-        fetch = FetchType.EAGER,
-        mappedBy = "books",
-        cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH }
+    @ManyToMany
+    @JoinTable(
+        name = "rel_book__collections",
+        joinColumns = @JoinColumn(name = "book_id"),
+        inverseJoinColumns = @JoinColumn(name = "collections_id")
     )
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Collection> collections = new HashSet<>();
 
-    @ManyToMany(
-        fetch = FetchType.EAGER,
-        mappedBy = "books",
-        cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH }
+    @ManyToMany
+    @JoinTable(
+        name = "rel_book__authors",
+        joinColumns = @JoinColumn(name = "book_id"),
+        inverseJoinColumns = @JoinColumn(name = "authors_id")
     )
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Author> authors = new HashSet<>();
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
+    private Cycle cycle;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -240,30 +242,11 @@ public class Book implements Serializable, Persistable<String> {
         this.setIsPersisted();
     }
 
-    public Cycle getCycle() {
-        return this.cycle;
-    }
-
-    public void setCycle(Cycle cycle) {
-        this.cycle = cycle;
-    }
-
-    public Book cycle(Cycle cycle) {
-        this.setCycle(cycle);
-        return this;
-    }
-
     public Set<Collection> getCollections() {
         return this.collections;
     }
 
     public void setCollections(Set<Collection> collections) {
-        if (this.collections != null) {
-            this.collections.forEach(i -> i.removeBooks(this));
-        }
-        if (collections != null) {
-            collections.forEach(i -> i.addBooks(this));
-        }
         this.collections = collections;
     }
 
@@ -289,12 +272,6 @@ public class Book implements Serializable, Persistable<String> {
     }
 
     public void setAuthors(Set<Author> authors) {
-        if (this.authors != null) {
-            this.authors.forEach(i -> i.removeBooks(this));
-        }
-        if (authors != null) {
-            authors.forEach(i -> i.addBooks(this));
-        }
         this.authors = authors;
     }
 
@@ -312,6 +289,19 @@ public class Book implements Serializable, Persistable<String> {
     public Book removeAuthors(Author author) {
         this.authors.remove(author);
         author.getBooks().remove(this);
+        return this;
+    }
+
+    public Cycle getCycle() {
+        return this.cycle;
+    }
+
+    public void setCycle(Cycle cycle) {
+        this.cycle = cycle;
+    }
+
+    public Book cycle(Cycle cycle) {
+        this.setCycle(cycle);
         return this;
     }
 

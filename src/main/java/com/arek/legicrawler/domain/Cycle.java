@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import org.springframework.data.domain.Persistable;
@@ -34,8 +33,8 @@ public class Cycle implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cycle", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-    @JsonIgnoreProperties(value = { "collections", "authors" }, allowSetters = true)
+    @OneToMany(mappedBy = "cycle")
+    @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

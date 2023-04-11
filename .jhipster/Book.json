@@ -1,5 +1,5 @@
 {
-  "applications": ["legicrawler"],
+  "applications": "*",
   "changelogDate": "20230321104701",
   "dto": "no",
   "embedded": false,
@@ -59,24 +59,24 @@
   "readOnly": false,
   "relationships": [
     {
-      "otherEntityName": "cycle",
-      "otherEntityRelationshipName": "books",
-      "relationshipName": "cycle",
-      "relationshipType": "many-to-one"
-    },
-    {
       "otherEntityName": "collection",
       "otherEntityRelationshipName": "books",
-      "ownerSide": false,
+      "ownerSide": true,
       "relationshipName": "collections",
       "relationshipType": "many-to-many"
     },
     {
       "otherEntityName": "author",
       "otherEntityRelationshipName": "books",
-      "ownerSide": false,
+      "ownerSide": true,
       "relationshipName": "authors",
       "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "cycle",
+      "otherEntityRelationshipName": "books",
+      "relationshipName": "cycle",
+      "relationshipType": "many-to-one"
     }
   ],
   "service": "serviceImpl"

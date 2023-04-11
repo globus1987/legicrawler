@@ -1,48 +1,3 @@
-application {
-    config {
-        applicationType monolith
-        authenticationType jwt
-        baseName legicrawler
-        blueprints []
-        buildTool gradle
-        cacheProvider no
-        clientFramework react
-        clientPackageManager npm
-        clientTheme none
-        creationTimestamp 1679393920428
-        databaseType sql
-        devDatabaseType postgresql
-        dtoSuffix DTO
-        enableGradleEnterprise false
-        enableHibernateCache false
-        enableSwaggerCodegen false
-        enableTranslation false
-        gradleEnterpriseHost ""
-        jhiPrefix jhi
-        jhipsterVersion "7.9.3"
-        jwtSecretKey "Y2NmOGI5YzM4YzEzYTkyZjlkNjYxNGMwMDk1MGY4OWM5YWExZTgyOWQzNGE0ZGQ2MmE0MzVmYmFiOTNkZGU1MmU4MWI1ZTI5MmU1YjQxZDEyYTdhNGFmYzA0YTUwZmVlNzIxNjg4Y2E4MmFmMTRjOTQ5OTk0NWRiYmUxMmE3Y2Q="
-        languages [en]
-        messageBroker false
-        microfrontend false
-        microfrontends []
-        nativeLanguage en
-        otherModules []
-        packageName com.arek.legicrawler
-        prodDatabaseType postgresql
-        reactive false
-        searchEngine false
-        serverPort 9999
-        serviceDiscoveryType no
-        skipClient false
-        skipUserManagement false
-        testFrameworks []
-        websocket false
-        withAdminUi true
-    }
-
-    entities Author, Book, Collection, Cycle
-}
-
 entity Author {
     id String
     name String
@@ -75,8 +30,8 @@ relationship OneToMany {
     Cycle{books} to Book{cycle}
 }
 relationship ManyToMany {
-    Collection{books} to Book{collections}
-    Author{books} to Book{authors}
+    Book{collections} to Collection{books}
+    Book{authors} to Author{books}
 }
 
 paginate Author, Book, Cycle with pagination

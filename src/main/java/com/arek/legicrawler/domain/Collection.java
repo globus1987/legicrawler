@@ -33,15 +33,8 @@ public class Collection implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    public Collection() {}
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "rel_collection__books",
-        joinColumns = @JoinColumn(name = "collection_id"),
-        inverseJoinColumns = @JoinColumn(name = "books_id")
-    )
-    @JsonIgnoreProperties(value = { "cycle", "collections", "authors" }, allowSetters = true)
+    @ManyToMany(mappedBy = "collections")
+    @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
     public Collection(String id, String name, String url) {
@@ -113,6 +106,12 @@ public class Collection implements Serializable, Persistable<String> {
     }
 
     public void setBooks(Set<Book> books) {
+        if (this.books != null) {
+            this.books.forEach(i -> i.removeCollections(this));
+        }
+        if (books != null) {
+            books.forEach(i -> i.addCollections(this));
+        }
         this.books = books;
     }
 

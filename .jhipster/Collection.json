@@ -1,5 +1,5 @@
 {
-  "applications": ["legicrawler"],
+  "applications": "*",
   "changelogDate": "20230321104703",
   "dto": "no",
   "embedded": false,
@@ -29,7 +29,7 @@
     {
       "otherEntityName": "book",
       "otherEntityRelationshipName": "collections",
-      "ownerSide": true,
+      "ownerSide": false,
       "relationshipName": "books",
       "relationshipType": "many-to-many"
     }

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.persistence.*;
 import org.springframework.data.domain.Persistable;
 
@@ -33,13 +31,8 @@ public class Author implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-        name = "rel_author__books",
-        joinColumns = @JoinColumn(name = "author_id"),
-        inverseJoinColumns = @JoinColumn(name = "books_id")
-    )
-    @JsonIgnoreProperties(value = { "cycles", "collections", "authors" }, allowSetters = true)
+    @ManyToMany(mappedBy = "authors")
+    @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
     public Author(String id, String name, String url) {
@@ -115,6 +108,12 @@ public class Author implements Serializable, Persistable<String> {
     }
 
     public void setBooks(Set<Book> books) {
+        if (this.books != null) {
+            this.books.forEach(i -> i.removeAuthors(this));
+        }
+        if (books != null) {
+            books.forEach(i -> i.addAuthors(this));
+        }
         this.books = books;
     }
 
