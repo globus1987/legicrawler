@@ -11,9 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -162,15 +160,26 @@ public class BookServiceImpl implements BookService {
             "https://www.legimi.pl/api/catalogue?filters=[\"audiobooks\",\"ebooks\",\"epub\",\"mobi\",\"pdf\",\"synchrobooks\",\"unlimited\",\"unlimitedlegimi\"]&languages=[\"polish\"]&sort=latest&&&skip=0",
             String.class
         );
-        var gson = new GsonBuilder().create();
-        var gsonValue = gson.fromJson(response, JsonObject.class);
+        var gsonValue = new GsonBuilder().create().fromJson(response, JsonObject.class);
         var pageCount = gsonValue.get("bookList").getAsJsonObject().get("pagination").getAsJsonObject().get("totalPages").getAsInt();
+        var idList = retrieveIdList(pageCount, authorService, cycleService, collectionService);
         var bookList = new ArrayList<Book>();
         var crawler = new Crawler(this, authorService, cycleService, collectionService);
         crawler.setExistingIds(bookRepository.findAllIds());
-        crawler.parse(pageCount, bookList);
+        crawler.parse(idList, bookList);
         bookRepository.saveAll(bookList);
         crawler.bookStats();
+    }
+
+    private Set<String> retrieveIdList(
+        int pageCount,
+        AuthorService authorService,
+        CycleService cycleService,
+        CollectionService collectionService
+    ) {
+        var idList = new HashSet<String>();
+        var crawler = new Crawler(this, authorService, cycleService, collectionService);
+        return crawler.retrieveIdList(pageCount);
     }
 
     @Override
