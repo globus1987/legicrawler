@@ -51,6 +51,31 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="20230321104701-1-relations" author="jhipster">
+
+        <createTable tableName="rel_book__collections">
+            <column name="collections_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="book_id, collections_id" tableName="rel_book__collections"/>
+
+        <createTable tableName="rel_book__authors">
+            <column name="authors_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="book_id, authors_id" tableName="rel_book__authors"/>
+    </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--

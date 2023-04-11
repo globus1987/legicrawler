@@ -24,20 +24,6 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="20230321104700-1-relations" author="jhipster">
-
-        <createTable tableName="rel_author__books">
-            <column name="books_id" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="author_id" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="author_id, books_id" tableName="rel_author__books"/>
-    </changeSet>
-
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--

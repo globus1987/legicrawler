@@ -8,6 +8,30 @@
     -->
     <changeSet id="20230321104701-2" author="jhipster">
 
+        <addForeignKeyConstraint baseColumnNames="book_id"
+                                 baseTableName="rel_book__collections"
+                                 constraintName="fk_rel_book__collections__book_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="book"/>
+
+        <addForeignKeyConstraint baseColumnNames="collections_id"
+                                 baseTableName="rel_book__collections"
+                                 constraintName="fk_rel_book__collections__collections_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="collection"/>
+
+        <addForeignKeyConstraint baseColumnNames="book_id"
+                                 baseTableName="rel_book__authors"
+                                 constraintName="fk_rel_book__authors__book_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="book"/>
+
+        <addForeignKeyConstraint baseColumnNames="authors_id"
+                                 baseTableName="rel_book__authors"
+                                 constraintName="fk_rel_book__authors__authors_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="author"/>
+
         <addForeignKeyConstraint baseColumnNames="cycle_id"
                                  baseTableName="book"
                                  constraintName="fk_book__cycle_id"
