@@ -35,7 +35,7 @@ public class Collection implements Serializable, Persistable<String> {
 
     public Collection() {}
 
-    @ManyToMany(mappedBy = "collections", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "collections")
     @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
