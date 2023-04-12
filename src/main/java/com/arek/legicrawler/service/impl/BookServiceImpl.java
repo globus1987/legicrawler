@@ -3,6 +3,7 @@ package com.arek.legicrawler.service.impl;
 import com.arek.legicrawler.domain.Author;
 import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.repository.BookRepository;
+import com.arek.legicrawler.repository.BookRepositoryWithBagRelationshipsImpl;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
 import com.arek.legicrawler.service.CollectionService;
@@ -100,7 +101,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public Page<Book> findAll(Pageable pageable) {
         log.debug("Request to get all Books");
-        return bookRepository.findAll(pageable);
+        return new BookRepositoryWithBagRelationshipsImpl().fetchBagRelationships(bookRepository.findAll(pageable));
     }
 
     @Override

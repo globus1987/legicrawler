@@ -42,7 +42,7 @@ public class Cycle implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @OneToMany(mappedBy = "cycle", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cycle", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "cycle", "collections", "authors" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();
 
