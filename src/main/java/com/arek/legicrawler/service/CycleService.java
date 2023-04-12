@@ -58,4 +58,5 @@ public interface CycleService {
      * @param id the id of the entity.
      */
     void delete(String id);
+    List<String> findAllIds();
 }

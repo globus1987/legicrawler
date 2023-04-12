@@ -33,6 +33,8 @@ public class Collection implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
+    public Collection() {}
+
     @ManyToMany(mappedBy = "collections", fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "collections", "authors", "cycle" }, allowSetters = true)
     private Set<Book> books = new HashSet<>();

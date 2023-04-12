@@ -88,4 +88,9 @@ public class CollectionServiceImpl implements CollectionService {
         log.debug("Request to delete Collection : {}", id);
         collectionRepository.deleteById(id);
     }
+
+    @Override
+    public List<String> findAllIds() {
+        return collectionRepository.findAllIds();
+    }
 }

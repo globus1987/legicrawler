@@ -86,12 +86,19 @@ public class CycleServiceImpl implements CycleService {
     @Transactional(readOnly = true)
     public Optional<Cycle> findOne(String id) {
         log.debug("Request to get Cycle : {}", id);
-        return cycleRepository.findById(id);
+        Optional<Cycle> byId = cycleRepository.findById(id);
+        var cyc = byId.get();
+        return byId;
     }
 
     @Override
     public void delete(String id) {
         log.debug("Request to delete Cycle : {}", id);
         cycleRepository.deleteById(id);
+    }
+
+    @Override
+    public List<String> findAllIds() {
+        return cycleRepository.findAllIds();
     }
 }

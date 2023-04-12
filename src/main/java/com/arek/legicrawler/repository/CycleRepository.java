@@ -18,4 +18,7 @@ public interface CycleRepository extends JpaRepository<Cycle, String> {
 
     @Query("select cycle.id from Cycle cycle where  upper(cycle.name) like %:query%")
     List<String> findIdsByName(@Param("query") String query);
+
+    @Query("select id from Cycle")
+    List<String> findAllIds();
 }

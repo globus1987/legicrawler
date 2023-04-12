@@ -47,11 +47,16 @@ export const AuthorDetail = () => {
                 <Typography variant="subtitle1">Books</Typography>
               </dt>
               <dd>
-                {authorEntity.books?.map(item => (
-                  <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
-                    {item.title}
-                  </Button>
-                ))}
+                {authorEntity.books &&
+                  [...authorEntity.books]
+                    .sort((a, b) => a.title.localeCompare(b.title))
+                    .map(item => (
+                      <dd key={item.id}>
+                        <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
+                          {item.title}
+                        </Button>
+                      </dd>
+                    ))}
               </dd>
             </>
           )}

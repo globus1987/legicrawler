@@ -167,6 +167,8 @@ public class BookServiceImpl implements BookService {
         var crawler = new Crawler(this, authorService, cycleService, collectionService);
         crawler.setExistingIds(bookRepository.findAllIds());
         crawler.setExistingAuthors(authorService.findAllIds());
+        crawler.setExistingCycles(cycleService.findAllIds());
+        crawler.setExistingCollections(collectionService.findAllIds());
         crawler.parse(idList, bookList);
         bookRepository.saveAll(bookList);
         crawler.bookStats();

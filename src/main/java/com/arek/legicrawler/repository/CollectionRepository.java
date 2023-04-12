@@ -20,6 +20,9 @@ public interface CollectionRepository extends CollectionRepositoryWithBagRelatio
         return this.fetchBagRelationships(this.findById(id));
     }
 
+    @Query("select id from Collection")
+    List<String> findAllIds();
+
     default List<Collection> findAllWithEagerRelationships() {
         return this.fetchBagRelationships(this.findAll());
     }
