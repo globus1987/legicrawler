@@ -103,4 +103,9 @@ public class AuthorServiceImpl implements AuthorService {
         log.debug("Request to delete Author : {}", id);
         authorRepository.deleteById(id);
     }
+
+    @Override
+    public List<String> findAllIds() {
+        return authorRepository.findAllIds();
+    }
 }

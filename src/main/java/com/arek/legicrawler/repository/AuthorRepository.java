@@ -34,4 +34,7 @@ public interface AuthorRepository extends AuthorRepositoryWithBagRelationships, 
 
     @Query("select author.id from Author author where  upper(author.name) like %:query%")
     List<String> findIdsByName(@Param("query") String query);
+
+    @Query("select id from Author")
+    List<String> findAllIds();
 }

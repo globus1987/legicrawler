@@ -58,11 +58,11 @@ public class Book implements Serializable, Persistable<String> {
     @Transient
     private boolean isPersisted;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Cycle cycle;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_book__collections",
         joinColumns = @JoinColumn(name = "book_id"),
@@ -71,7 +71,7 @@ public class Book implements Serializable, Persistable<String> {
     @JsonIgnoreProperties(value = { "books" }, allowSetters = true)
     private Set<Collection> collections = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_book__authors",
         joinColumns = @JoinColumn(name = "book_id"),

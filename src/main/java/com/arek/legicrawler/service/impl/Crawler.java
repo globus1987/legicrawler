@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -49,8 +50,10 @@ public class Crawler {
     private WebClient webClient = WebClient.builder().build();
     private Map<String, com.arek.legicrawler.domain.Collection> collectionList = new HashMap<>();
     private Map<String, com.arek.legicrawler.domain.Author> authorList = new HashMap<>();
+    private Map<String, com.arek.legicrawler.domain.Cycle> cycleList = new HashMap<>();
     private List<Book> bookList;
     private Set<String> idList = new HashSet<>();
+    private List<String> existingAuthors;
 
     public Crawler(BookService bookService, AuthorService authorService, CycleService cycleService, CollectionService collectionService) {
         this.cycleService = cycleService;
@@ -67,6 +70,11 @@ public class Crawler {
     public Crawler setExistingIds(List<String> existingIds) {
         this.existingIds = existingIds;
         this.counter = new AtomicInteger(0);
+        return this;
+    }
+
+    public Crawler setExistingAuthors(List<String> allIds) {
+        this.existingAuthors = allIds;
         return this;
     }
 
@@ -97,7 +105,8 @@ public class Crawler {
         return Mono.just("test");
     }
 
-    private void parseUrl(String id) {
+    @Transactional
+    public void parseUrl(String id) {
         var client = WebClient.builder().build();
         var gson = new GsonBuilder().create();
         if (existingIds.contains(id)) {
@@ -108,6 +117,7 @@ public class Crawler {
             if (bookDetailsJson.isJsonNull()) return;
             if (!bookDetailsJson.has("book")) return;
             var bookDetails = bookDetailsJson.getAsJsonObject("book");
+            if (!bookDetails.has("audiobook") && bookDetails.has("ebook")) return;
             var audiobookFormat = bookDetails.get("audiobook").isJsonObject();
             var ebookFormat = bookDetails.get("ebook").isJsonObject();
             if (!ebookFormat && !audiobookFormat) {
@@ -123,11 +133,12 @@ public class Crawler {
                 logger.error("Cannot set cycle for " + id);
                 exception.printStackTrace();
             }
-            //                try {
-            //                    setAuthors(bookDetails, newBook);
-            //                } catch (Exception exception) {
-            //                    logger.error("Cannot set authors for " + bookElementId);
-            //                }
+            try {
+                setAuthors(bookDetails, newBook);
+            } catch (Exception exception) {
+                logger.error("Cannot set authors for " + id);
+                exception.printStackTrace();
+            }
             //                try {
             //                    setCollections(bookDetailsJson.getAsJsonArray("bookCollections"), newBook);
             //                } catch (Exception exception) {
@@ -171,7 +182,7 @@ public class Crawler {
     ) {
         var newBook = new Book();
         newBook.setTitle(bookObject.get("title").getAsString());
-        newBook.setUrl(legimiUrl + bookObject.get("url").getAsString());
+        newBook.setUrl(bookObject.get("url").getAsString());
         newBook.setId(bookElementId);
         newBook.setAdded(LocalDate.now());
         newBook.setAudiobook(audiobookFormat);
@@ -211,16 +222,16 @@ public class Crawler {
             for (var authorElement : authors) {
                 var authorObject = authorElement.getAsJsonObject();
                 var authorId = authorObject.get("id").getAsString();
-                var author = authorList.containsKey(authorId)
-                    ? authorList.get(authorId)
-                    : authorService
-                        .findOne(authorId)
-                        .orElseGet(() ->
-                            new Author(authorId, authorObject.get("name").getAsString(), legimiUrl + authorObject.get("url").getAsString())
-                        );
+                var author = existingAuthors.contains(authorId)
+                    ? authorService.findOne(authorId).get()
+                    : authorList.containsKey(authorId)
+                        ? authorList.get(authorId)
+                        : new Author(authorId, authorObject.get("name").getAsString(), legimiUrl + authorObject.get("url").getAsString());
+                if (!authorList.containsKey(authorId)) {
+                    authorList.put(authorId, author);
+                    authorService.save(author);
+                }
                 author.addBooks(newBook);
-                if (!authorList.containsKey(authorId)) authorList.put(authorId, author);
-                newBook.addAuthors(author);
             }
         }
     }
@@ -259,8 +270,8 @@ public class Crawler {
                 cycle.setName(bookDetails.get("cycle").getAsJsonObject().get("name").getAsString());
                 cycle.setUrl(legimiUrl + bookDetails.get("cycle").getAsJsonObject().get("url").getAsString());
                 cycle.setId(cycleId);
+                cycleService.save(cycle);
             }
-            cycleService.save(cycle);
             cycle.addBooks(newBook);
             saveBook(newBook);
         }
