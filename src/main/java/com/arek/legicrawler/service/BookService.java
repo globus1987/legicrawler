@@ -47,7 +47,7 @@ public interface BookService {
     Page<Book> findAllByAuthor(Pageable pageable, List<Author> authors);
     Page<Book> findAllByTitle(Pageable pageable, String title);
     Page<Book> findAllByAuthorAndTitle(Pageable pageable, List<Author> authors, String title);
-    Page<Book> findAll(Pageable pageable, List<String> authors, List<String> cycles, String title, String added);
+    Page<Book> findAll(Pageable pageable, List<String> authors, List<String> cycles, List<String> collections, String title, String added);
     boolean existsByIdAndCycleIsNull(String id);
     boolean existsByIdAndCycleIsNotNull(String id);
     /**

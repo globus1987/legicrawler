@@ -49,6 +49,7 @@ public interface CollectionService {
      * @return the list of entities.
      */
     Page<Collection> findAllWithEagerRelationships(Pageable pageable);
+    List<String> findIdList(String query);
 
     /**
      * Get the "id" collection.

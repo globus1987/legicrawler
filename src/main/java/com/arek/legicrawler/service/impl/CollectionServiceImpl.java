@@ -3,6 +3,7 @@ package com.arek.legicrawler.service.impl;
 import com.arek.legicrawler.domain.Collection;
 import com.arek.legicrawler.repository.CollectionRepository;
 import com.arek.legicrawler.service.CollectionService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -74,6 +75,13 @@ public class CollectionServiceImpl implements CollectionService {
 
     public Page<Collection> findAllWithEagerRelationships(Pageable pageable) {
         return collectionRepository.findAllWithEagerRelationships(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> findIdList(String query) {
+        if (query.isEmpty()) return new ArrayList<>();
+        return collectionRepository.findIdsByName(query.toUpperCase());
     }
 
     @Override

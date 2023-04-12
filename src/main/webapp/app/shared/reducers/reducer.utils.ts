@@ -20,6 +20,7 @@ export type IQueryParams = {
   filterTitle?: string;
   filterAuthor?: string;
   filterCycle?: string;
+  filterCollection?: string;
   added?: string;
 };
 

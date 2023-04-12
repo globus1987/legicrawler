@@ -39,6 +39,10 @@ export const Book = () => {
     const savedValue = window.localStorage.getItem('book-cycle');
     return savedValue !== null ? savedValue : '';
   });
+  const [filterCollection, setFilterCollection] = useState(() => {
+    const savedValue = window.localStorage.getItem('book-collection');
+    return savedValue !== null ? savedValue : '';
+  });
   const [added, setAdded] = useState(() => {
     const savedValue = window.localStorage.getItem('book-added');
     return savedValue !== null ? new Date(savedValue) : undefined;
@@ -51,6 +55,9 @@ export const Book = () => {
     window.localStorage.setItem('book-cycle', filterCycle);
   }, [filterCycle]);
   useEffect(() => {
+    window.localStorage.setItem('book-collection', filterCycle);
+  }, [filterCycle]);
+  useEffect(() => {
     window.localStorage.setItem('book-author', filterAuthor);
   }, [filterAuthor]);
   useEffect(() => {
@@ -61,7 +68,13 @@ export const Book = () => {
   }, [added]);
 
   const getAllEntities = () => {
-    if (filterTitle.length > 0 || filterAuthor.length > 0 || formatAdded(added).length > 0 || filterCycle.length > 0) {
+    if (
+      filterTitle.length > 0 ||
+      filterAuthor.length > 0 ||
+      formatAdded(added).length > 0 ||
+      filterCycle.length > 0 ||
+      filterCollection.length > 0
+    ) {
       dispatch(
         getEntities({
           page: paginationState.activePage - 1,
@@ -70,6 +83,7 @@ export const Book = () => {
           filterTitle: filterTitle,
           filterAuthor: filterAuthor,
           filterCycle: filterCycle,
+          filterCollection: filterCollection,
           added: formatAdded(added),
         })
       );
@@ -191,6 +205,15 @@ export const Book = () => {
           onKeyDown={e => handleKeyDown(e, handleFilter)}
           onBlur={handleFilter}
         />
+        <ValidatedField
+          type="text"
+          name="collection"
+          label="Collection"
+          value={filterCollection}
+          onChange={e => setFilterCollection(e.target.value)}
+          onKeyDown={e => handleKeyDown(e, handleFilter)}
+          onBlur={handleFilter}
+        />
         <DatePicker
           name="added"
           selected={added}
@@ -251,7 +274,11 @@ export const Book = () => {
                   <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
                   <td>
                     {book.collections?.map(item => (
-                      <Link to={`/collection/${item.id}`}>{item.name}</Link>
+                      <tr key={item.id}>
+                        <td>
+                          <Link to={`/collection/${item.id}`}>{item.name}</Link>
+                        </td>
+                      </tr>
                     ))}
                   </td>
                   <td>{book.added ? <TextFormat type="date" value={book.added} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>

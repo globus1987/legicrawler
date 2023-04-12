@@ -46,12 +46,8 @@ export const CollectionDetail = () => {
             ))}
           </dd>
         </dl>
-        <Button tag={Link} to="/collection" replace color="info" data-cy="entityDetailsBackButton">
+        <Button tag={Link} to="/collection" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
-        </Button>
-        &nbsp;
-        <Button tag={Link} to={`/collection/${collectionEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
         </Button>
       </Col>
     </Row>

@@ -1,7 +1,9 @@
 package com.arek.legicrawler.repository;
 
+import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.domain.Cycle;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -21,4 +23,7 @@ public interface CycleRepository extends JpaRepository<Cycle, String> {
 
     @Query("select id from Cycle")
     List<String> findAllIds();
+
+    @Query("select cycle from Cycle cycle JOIN FETCH cycle.books where cycle.id=:id")
+    Optional<Cycle> findById(@Param("id") String id);
 }

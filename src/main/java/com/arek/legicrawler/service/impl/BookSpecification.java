@@ -25,6 +25,13 @@ public class BookSpecification {
         };
     }
 
+    public static Specification<Book> filterByCollections(List<String> collections) {
+        return (root, query, builder) -> {
+            Join<Book, Author> join = root.join("collections");
+            return join.get("id").in(collections);
+        };
+    }
+
     public static Specification<Book> filterByCycles(List<String> cycles) {
         return (root, query, builder) -> {
             Join<Book, Cycle> join = root.join("cycle");

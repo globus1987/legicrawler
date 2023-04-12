@@ -159,13 +159,21 @@ public class BookResource {
         @org.springdoc.api.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = true) final String filterAuthor,
         @RequestParam(required = true) final String filterCycle,
+        @RequestParam(required = true) final String filterCollection,
         @RequestParam(required = true) final String filterTitle,
         @RequestParam(required = true) final String added
     ) {
         log.debug("REST request to get a page of Books");
         Page<Book> page;
         page =
-            bookService.findAll(pageable, authorService.findIdList(filterAuthor), cycleService.findIdList(filterCycle), filterTitle, added);
+            bookService.findAll(
+                pageable,
+                authorService.findIdList(filterAuthor),
+                cycleService.findIdList(filterCycle),
+                collectionService.findIdList(filterCollection),
+                filterTitle,
+                added
+            );
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

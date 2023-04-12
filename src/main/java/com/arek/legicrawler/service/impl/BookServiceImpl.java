@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,7 +102,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public Page<Book> findAll(Pageable pageable) {
         log.debug("Request to get all Books");
-        return new BookRepositoryWithBagRelationshipsImpl().fetchBagRelationships(bookRepository.findAll(pageable));
+        return bookRepository.findAll(pageable);
     }
 
     @Override
@@ -127,18 +128,25 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Book> findAll(Pageable pageable, List<String> authors, List<String> cycles, String filterTitle, String added) {
+    public Page<Book> findAll(
+        Pageable pageable,
+        List<String> authors,
+        List<String> cycles,
+        List<String> collections,
+        String filterTitle,
+        String added
+    ) {
         log.debug("Request to get all Books");
         var bookspec = BookSpecification.filterByTitle(filterTitle); // filter by title
-        if (!added.isEmpty()) bookspec =
-            bookspec.and(BookSpecification.filterByAdded(LocalDate.parse(added, DateTimeFormatter.ofPattern("d/M/yyyy")))); // filter by added date
+        if (!added.isEmpty()) {
+            bookspec = bookspec.and(BookSpecification.filterByAdded(LocalDate.parse(added, DateTimeFormatter.ofPattern("d/M/yyyy")))); // filter by added date
+        }
 
         if (!authors.isEmpty()) bookspec = bookspec.and(BookSpecification.filterByAuthors(authors));
         if (!cycles.isEmpty()) bookspec = bookspec.and(BookSpecification.filterByCycles(cycles));
-        return bookRepository.findAll(
-            bookspec, // filter by author name,
-            pageable
-        );
+        if (!collections.isEmpty()) bookspec = bookspec.and(BookSpecification.filterByCollections(collections));
+        var list = bookRepository.findAll(bookspec);
+        return new PageImpl<>(list, pageable, list.size());
     }
 
     @Override
