@@ -7,6 +7,7 @@ export interface IBook {
   id?: string;
   title?: string | null;
   url?: string | null;
+  imgsrc?: string | null;
   ebook?: boolean | null;
   audiobook?: boolean | null;
   category?: string | null;
