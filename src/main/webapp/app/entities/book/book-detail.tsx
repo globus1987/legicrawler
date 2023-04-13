@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +10,11 @@ import { getEntity } from './book.reducer';
 export const BookDetail = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   const { id } = useParams<'id'>();
 
@@ -23,6 +28,16 @@ export const BookDetail = () => {
       <Col md="8">
         <h2 data-cy="bookDetailsHeading">Book {bookEntity.id}</h2>
         <dl className="jh-entity-details">
+          <dt>Cover Image</dt>
+          <dd>
+            {!imageError && (
+              <img
+                src="https://files.legimi.com/images/d6d87eeec1916eac1c72482f69fdb6fe/w200_u90.jpg"
+                alt="Book Cover"
+                onError={handleImageError}
+              />
+            )}
+          </dd>
           <dt>
             <span id="title">Title</span>
           </dt>
