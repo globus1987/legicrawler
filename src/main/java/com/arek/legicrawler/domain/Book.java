@@ -31,6 +31,10 @@ public class Book implements Serializable, Persistable<String> {
     @Column(name = "url", length = 5000)
     private String url;
 
+    @Size(max = 5000)
+    @Column(name = "imgsrc", length = 5000)
+    private String imgsrc;
+
     @Column(name = "ebook")
     private Boolean ebook;
 
@@ -119,6 +123,19 @@ public class Book implements Serializable, Persistable<String> {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getImgsrc() {
+        return this.imgsrc;
+    }
+
+    public Book imgsrc(String imgsrc) {
+        this.setImgsrc(imgsrc);
+        return this;
+    }
+
+    public void setImgsrc(String imgsrc) {
+        this.imgsrc = imgsrc;
     }
 
     public Boolean getEbook() {
@@ -331,6 +348,7 @@ public class Book implements Serializable, Persistable<String> {
             "id=" + getId() +
             ", title='" + getTitle() + "'" +
             ", url='" + getUrl() + "'" +
+            ", imgsrc='" + getImgsrc() + "'" +
             ", ebook='" + getEbook() + "'" +
             ", audiobook='" + getAudiobook() + "'" +
             ", category='" + getCategory() + "'" +
