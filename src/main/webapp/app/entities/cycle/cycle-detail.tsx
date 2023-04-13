@@ -39,16 +39,18 @@ export const CycleDetail = () => {
           <dt>
             <span id="url">Books</span>
           </dt>
-          {cycleEntity.books &&
-            [...cycleEntity.books]
-              .sort((a, b) => a.id - b.id)
-              .map(item => (
-                <dd key={item.id}>
-                  <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
-                    {item.title}
-                  </Button>
-                </dd>
-              ))}
+          <dd className={'book-list'}>
+            {cycleEntity.books &&
+              [...cycleEntity.books]
+                .sort((a, b) => a.id - b.id)
+                .map(item => (
+                  <dd key={item.id}>
+                    <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
+                      {item.title}
+                    </Button>
+                  </dd>
+                ))}
+          </dd>
         </dl>
         <Button tag={Link} to="/cycle" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

@@ -10,6 +10,7 @@ import com.arek.legicrawler.service.CycleService;
 import com.google.gson.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -50,7 +51,7 @@ public class Crawler {
     private Map<String, com.arek.legicrawler.domain.Author> authorList = new HashMap<>();
     private Map<String, com.arek.legicrawler.domain.Cycle> cycleList = new HashMap<>();
     private List<Book> bookList;
-    private Set<String> idList = new HashSet<>();
+    private Set<String> idList = new ConcurrentSkipListSet<>();
     private List<String> existingAuthors;
     private List<String> existingCycles;
     private List<String> existingCollections;
@@ -129,26 +130,21 @@ public class Crawler {
             try {
                 setCycle(bookDetails, newBook);
             } catch (Exception exception) {
-                logger.error("Cannot set cycle for " + id);
-                exception.printStackTrace();
+                logger.error("Cannot set cycle for " + id, exception);
             }
             try {
                 setAuthors(bookDetails, newBook);
             } catch (Exception exception) {
-                logger.error("Cannot set authors for " + id);
-                exception.printStackTrace();
+                logger.error("Cannot set authors for " + id, exception);
             }
             try {
                 setCollections(bookDetailsJson.getAsJsonArray("bookCollections"), newBook);
             } catch (Exception exception) {
-                logger.error("Cannot set collections for " + id);
-                exception.printStackTrace();
+                logger.error("Cannot set collections for " + id, exception);
             }
             bookList.add(newBook);
         } catch (Exception e) {
-            logger.error("Cannot parse book {}", id);
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error("Cannot parse book {}", id, e);
         }
     }
 

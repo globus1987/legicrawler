@@ -29,6 +29,8 @@ export const Book = () => {
   const bookList = useAppSelector(state => state.book.entities);
   const loading = useAppSelector(state => state.book.loading);
   const totalItems = useAppSelector(state => state.book.totalItems);
+  const [width, setWidth] = useState(window.innerWidth);
+
   const [filterTitle, setFilterTitle] = useState(() => {
     const savedValue = window.localStorage.getItem('filter.title');
     return savedValue !== null ? savedValue : '';
@@ -118,7 +120,11 @@ export const Book = () => {
       });
     }
   }, [location.search]);
-
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const sort = p => () => {
     setPaginationState({
       ...paginationState,
@@ -168,6 +174,98 @@ export const Book = () => {
     setFilterTitle('');
     setFilterAuthor('');
   };
+
+  const renderMinimumHeaders = () => (
+    <>
+      <th className="hand" onClick={sort('title')}>
+        Title <FontAwesomeIcon icon="sort" />
+      </th>
+      <th className="hand">Authors</th>
+      <th className="hand" onClick={sort('category')}>
+        Category <FontAwesomeIcon icon="sort" />
+      </th>
+    </>
+  );
+  const renderTableHeaders = () => {
+    if (width >= 1000) {
+      return (
+        <thead>
+          <tr>
+            {renderMinimumHeaders()}
+            <th className="hand" onClick={sort('url')}>
+              Url <FontAwesomeIcon icon="sort" />
+            </th>
+            <th>Cycle</th>
+            <th>Collections</th>
+          </tr>
+        </thead>
+      );
+    } else {
+      return (
+        <thead>
+          <tr>{renderMinimumHeaders()}</tr>
+        </thead>
+      );
+    }
+  };
+
+  const renderTableRows = () => {
+    if (width >= 1000) {
+      return bookList.map((book, i) => (
+        <tr key={`entity-${i}`} data-cy="entityTable">
+          <td>
+            <a href={`/book/${book.id}`} color="link">
+              {book.title}
+            </a>
+          </td>
+          <td>
+            {book.authors?.map(item => (
+              <a href={`/author/${item.id}`} color="link">
+                {item.name}
+              </a>
+            ))}
+          </td>
+          <td>{book.category}</td>
+          <td>
+            <a href={book.url} color="link">
+              {book.url}
+            </a>
+          </td>
+          <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
+          <td>
+            {book.collections?.map(item => (
+              <tr key={item.id}>
+                <td>
+                  <Link to={`/collection/${item.id}`}>{item.name}</Link>
+                </td>
+              </tr>
+            ))}
+          </td>
+        </tr>
+      ));
+    } else {
+      return bookList.map((book, i) => (
+        <tr key={`entity-${i}`} data-cy="entityTable">
+          <td>
+            <a href={`/book/${book.id}`} color="link">
+              {book.title}
+            </a>
+          </td>
+          <td>
+            {book.authors?.map(item => (
+              <tr key={item.id}>
+                <td>
+                  <Link to={`/author/${item.id}`}>{item.name}</Link>
+                </td>
+              </tr>
+            ))}
+          </td>
+          <td>{book.category}</td>
+        </tr>
+      ));
+    }
+  };
+
   return (
     <div>
       <h2 id="book-heading" data-cy="BookHeading">
@@ -176,11 +274,11 @@ export const Book = () => {
             <FontAwesomeIcon icon="right-left" />
             &nbsp; Reload books
           </Button>
-          <Button onClick={handleReloadCycles} className="me-2" color="warning">
+          <Button onClick={handleReloadCycles} className="me-2" disabled color="warning">
             <FontAwesomeIcon icon="right-left" />
             &nbsp; Reload cycles
           </Button>
-          <Button onClick={handleReloadCollections} className="me-2" color="warning">
+          <Button onClick={handleReloadCollections} className="me-2" disabled color="warning">
             <FontAwesomeIcon icon="right-left" />
             &nbsp; Reload collections
           </Button>
@@ -270,64 +368,8 @@ export const Book = () => {
 
       <div className="table-responsive">
         <Table responsive>
-          <thead>
-            <tr>
-              <th className="hand" onClick={sort('title')}>
-                Title <FontAwesomeIcon icon="sort" />
-              </th>
-              <th className="hand">Authors</th>
-              <th className="hand" onClick={sort('url')}>
-                Url <FontAwesomeIcon icon="sort" />
-              </th>
-              <th className="hand" onClick={sort('category')}>
-                Category <FontAwesomeIcon icon="sort" />
-              </th>
-              <th>Cycle</th>
-              <th className="hand">Collections</th>
-              <th className="hand" onClick={sort('added')}>
-                Added <FontAwesomeIcon icon="sort" />
-              </th>
-            </tr>
-          </thead>
-          {bookList && bookList.length > 0 ? (
-            <tbody>
-              {bookList.map((book, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <a href={`/book/${book.id}`} color="link">
-                      {book.title}
-                    </a>
-                  </td>
-                  <td>
-                    {book.authors?.map(item => (
-                      <a href={item.url} color="link">
-                        {item.name}
-                      </a>
-                    ))}
-                  </td>
-                  <td>
-                    <a href={book.url} color="link">
-                      {book.url}
-                    </a>
-                  </td>
-                  <td>{book.category}</td>
-                  <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
-                  <td>
-                    {book.collections?.map(item => (
-                      <tr key={item.id}>
-                        <td>
-                          <Link to={`/collection/${item.id}`}>{item.name}</Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </td>
-                  <td>{book.added ? <TextFormat type="date" value={book.added} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
-                </tr>
-              ))}
-            </tbody>
-          ) : (
-            !loading && <tbody></tbody>
-          )}
+          {renderTableHeaders()}
+          {bookList && bookList.length > 0 ? <tbody>{renderTableRows()}</tbody> : !loading && <tbody></tbody>}
         </Table>
       </div>
       {totalItems ? (

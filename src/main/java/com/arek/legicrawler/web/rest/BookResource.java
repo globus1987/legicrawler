@@ -200,7 +200,7 @@ public class BookResource {
     }
 
     @GetMapping("/books/reload")
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public ResponseEntity<String> reloadBooks() {
         bookService.reload(cycleService, authorService, collectionService);
         return ResponseEntity.ok().body("Reloaded");

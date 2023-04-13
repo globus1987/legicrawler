@@ -46,7 +46,7 @@ export const AuthorDetail = () => {
               <dt>
                 <Typography variant="subtitle1">Books</Typography>
               </dt>
-              <dd>
+              <dd className={'book-list'}>
                 {authorEntity.books &&
                   [...authorEntity.books]
                     .sort((a, b) => a.title.localeCompare(b.title))

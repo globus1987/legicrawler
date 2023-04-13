@@ -36,14 +36,23 @@ export const CollectionDetail = () => {
           <dt>
             <span id="url">Url</span>
           </dt>
-          <dd>{collectionEntity.url}</dd>
-          <dt>Books</dt>
           <dd>
-            {collectionEntity.books?.map(item => (
-              <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
-                {item.title}
-              </Button>
-            ))}
+            <a href={collectionEntity.url} color="link">
+              {collectionEntity.url}
+            </a>{' '}
+          </dd>
+          <dt>Books</dt>
+          <dd className={'book-list'}>
+            {collectionEntity.books &&
+              [...collectionEntity.books]
+                .sort((a, b) => a.title.localeCompare(b.title))
+                .map(item => (
+                  <dd key={item.id}>
+                    <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
+                      {item.title}
+                    </Button>
+                  </dd>
+                ))}
           </dd>
         </dl>
         <Button tag={Link} to="/collection" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">

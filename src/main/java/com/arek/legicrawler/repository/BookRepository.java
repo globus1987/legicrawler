@@ -22,7 +22,7 @@ public interface BookRepository extends BookRepositoryWithBagRelationships, JpaR
     @Query("select id from Book")
     List<String> findAllIds();
 
-    @EntityGraph(attributePaths = { "collections", "authors" })
+    @EntityGraph(attributePaths = { "collections", "authors", "cycle" })
     @Query("select book from Book book where book.id=:id")
     Optional<Book> findById(@Param("id") String id);
 
