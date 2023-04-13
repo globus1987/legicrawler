@@ -12,12 +12,14 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -164,18 +166,24 @@ public class BookResource {
         @RequestParam(required = true) final String added
     ) {
         log.debug("REST request to get a page of Books");
-        Page<Book> page;
-        page =
-            bookService.findAll(
-                pageable,
-                authorService.findIdList(filterAuthor),
-                cycleService.findIdList(filterCycle),
-                collectionService.findIdList(filterCollection),
-                filterTitle,
-                added
-            );
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<Book> list = bookService.findAll(
+            pageable.getSort(),
+            filterAuthor.isEmpty() ? null : authorService.findIdList(filterAuthor),
+            filterCycle.isEmpty() ? null : cycleService.findIdList(filterCycle),
+            filterCollection.isEmpty() ? null : collectionService.findIdList(filterCollection),
+            filterTitle,
+            added
+        );
+        if (list.size() > 50) {
+            List<Book> pageContent = list.stream().skip(pageable.getOffset()).limit(pageable.getPageSize()).collect(Collectors.toList()); // get the content for the requested page
+
+            Page<Book> bookPage = new PageImpl<>(pageContent, pageable, list.size()); // create a new page object
+
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), bookPage);
+            return ResponseEntity.ok().headers(headers).body(bookPage.getContent());
+        } else {
+            return ResponseEntity.ok().body(list);
+        }
     }
 
     /**

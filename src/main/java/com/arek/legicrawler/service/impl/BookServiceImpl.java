@@ -19,6 +19,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,8 +129,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Book> findAll(
-        Pageable pageable,
+    public List<Book> findAll(
+        Sort sort,
         List<String> authors,
         List<String> cycles,
         List<String> collections,
@@ -142,11 +143,10 @@ public class BookServiceImpl implements BookService {
             bookspec = bookspec.and(BookSpecification.filterByAdded(LocalDate.parse(added, DateTimeFormatter.ofPattern("d/M/yyyy")))); // filter by added date
         }
 
-        if (!authors.isEmpty()) bookspec = bookspec.and(BookSpecification.filterByAuthors(authors));
-        if (!cycles.isEmpty()) bookspec = bookspec.and(BookSpecification.filterByCycles(cycles));
-        if (!collections.isEmpty()) bookspec = bookspec.and(BookSpecification.filterByCollections(collections));
-        var list = bookRepository.findAll(bookspec);
-        return new PageImpl<>(list, pageable, list.size());
+        if (authors != null) bookspec = bookspec.and(BookSpecification.filterByAuthors(authors));
+        if (cycles != null) bookspec = bookspec.and(BookSpecification.filterByCycles(cycles));
+        if (collections != null) bookspec = bookspec.and(BookSpecification.filterByCollections(collections));
+        return bookRepository.findAll(bookspec, sort);
     }
 
     @Override

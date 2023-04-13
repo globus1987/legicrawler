@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 /**
  * Service Interface for managing {@link Book}.
@@ -47,7 +48,7 @@ public interface BookService {
     Page<Book> findAllByAuthor(Pageable pageable, List<Author> authors);
     Page<Book> findAllByTitle(Pageable pageable, String title);
     Page<Book> findAllByAuthorAndTitle(Pageable pageable, List<Author> authors, String title);
-    Page<Book> findAll(Pageable pageable, List<String> authors, List<String> cycles, List<String> collections, String title, String added);
+    List<Book> findAll(Sort sort, List<String> authors, List<String> cycles, List<String> collections, String title, String added);
     boolean existsByIdAndCycleIsNull(String id);
     boolean existsByIdAndCycleIsNotNull(String id);
     /**
