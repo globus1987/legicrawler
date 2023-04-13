@@ -46,6 +46,9 @@ class BookResourceIT {
     private static final String DEFAULT_URL = "AAAAAAAAAA";
     private static final String UPDATED_URL = "BBBBBBBBBB";
 
+    private static final String DEFAULT_IMGSRC = "AAAAAAAAAA";
+    private static final String UPDATED_IMGSRC = "BBBBBBBBBB";
+
     private static final Boolean DEFAULT_EBOOK = false;
     private static final Boolean UPDATED_EBOOK = true;
 
@@ -100,6 +103,7 @@ class BookResourceIT {
         Book book = new Book()
             .title(DEFAULT_TITLE)
             .url(DEFAULT_URL)
+            .imgsrc(DEFAULT_IMGSRC)
             .ebook(DEFAULT_EBOOK)
             .audiobook(DEFAULT_AUDIOBOOK)
             .category(DEFAULT_CATEGORY)
@@ -121,6 +125,7 @@ class BookResourceIT {
         Book book = new Book()
             .title(UPDATED_TITLE)
             .url(UPDATED_URL)
+            .imgsrc(UPDATED_IMGSRC)
             .ebook(UPDATED_EBOOK)
             .audiobook(UPDATED_AUDIOBOOK)
             .category(UPDATED_CATEGORY)
@@ -152,6 +157,7 @@ class BookResourceIT {
         Book testBook = bookList.get(bookList.size() - 1);
         assertThat(testBook.getTitle()).isEqualTo(DEFAULT_TITLE);
         assertThat(testBook.getUrl()).isEqualTo(DEFAULT_URL);
+        assertThat(testBook.getImgsrc()).isEqualTo(DEFAULT_IMGSRC);
         assertThat(testBook.getEbook()).isEqualTo(DEFAULT_EBOOK);
         assertThat(testBook.getAudiobook()).isEqualTo(DEFAULT_AUDIOBOOK);
         assertThat(testBook.getCategory()).isEqualTo(DEFAULT_CATEGORY);
@@ -195,6 +201,7 @@ class BookResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(book.getId())))
             .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)))
             .andExpect(jsonPath("$.[*].url").value(hasItem(DEFAULT_URL)))
+            .andExpect(jsonPath("$.[*].imgsrc").value(hasItem(DEFAULT_IMGSRC)))
             .andExpect(jsonPath("$.[*].ebook").value(hasItem(DEFAULT_EBOOK.booleanValue())))
             .andExpect(jsonPath("$.[*].audiobook").value(hasItem(DEFAULT_AUDIOBOOK.booleanValue())))
             .andExpect(jsonPath("$.[*].category").value(hasItem(DEFAULT_CATEGORY)))
@@ -237,6 +244,7 @@ class BookResourceIT {
             .andExpect(jsonPath("$.id").value(book.getId()))
             .andExpect(jsonPath("$.title").value(DEFAULT_TITLE))
             .andExpect(jsonPath("$.url").value(DEFAULT_URL))
+            .andExpect(jsonPath("$.imgsrc").value(DEFAULT_IMGSRC))
             .andExpect(jsonPath("$.ebook").value(DEFAULT_EBOOK.booleanValue()))
             .andExpect(jsonPath("$.audiobook").value(DEFAULT_AUDIOBOOK.booleanValue()))
             .andExpect(jsonPath("$.category").value(DEFAULT_CATEGORY))
@@ -270,6 +278,7 @@ class BookResourceIT {
         updatedBook
             .title(UPDATED_TITLE)
             .url(UPDATED_URL)
+            .imgsrc(UPDATED_IMGSRC)
             .ebook(UPDATED_EBOOK)
             .audiobook(UPDATED_AUDIOBOOK)
             .category(UPDATED_CATEGORY)
@@ -293,6 +302,7 @@ class BookResourceIT {
         Book testBook = bookList.get(bookList.size() - 1);
         assertThat(testBook.getTitle()).isEqualTo(UPDATED_TITLE);
         assertThat(testBook.getUrl()).isEqualTo(UPDATED_URL);
+        assertThat(testBook.getImgsrc()).isEqualTo(UPDATED_IMGSRC);
         assertThat(testBook.getEbook()).isEqualTo(UPDATED_EBOOK);
         assertThat(testBook.getAudiobook()).isEqualTo(UPDATED_AUDIOBOOK);
         assertThat(testBook.getCategory()).isEqualTo(UPDATED_CATEGORY);
@@ -372,7 +382,7 @@ class BookResourceIT {
         Book partialUpdatedBook = new Book();
         partialUpdatedBook.setId(book.getId());
 
-        partialUpdatedBook.category(UPDATED_CATEGORY).libraryPass(UPDATED_LIBRARY_PASS);
+        partialUpdatedBook.audiobook(UPDATED_AUDIOBOOK).kindleSubscription(UPDATED_KINDLE_SUBSCRIPTION).subscription(UPDATED_SUBSCRIPTION);
 
         restBookMockMvc
             .perform(
@@ -388,14 +398,15 @@ class BookResourceIT {
         Book testBook = bookList.get(bookList.size() - 1);
         assertThat(testBook.getTitle()).isEqualTo(DEFAULT_TITLE);
         assertThat(testBook.getUrl()).isEqualTo(DEFAULT_URL);
+        assertThat(testBook.getImgsrc()).isEqualTo(DEFAULT_IMGSRC);
         assertThat(testBook.getEbook()).isEqualTo(DEFAULT_EBOOK);
-        assertThat(testBook.getAudiobook()).isEqualTo(DEFAULT_AUDIOBOOK);
-        assertThat(testBook.getCategory()).isEqualTo(UPDATED_CATEGORY);
+        assertThat(testBook.getAudiobook()).isEqualTo(UPDATED_AUDIOBOOK);
+        assertThat(testBook.getCategory()).isEqualTo(DEFAULT_CATEGORY);
         assertThat(testBook.getAdded()).isEqualTo(DEFAULT_ADDED);
-        assertThat(testBook.getKindleSubscription()).isEqualTo(DEFAULT_KINDLE_SUBSCRIPTION);
-        assertThat(testBook.getLibraryPass()).isEqualTo(UPDATED_LIBRARY_PASS);
+        assertThat(testBook.getKindleSubscription()).isEqualTo(UPDATED_KINDLE_SUBSCRIPTION);
+        assertThat(testBook.getLibraryPass()).isEqualTo(DEFAULT_LIBRARY_PASS);
         assertThat(testBook.getLibrarySubscription()).isEqualTo(DEFAULT_LIBRARY_SUBSCRIPTION);
-        assertThat(testBook.getSubscription()).isEqualTo(DEFAULT_SUBSCRIPTION);
+        assertThat(testBook.getSubscription()).isEqualTo(UPDATED_SUBSCRIPTION);
     }
 
     @Test
@@ -414,6 +425,7 @@ class BookResourceIT {
         partialUpdatedBook
             .title(UPDATED_TITLE)
             .url(UPDATED_URL)
+            .imgsrc(UPDATED_IMGSRC)
             .ebook(UPDATED_EBOOK)
             .audiobook(UPDATED_AUDIOBOOK)
             .category(UPDATED_CATEGORY)
@@ -437,6 +449,7 @@ class BookResourceIT {
         Book testBook = bookList.get(bookList.size() - 1);
         assertThat(testBook.getTitle()).isEqualTo(UPDATED_TITLE);
         assertThat(testBook.getUrl()).isEqualTo(UPDATED_URL);
+        assertThat(testBook.getImgsrc()).isEqualTo(UPDATED_IMGSRC);
         assertThat(testBook.getEbook()).isEqualTo(UPDATED_EBOOK);
         assertThat(testBook.getAudiobook()).isEqualTo(UPDATED_AUDIOBOOK);
         assertThat(testBook.getCategory()).isEqualTo(UPDATED_CATEGORY);

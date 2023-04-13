@@ -20,6 +20,12 @@
       "fieldValidateRulesMaxlength": "5000"
     },
     {
+      "fieldName": "imgsrc",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "5000"
+    },
+    {
       "fieldName": "ebook",
       "fieldType": "Boolean"
     },
