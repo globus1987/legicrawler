@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
+import { Col, Row, Table } from 'reactstrap';
 import { TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -11,12 +11,14 @@ import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.cons
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
+import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
+
 import { getEntities, reload, reloadCycles, reloadCollections } from './book.reducer';
 import SyncLoader from 'react-spinners/SyncLoader';
+import { ButtonGroup } from '@mui/material';
 
 export const Book = () => {
   const dispatch = useAppDispatch();
-
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -28,41 +30,41 @@ export const Book = () => {
   const loading = useAppSelector(state => state.book.loading);
   const totalItems = useAppSelector(state => state.book.totalItems);
   const [filterTitle, setFilterTitle] = useState(() => {
-    const savedValue = window.localStorage.getItem('book-title');
+    const savedValue = window.localStorage.getItem('filter.title');
     return savedValue !== null ? savedValue : '';
   });
   const [filterAuthor, setFilterAuthor] = useState(() => {
-    const savedValue = window.localStorage.getItem('book-author');
+    const savedValue = window.localStorage.getItem('filter.author');
     return savedValue !== null ? savedValue : '';
   });
   const [filterCycle, setFilterCycle] = useState(() => {
-    const savedValue = window.localStorage.getItem('book-cycle');
+    const savedValue = window.localStorage.getItem('filter.cycle');
     return savedValue !== null ? savedValue : '';
   });
   const [filterCollection, setFilterCollection] = useState(() => {
-    const savedValue = window.localStorage.getItem('book-collection');
+    const savedValue = window.localStorage.getItem('filter.collection');
     return savedValue !== null ? savedValue : '';
   });
   const [added, setAdded] = useState(() => {
-    const savedValue = window.localStorage.getItem('book-added');
+    const savedValue = window.localStorage.getItem('filter.added');
     return savedValue !== null ? new Date(savedValue) : undefined;
   });
 
   useEffect(() => {
-    window.localStorage.setItem('book-title', filterTitle);
+    window.localStorage.setItem('filter.title', filterTitle);
   }, [filterTitle]);
   useEffect(() => {
-    window.localStorage.setItem('book-cycle', filterCycle);
+    window.localStorage.setItem('filter.cycle', filterCycle);
   }, [filterCycle]);
   useEffect(() => {
-    window.localStorage.setItem('book-collection', filterCycle);
+    window.localStorage.setItem('filter.collection', filterCycle);
   }, [filterCycle]);
   useEffect(() => {
-    window.localStorage.setItem('book-author', filterAuthor);
+    window.localStorage.setItem('filter.author', filterAuthor);
   }, [filterAuthor]);
   useEffect(() => {
     if (added !== undefined && added !== null) {
-      window.localStorage.setItem('book-added', added.toISOString());
+      window.localStorage.setItem('filter.added', added.toISOString());
       handleFilter();
     }
   }, [added]);
@@ -155,13 +157,20 @@ export const Book = () => {
       : '';
   };
   const handleClearClick = () => {
-    window.localStorage.removeItem('book-added');
+    window.localStorage.removeItem('filter.added');
     setAdded(undefined);
+  };
+  const handleClear = () => {
+    window.localStorage.clear();
+    setAdded(undefined);
+    setFilterCollection('');
+    setFilterCycle('');
+    setFilterTitle('');
+    setFilterAuthor('');
   };
   return (
     <div>
       <h2 id="book-heading" data-cy="BookHeading">
-        Books
         <div className="d-flex justify-content-end">
           <Button onClick={handleReloadBooks} className="me-2" color="warning">
             <FontAwesomeIcon icon="right-left" />
@@ -178,53 +187,84 @@ export const Book = () => {
         </div>
       </h2>
       <ValidatedForm onSubmit={handleFilter}>
-        <ValidatedField
-          type="text"
-          name="title"
-          label="Title"
-          value={filterTitle}
-          onChange={e => setFilterTitle(e.target.value)}
-          onKeyDown={e => handleKeyDown(e, handleFilter)}
-          onBlur={handleFilter}
-        />
-        <ValidatedField
-          type="text"
-          name="author"
-          label="Author"
-          value={filterAuthor}
-          onChange={e => setFilterAuthor(e.target.value)}
-          onKeyDown={e => handleKeyDown(e, handleFilter)}
-          onBlur={handleFilter}
-        />
-        <ValidatedField
-          type="text"
-          name="cycle"
-          label="Cycle"
-          value={filterCycle}
-          onChange={e => setFilterCycle(e.target.value)}
-          onKeyDown={e => handleKeyDown(e, handleFilter)}
-          onBlur={handleFilter}
-        />
-        <ValidatedField
-          type="text"
-          name="collection"
-          label="Collection"
-          value={filterCollection}
-          onChange={e => setFilterCollection(e.target.value)}
-          onKeyDown={e => handleKeyDown(e, handleFilter)}
-          onBlur={handleFilter}
-        />
-        <DatePicker
-          name="added"
-          selected={added}
-          onChange={date => setAdded(date)}
-          isClearable={true}
-          onClear={handleClearClick}
-          dateFormat="dd/MM/yyyy" // specify date format
-          label="Added"
-          showYearDropdown
-          scrollableYearDropdown // add these props to allow selecting year from dropdown
-        />{' '}
+        <Row>
+          <Col md="6">
+            <ValidatedField
+              type="text"
+              name="title"
+              label="Title"
+              value={filterTitle}
+              onChange={e => setFilterTitle(e.target.value)}
+              onKeyDown={e => handleKeyDown(e, handleFilter)}
+              onBlur={handleFilter}
+            />
+          </Col>
+          <Col md="6">
+            <ValidatedField
+              type="text"
+              name="author"
+              label="Author"
+              value={filterAuthor}
+              onChange={e => setFilterAuthor(e.target.value)}
+              onKeyDown={e => handleKeyDown(e, handleFilter)}
+              onBlur={handleFilter}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col md="6">
+            <ValidatedField
+              type="text"
+              name="collection"
+              label="Collection"
+              value={filterCollection}
+              onChange={e => setFilterCollection(e.target.value)}
+              onKeyDown={e => handleKeyDown(e, handleFilter)}
+              onBlur={handleFilter}
+            />
+          </Col>
+          <Col md="6">
+            <ValidatedField
+              type="text"
+              name="cycle"
+              label="Cycle"
+              value={filterCycle}
+              onChange={e => setFilterCycle(e.target.value)}
+              onKeyDown={e => handleKeyDown(e, handleFilter)}
+              onBlur={handleFilter}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col md="6">
+            <FormGroup>
+              <Label for="added">Added</Label>
+              <DatePicker
+                name="added"
+                selected={added}
+                onChange={date => setAdded(date)}
+                isClearable={true}
+                onClear={handleClearClick}
+                dateFormat="dd/MM/yyyy" // specify date format
+                label="Added"
+                showYearDropdown
+                scrollableYearDropdown // add these props to allow selecting year from dropdown
+              />{' '}
+            </FormGroup>
+          </Col>
+          <Col md="6">
+            <ButtonGroup className="btn-container">
+              <Button onClick={handleFilter} className="me-2" color="success">
+                <FontAwesomeIcon icon="search" />
+                &nbsp; Search
+              </Button>
+              <Button onClick={handleClear} className="me-2" color="danger">
+                <FontAwesomeIcon icon="trash" />
+                &nbsp; Clear
+              </Button>
+            </ButtonGroup>
+          </Col>
+        </Row>
       </ValidatedForm>
       {loading ? <SyncLoader></SyncLoader> : <div></div>}
 
