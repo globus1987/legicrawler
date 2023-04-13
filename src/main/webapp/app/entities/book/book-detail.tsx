@@ -28,16 +28,8 @@ export const BookDetail = () => {
       <Col md="8">
         <h2 data-cy="bookDetailsHeading">Book {bookEntity.id}</h2>
         <dl className="jh-entity-details">
-          <dt>Cover Image</dt>
-          <dd>
-            {!imageError && (
-              <img
-                src="https://files.legimi.com/images/d6d87eeec1916eac1c72482f69fdb6fe/w200_u90.jpg"
-                alt="Book Cover"
-                onError={handleImageError}
-              />
-            )}
-          </dd>
+          {!imageError && <dt>Cover Image</dt>}
+          <dd>{!imageError && <img src={bookEntity.imgsrc} alt="Book Cover" onError={handleImageError} />}</dd>
           <dt>
             <span id="title">Title</span>
           </dt>
