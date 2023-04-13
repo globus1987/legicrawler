@@ -58,7 +58,7 @@ export const BookDetail = () => {
           <dt>Collections</dt>
           <dd>
             {bookEntity.collections?.map(item => (
-              <Button onClick={() => navigate(`/collections/${item.id}`)} color="light" size="sm">
+              <Button onClick={() => navigate(`/collection/${item.id}`)} color="light" size="sm">
                 {item.name}
               </Button>
             ))}
