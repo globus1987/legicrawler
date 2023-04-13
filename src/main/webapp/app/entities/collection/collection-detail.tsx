@@ -23,16 +23,10 @@ export const CollectionDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="collectionDetailsHeading">Collection</h2>
+        <h2 data-cy="collectionDetailsHeading">
+          {collectionEntity.id} : {collectionEntity.name}
+        </h2>
         <dl className="jh-entity-details">
-          <dt>
-            <span id="id">Id</span>
-          </dt>
-          <dd>{collectionEntity.id}</dd>
-          <dt>
-            <span id="name">Name</span>
-          </dt>
-          <dd>{collectionEntity.name}</dd>
           <dt>
             <span id="url">Url</span>
           </dt>
@@ -55,7 +49,7 @@ export const CollectionDetail = () => {
                 ))}
           </dd>
         </dl>
-        <Button tag={Link} to="/collection" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">
+        <Button tag={Link} to="/collection" onClick={() => navigate(-1)} replace color="dark" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
       </Col>

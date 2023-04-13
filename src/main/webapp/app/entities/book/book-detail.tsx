@@ -26,14 +26,11 @@ export const BookDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="bookDetailsHeading">Book {bookEntity.id}</h2>
+        <h2 data-cy="bookDetailsHeading">
+          {bookEntity.id} : {bookEntity.title}
+        </h2>
         <dl className="jh-entity-details">
-          {!imageError && <dt>Cover Image</dt>}
           <dd>{!imageError && <img src={bookEntity.imgsrc} alt="Book Cover" onError={handleImageError} />}</dd>
-          <dt>
-            <span id="title">Title</span>
-          </dt>
-          <dd>{bookEntity.title}</dd>
           <dt>Authors</dt>
           <dd>
             {bookEntity.authors?.map(item => (
@@ -122,7 +119,7 @@ export const BookDetail = () => {
             <span id="librarySubscription"> Library Subscription</span>
           </dt>
         </dl>
-        <Button tag={Link} to="/book" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">
+        <Button tag={Link} to="/book" onClick={() => navigate(-1)} replace color="dark" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
       </Col>

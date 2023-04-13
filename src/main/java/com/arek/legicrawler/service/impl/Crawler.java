@@ -124,6 +124,7 @@ public class Crawler {
                 return;
             }
             var newBook = createBookDetails(bookDetails, id, bookDetails, audiobookFormat, ebookFormat);
+            newBook.setImgsrc(bookDetails.get("images").getAsJsonObject().get("200").getAsString());
             setAudiobookSubscriptions(bookDetails, audiobookFormat, newBook);
             setEbookSubscriptions(bookDetails, ebookFormat, newBook);
             bookService.save(newBook);

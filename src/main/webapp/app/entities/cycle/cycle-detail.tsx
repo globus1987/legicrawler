@@ -24,12 +24,10 @@ export const CycleDetail = () => {
   return (
     <Row>
       <Col md="8">
-        <h2 data-cy="cycleDetailsHeading">Cycle {cycleEntity.id}</h2>
+        <h2 data-cy="cycleDetailsHeading">
+          {cycleEntity.id} : {cycleEntity.name}
+        </h2>
         <dl className="jh-entity-details">
-          <dt>
-            <span id="name">Name</span>
-          </dt>
-          <dd>{cycleEntity.name}</dd>
           <dt>
             <span id="url">Url</span>
           </dt>
@@ -52,7 +50,7 @@ export const CycleDetail = () => {
                 ))}
           </dd>
         </dl>
-        <Button tag={Link} to="/cycle" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">
+        <Button tag={Link} to="/cycle" onClick={() => navigate(-1)} replace color="dark" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
       </Col>

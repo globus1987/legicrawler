@@ -272,15 +272,15 @@ export const Book = () => {
         <div className="d-flex justify-content-end">
           <Button onClick={handleReloadBooks} className="me-2" color="warning">
             <FontAwesomeIcon icon="right-left" />
-            &nbsp; Reload books
+            &nbsp; Crawl
           </Button>
           <Button onClick={handleReloadCycles} className="me-2" disabled color="warning">
             <FontAwesomeIcon icon="right-left" />
-            &nbsp; Reload cycles
+            &nbsp; Update cycles
           </Button>
           <Button onClick={handleReloadCollections} className="me-2" disabled color="warning">
             <FontAwesomeIcon icon="right-left" />
-            &nbsp; Reload collections
+            &nbsp; Update collections
           </Button>
         </div>
       </h2>

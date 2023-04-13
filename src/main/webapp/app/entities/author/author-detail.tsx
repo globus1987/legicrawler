@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Row, Col, Button } from 'reactstrap';
-import { Grid, Typography, Link, createMuiTheme } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -21,51 +20,39 @@ export const AuthorDetail = () => {
   const authorEntity = useAppSelector(state => state.author.entity);
 
   return (
-    <Grid container>
-      <Grid item md={8}>
-        <Typography variant="h2" data-cy="authorDetailsHeading">
-          Author {authorEntity.id}
-        </Typography>
+    <Row>
+      <Col md="8">
+        <h2 data-cy="cycleDetailsHeading">
+          {authorEntity.id} : {authorEntity.name}
+        </h2>
         <dl className="jh-entity-details">
-          <dt>
-            <Typography variant="subtitle1" id="name">
-              Name
-            </Typography>
-          </dt>
-          <dd>{authorEntity.name}</dd>
           <dt>
             <span id="url">Url</span>
           </dt>
+          <dd>
+            <a href={authorEntity.url}>{authorEntity.url}</a>
+          </dd>
           <dt>
-            <a href={authorEntity.url} color="link">
-              {authorEntity.url}
-            </a>{' '}
+            <span id="url">Books</span>
           </dt>
-          {authorEntity.books && (
-            <>
-              <dt>
-                <Typography variant="subtitle1">Books</Typography>
-              </dt>
-              <dd className={'book-list'}>
-                {authorEntity.books &&
-                  [...authorEntity.books]
-                    .sort((a, b) => a.title.localeCompare(b.title))
-                    .map(item => (
-                      <dd key={item.id}>
-                        <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
-                          {item.title}
-                        </Button>
-                      </dd>
-                    ))}
-              </dd>
-            </>
-          )}
+          <dd className={'book-list'}>
+            {authorEntity.books &&
+              [...authorEntity.books]
+                .sort((a, b) => a.title.localeCompare(b.title))
+                .map(item => (
+                  <dd key={item.id}>
+                    <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
+                      {item.title}
+                    </Button>
+                  </dd>
+                ))}
+          </dd>
         </dl>
-        <Button tag={Link} to="/author" onClick={() => navigate(-1)} replace color="info" data-cy="entityDetailsBackButton">
+        <Button tag={Link} to="/cycle" onClick={() => navigate(-1)} replace color="dark" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
-      </Grid>
-    </Grid>
+      </Col>
+    </Row>
   );
 };
 
