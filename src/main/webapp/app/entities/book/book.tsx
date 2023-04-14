@@ -223,9 +223,11 @@ export const Book = () => {
           </td>
           <td>
             {book.authors?.map(item => (
-              <a href={`/author/${item.id}`} color="link">
-                {item.name}
-              </a>
+              <tr key={item.id}>
+                <td>
+                  <Link to={`/author/${item.id}`}>{item.name}</Link>
+                </td>
+              </tr>
             ))}
           </td>
           <td>{book.category}</td>

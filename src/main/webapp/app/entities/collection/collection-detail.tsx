@@ -1,17 +1,13 @@
 import React, { useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Button, Row, Col } from 'reactstrap';
-import {} from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { useParams } from 'react-router-dom';
+import { Col, Row } from 'reactstrap';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './collection.reducer';
+import GoToLegimiButton, { BookCard, DetailHeader, GoBack } from 'app/entities/ReusableComponents';
 
 export const CollectionDetail = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const { id } = useParams<'id'>();
 
@@ -19,39 +15,18 @@ export const CollectionDetail = () => {
     dispatch(getEntity(id));
   }, []);
 
-  const collectionEntity = useAppSelector(state => state.collection.entity);
+  const entity = useAppSelector(state => state.collection.entity);
   return (
     <Row>
-      <Col md="8">
-        <h2 data-cy="collectionDetailsHeading">
-          {collectionEntity.id} : {collectionEntity.name}
-        </h2>
+      <Col>
+        <DetailHeader id={entity.id} name={entity.name}></DetailHeader>
         <dl className="jh-entity-details">
-          <dt>
-            <span id="url">Url</span>
-          </dt>
-          <dd>
-            <a href={collectionEntity.url} color="link">
-              {collectionEntity.url}
-            </a>{' '}
-          </dd>
-          <dt>Books</dt>
           <dd className={'book-list'}>
-            {collectionEntity.books &&
-              [...collectionEntity.books]
-                .sort((a, b) => a.title.localeCompare(b.title))
-                .map(item => (
-                  <dd key={item.id}>
-                    <Button onClick={() => navigate(`/book/${item.id}`)} color="light">
-                      {item.title}
-                    </Button>
-                  </dd>
-                ))}
+            {entity.books && [...entity.books].sort((a, b) => a.title.localeCompare(b.title)).map(item => <BookCard book={item} />)}
           </dd>
         </dl>
-        <Button tag={Link} to="/collection" onClick={() => navigate(-1)} replace color="dark" data-cy="entityDetailsBackButton">
-          <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
-        </Button>
+        <GoBack to={'/collection'} />
+        <GoToLegimiButton href={entity.url} />
       </Col>
     </Row>
   );
