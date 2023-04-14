@@ -219,13 +219,6 @@ public class BookResource {
         return ResponseEntity.ok().body("Reloaded");
     }
 
-    @GetMapping("/books/bookStats")
-    public ResponseEntity<List<Object[]>> getBookStats() {
-        List<Object[]> body = bookRepository.countBooksByDay();
-        log.info(new Gson().toJson(body));
-        return ResponseEntity.ok().body(body);
-    }
-
     /**
      * {@code DELETE  /books/:id} : delete the "id" book.
      *

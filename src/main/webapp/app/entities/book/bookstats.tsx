@@ -1,19 +1,24 @@
 import React, { useEffect } from 'react';
 import { GoBack } from 'app/entities/ReusableComponents';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getBookStats } from 'app/entities/book/bookstat.reducer';
+import { getEntities } from 'app/entities/statistics/statistics.reducer';
+import { Line } from 'react-chartjs-2';
+import Chart from 'app/entities/book/chart';
 
 export const BookStats = () => {
   const dispatch = useAppDispatch();
-  const bookList = useAppSelector(state => state.bookstat.entities);
-  const loading = useAppSelector(state => state.bookstat.loading);
+  const statisticsList = useAppSelector(state => state.statistics.entities);
+  const loading = useAppSelector(state => state.statistics.loading);
+
   useEffect(() => {
-    dispatch(getBookStats);
+    dispatch(getEntities({}));
   }, []);
 
-  if (!loading) console.log(JSON.stringify(bookList));
   return (
     <div>
+      <Chart chartData={statisticsList} chartType="day" />
+      <Chart chartData={statisticsList} chartType="week" />
+      <Chart chartData={statisticsList} chartType="month" />
       <GoBack to={'/book'} />
     </div>
   );

@@ -17,6 +17,7 @@ import ErrorBoundary from 'app/shared/error/error-boundary';
 import { AUTHORITIES } from 'app/config/constants';
 import AppRoutes from 'app/routes';
 import { loginAdmin } from 'app/modules/login/login';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
 const baseHref = document.querySelector('base').getAttribute('href').replace(/\/$/, '');
 

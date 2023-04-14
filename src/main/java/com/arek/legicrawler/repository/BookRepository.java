@@ -2,6 +2,7 @@ package com.arek.legicrawler.repository;
 
 import com.arek.legicrawler.domain.Author;
 import com.arek.legicrawler.domain.Book;
+import com.arek.legicrawler.domain.Statistics;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -22,8 +23,8 @@ public interface BookRepository extends BookRepositoryWithBagRelationships, JpaR
     @Query("select id from Book")
     List<String> findAllIds();
 
-    @Query("SELECT b.added, COUNT(b) as count FROM Book b GROUP BY b.added")
-    List<Object[]> countBooksByDay();
+    @Query("SELECT new com.arek.legicrawler.domain.Statistics(b.added, COUNT(b)) FROM Book b GROUP BY b.added")
+    List<Statistics> countBooksByDay();
 
     @EntityGraph(attributePaths = { "collections", "authors", "cycle" })
     @Query("select book from Book book where book.id=:id")

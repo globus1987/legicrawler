@@ -1,6 +1,5 @@
 import author from 'app/entities/author/author.reducer';
 import book from 'app/entities/book/book.reducer';
-import bookstat from 'app/entities/book/bookstat.reducer';
 import cycle from 'app/entities/cycle/cycle.reducer';
 import collection from 'app/entities/collection/collection.reducer';
 import statistics from 'app/entities/statistics/statistics.reducer';
@@ -9,7 +8,6 @@ import statistics from 'app/entities/statistics/statistics.reducer';
 const entitiesReducers = {
   author,
   book,
-  bookstat,
   cycle,
   collection,
   statistics,
