@@ -57,6 +57,23 @@ a {
   background: #c1c1c1;
 }
 
+.pagination li button {
+  background: #c1c1c1;
+  color: black;
+  border: black;
+}
+.pagination .disabled button {
+  background: #c1c1c1;
+  color: black;
+  border: black;
+}
+
+.pagination .active button {
+  background: #9b9b9b;
+  color: black;
+  border: black;
+}
+
 .react-datepicker__input-container input {
   border-radius: 5px;
   padding: 10px;

@@ -387,7 +387,7 @@ export const Book = () => {
           <div className="justify-content-center d-flex">
             <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} />
           </div>
-          <div className="justify-content-center d-flex">
+          <div className="justify-content-center d-flex pagination">
             <JhiPagination
               activePage={paginationState.activePage}
               onSelect={handlePagination}
