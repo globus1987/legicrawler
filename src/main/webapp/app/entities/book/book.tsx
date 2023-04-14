@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Col, FormGroup, Label, Row } from 'reactstrap';
-import { getSortState, JhiItemCount, JhiPagination, ValidatedField, ValidatedForm } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import DatePicker from 'react-datepicker';
+import { getSortState, JhiItemCount, JhiPagination } from 'react-jhipster';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { getEntities, reload, reloadCollections, reloadCycles } from './book.reducer';
+import { getEntities } from './book.reducer';
 import SyncLoader from 'react-spinners/SyncLoader';
-import { ButtonGroup } from '@mui/material';
 import BookTable from 'app/entities/book/bookTable';
 import useLocalStorageState from './localStorage';
 import { ActionButtons } from 'app/entities/ReusableComponents';
+import BookFilter from 'app/entities/book/filter';
 
 export const Book = () => {
   const dispatch = useAppDispatch();
@@ -28,15 +25,25 @@ export const Book = () => {
   const bookList = useAppSelector(state => state.book.entities);
   const loading = useAppSelector(state => state.book.loading);
   const totalItems = useAppSelector(state => state.book.totalItems);
-
   const [filterTitle, setFilterTitle] = useLocalStorageState('filter.title', '');
   const [filterAuthor, setFilterAuthor] = useLocalStorageState('filter.author', '');
   const [filterCycle, setFilterCycle] = useLocalStorageState('filter.cycle', '');
   const [filterCollection, setFilterCollection] = useLocalStorageState('filter.collection', '');
   const [added, setAdded] = useLocalStorageState('filter.added', undefined);
+  interface Filters {
+    [key: string]: [any, React.Dispatch<React.SetStateAction<any>>];
+  }
+
+  const filters: Filters = {
+    title: [filterTitle, setFilterTitle],
+    author: [filterAuthor, setFilterAuthor],
+    cycle: [filterCycle, setFilterCycle],
+    collection: [filterCollection, setFilterCollection],
+    added: [added, setAdded],
+  };
 
   const getAllEntities = () => {
-    const filters = {
+    const requestFilters = {
       filterTitle,
       filterAuthor,
       filterCycle,
@@ -44,7 +51,7 @@ export const Book = () => {
       added: formatAdded(added),
     };
 
-    const hasFilters = Object.values(filters).some(filter => filter.length > 0);
+    const hasFilters = Object.values(requestFilters).some(filter => filter.length > 0);
 
     if (hasFilters) {
       dispatch(
@@ -52,7 +59,11 @@ export const Book = () => {
           page: paginationState.activePage - 1,
           size: paginationState.itemsPerPage,
           sort: `${paginationState.sort},${paginationState.order}`,
-          ...filters,
+          filterTitle: filterTitle,
+          filterAuthor: filterAuthor,
+          filterCycle: filterCycle,
+          filterCollection: filterCollection,
+          added: formatAdded(added),
         })
       );
     }
@@ -68,7 +79,7 @@ export const Book = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort, added]);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -99,20 +110,10 @@ export const Book = () => {
   const handleFilter = () => {
     sortEntities();
   };
-  const handleKeyDown = (e, callback) => {
-    if (e.keyCode === 13) {
-      e.preventDefault();
-      callback();
-    }
-  };
   const formatAdded = date => {
     return date !== undefined && date !== null && typeof date === 'object'
       ? `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
       : '';
-  };
-  const handleClearClick = () => {
-    window.localStorage.removeItem('filter.added');
-    setAdded(undefined);
   };
 
   const handleClear = () => {
@@ -129,86 +130,7 @@ export const Book = () => {
       <h2 id="book-heading" data-cy="BookHeading">
         <ActionButtons />
       </h2>
-      <ValidatedForm onSubmit={handleFilter}>
-        <Row>
-          <Col md="6">
-            <ValidatedField
-              type="text"
-              name="title"
-              label="Title"
-              value={filterTitle}
-              onChange={e => setFilterTitle(e.target.value)}
-              onKeyDown={e => handleKeyDown(e, handleFilter)}
-              onBlur={handleFilter}
-            />
-          </Col>
-          <Col md="6">
-            <ValidatedField
-              type="text"
-              name="author"
-              label="Author"
-              value={filterAuthor}
-              onChange={e => setFilterAuthor(e.target.value)}
-              onKeyDown={e => handleKeyDown(e, handleFilter)}
-              onBlur={handleFilter}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="6">
-            <ValidatedField
-              type="text"
-              name="collection"
-              label="Collection"
-              value={filterCollection}
-              onChange={e => setFilterCollection(e.target.value)}
-              onKeyDown={e => handleKeyDown(e, handleFilter)}
-              onBlur={handleFilter}
-            />
-          </Col>
-          <Col md="6">
-            <ValidatedField
-              type="text"
-              name="cycle"
-              label="Cycle"
-              value={filterCycle}
-              onChange={e => setFilterCycle(e.target.value)}
-              onKeyDown={e => handleKeyDown(e, handleFilter)}
-              onBlur={handleFilter}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="6">
-            <FormGroup>
-              <Label for="added">Added</Label>
-              <DatePicker
-                name="added"
-                selected={added}
-                onChange={date => setAdded(date)}
-                isClearable={true}
-                onClear={handleClearClick}
-                dateFormat="dd/MM/yyyy" // specify date format
-                label="Added"
-                showYearDropdown
-                scrollableYearDropdown // add these props to allow selecting year from dropdown
-              />{' '}
-            </FormGroup>
-          </Col>
-          <Col md="6">
-            <ButtonGroup style={{ verticalAlign: 'bottom' }} className="btn-container">
-              <Button onClick={handleFilter} className="me-2" color="success">
-                <FontAwesomeIcon icon="search" />
-                &nbsp; Search
-              </Button>
-              <Button onClick={handleClear} className="me-2" color="danger">
-                <FontAwesomeIcon icon="trash" />
-                &nbsp; Clear
-              </Button>
-            </ButtonGroup>
-          </Col>
-        </Row>
-      </ValidatedForm>
+      <BookFilter filters={filters} handleFilter={handleFilter} handleClear={handleClear} />
       {loading ? <SyncLoader></SyncLoader> : <div></div>}
 
       <BookTable bookList={bookList} sort={sort} />
