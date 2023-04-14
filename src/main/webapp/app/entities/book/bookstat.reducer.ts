@@ -2,10 +2,11 @@ import axios from 'axios';
 import { createAsyncThunk, isFulfilled, isPending } from '@reduxjs/toolkit';
 
 import { cleanEntity } from 'app/shared/util/entity-utils';
-import { createEntitySlice, EntityState, IQueryParams, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
-import { defaultValue, IBook, IBookStat } from 'app/shared/model/book.model';
+import { createEntitySlice, EntityState, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
+import { defaultValue, IBookStat } from 'app/shared/model/book.model';
+import { getEntities } from 'app/entities/book/book.reducer';
 
-const initialState: EntityState<IBook> = {
+const initialState: EntityState<IBookStat> = {
   loading: false,
   errorMessage: null,
   entities: [],
@@ -19,46 +20,16 @@ const apiUrl = 'api/books';
 
 // Actions
 
-export const getEntities = createAsyncThunk(
-  'book/fetch_entity_list',
-  async ({ page, size, sort, filterTitle, filterAuthor, filterCycle, filterCollection, added }: IQueryParams) => {
-    const requestUrl = `${apiUrl}${
-      sort
-        ? `?filterTitle=${filterTitle}&filterAuthor=${filterAuthor}&filterCycle=${filterCycle}&filterCollection=${filterCollection}&added=${added}&page=${page}&size=${size}&sort=${sort}&`
-        : '?'
-    }cacheBuster=${new Date().getTime()}`;
-    return axios.get<IBook[]>(requestUrl);
-  }
-);
-
-export const reload = async () => {
-  const requestUrl = `${apiUrl}/reload`;
-  axios.get<IBook[]>(requestUrl);
-};
-
-export const reloadCycles = async () => {
-  const requestUrl = `${apiUrl}/reloadCycles`;
-  axios.get<IBook[]>(requestUrl);
-};
-
-export const reloadCollections = async () => {
-  const requestUrl = `${apiUrl}/reloadCycles`;
-  axios.get<IBook[]>(requestUrl);
-};
-
-export const getEntity = createAsyncThunk(
-  'book/fetch_entity',
-  async (id: string | number) => {
-    const requestUrl = `${apiUrl}/${id}`;
-    return axios.get<IBook>(requestUrl);
-  },
-  { serializeError: serializeAxiosError }
-);
+export const getBookStats = createAsyncThunk('bookstat/fetch_entity_list', async () => {
+  const requestUrl = `${apiUrl}/bookStats`;
+  console.log(3);
+  return axios.get<IBookStat[]>(requestUrl);
+});
 
 export const createEntity = createAsyncThunk(
-  'book/create_entity',
-  async (entity: IBook, thunkAPI) => {
-    const result = await axios.post<IBook>(apiUrl, cleanEntity(entity));
+  'bookstat/create_entity',
+  async (entity: IBookStat, thunkAPI) => {
+    const result = await axios.post<IBookStat>(apiUrl, cleanEntity(entity));
     thunkAPI.dispatch(getEntities({}));
     return result;
   },
@@ -66,19 +37,26 @@ export const createEntity = createAsyncThunk(
 );
 
 export const updateEntity = createAsyncThunk(
-  'book/update_entity',
-  async (entity: IBook, thunkAPI) => {
-    const result = await axios.put<IBook>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
+  'bookstat/update_entity',
+  async (entity: IBookStat, thunkAPI) => {
+    const result = await axios.put<IBookStat>(`${apiUrl}/${entity.added}`, cleanEntity(entity));
     thunkAPI.dispatch(getEntities({}));
     return result;
   },
   { serializeError: serializeAxiosError }
 );
-
+export const getEntity = createAsyncThunk(
+  'bookstat/fetch_entity',
+  async (id: string | number) => {
+    const requestUrl = `${apiUrl}/${id}`;
+    return axios.get<IBookStat>(requestUrl);
+  },
+  { serializeError: serializeAxiosError }
+);
 export const partialUpdateEntity = createAsyncThunk(
-  'book/partial_update_entity',
-  async (entity: IBook, thunkAPI) => {
-    const result = await axios.patch<IBook>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
+  'bookstat/partial_update_entity',
+  async (entity: IBookStat, thunkAPI) => {
+    const result = await axios.patch<IBookStat>(`${apiUrl}/${entity.added}`, cleanEntity(entity));
     thunkAPI.dispatch(getEntities({}));
     return result;
   },
@@ -86,20 +64,19 @@ export const partialUpdateEntity = createAsyncThunk(
 );
 
 export const deleteEntity = createAsyncThunk(
-  'book/delete_entity',
+  'bookstat/delete_entity',
   async (id: string | number, thunkAPI) => {
     const requestUrl = `${apiUrl}/${id}`;
-    const result = await axios.delete<IBook>(requestUrl);
+    const result = await axios.delete<IBookStat>(requestUrl);
     thunkAPI.dispatch(getEntities({}));
     return result;
   },
   { serializeError: serializeAxiosError }
 );
-
 // slice
 
-export const BookSlice = createEntitySlice({
-  name: 'book',
+export const BookStatSlice = createEntitySlice({
+  name: 'bookstat',
   initialState,
   extraReducers(builder) {
     builder
@@ -119,7 +96,6 @@ export const BookSlice = createEntitySlice({
           ...state,
           loading: false,
           entities: data,
-          totalItems: parseInt(headers['x-total-count'], 10),
         };
       })
       .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {
@@ -141,7 +117,7 @@ export const BookSlice = createEntitySlice({
   },
 });
 
-export const { reset } = BookSlice.actions;
+export const { reset } = BookStatSlice.actions;
 
 // Reducer
-export default BookSlice.reducer;
+export default BookStatSlice.reducer;

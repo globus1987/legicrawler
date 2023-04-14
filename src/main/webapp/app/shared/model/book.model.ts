@@ -21,6 +21,11 @@ export interface IBook {
   authors?: IAuthor[] | null;
 }
 
+export interface IBookStat {
+  added?: string | null;
+  count?: number[] | null;
+}
+
 export const defaultValue: Readonly<IBook> = {
   ebook: false,
   audiobook: false,

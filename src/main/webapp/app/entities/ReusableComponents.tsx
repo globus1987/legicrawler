@@ -90,6 +90,7 @@ export const RedirectToEntity = ({ url, name }) => {
   );
 };
 export const ActionButtons = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const handleReloadBooks = () => {
     dispatch(reload);
@@ -113,6 +114,10 @@ export const ActionButtons = () => {
       <Button onClick={handleReloadCollections} className="me-2" disabled color="warning">
         <FontAwesomeIcon icon="right-left" />
         &nbsp; Update collections
+      </Button>
+      <Button onClick={() => navigate('/book/stats')} className="me-2" color="warning">
+        <FontAwesomeIcon icon="database" />
+        &nbsp; Statistics
       </Button>
     </div>
   );

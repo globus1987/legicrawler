@@ -100,7 +100,7 @@ public class Crawler {
     private Mono<String> fetchBooks(String id) {
         parseUrl(id);
         counter.getAndDecrement();
-        if (counter.get() % 100 == 0) logger.info(counter.get() + " pages left to parse");
+        if (counter.get() % 100 == 0) logger.debug(counter.get() + " pages left to parse");
         return Mono.just("test");
     }
 
@@ -327,7 +327,7 @@ public class Crawler {
     private Mono<String> fetchIds(String url) {
         parseUrlForId(url);
         counter.getAndDecrement();
-        if (counter.get() % 1000 == 0) logger.info(counter.get() + " ids left to parse");
+        if (counter.get() % 1000 == 0) logger.debug(counter.get() + " ids left to parse");
         return Mono.just("test");
     }
 

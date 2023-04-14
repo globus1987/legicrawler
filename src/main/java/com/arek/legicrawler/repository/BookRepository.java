@@ -22,6 +22,9 @@ public interface BookRepository extends BookRepositoryWithBagRelationships, JpaR
     @Query("select id from Book")
     List<String> findAllIds();
 
+    @Query("SELECT b.added, COUNT(b) as count FROM Book b GROUP BY b.added")
+    List<Object[]> countBooksByDay();
+
     @EntityGraph(attributePaths = { "collections", "authors", "cycle" })
     @Query("select book from Book book where book.id=:id")
     Optional<Book> findById(@Param("id") String id);
