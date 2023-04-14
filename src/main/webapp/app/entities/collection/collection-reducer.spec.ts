@@ -9,12 +9,12 @@ import reducer, {
   deleteEntity,
   getEntities,
   getEntity,
-  updateEntity,
   partialUpdateEntity,
   reset,
+  updateEntity,
 } from './collection.reducer';
 import { EntityState } from 'app/shared/reducers/reducer.utils';
-import { ICollection, defaultValue } from 'app/shared/model/collection.model';
+import { defaultValue, ICollection } from 'app/shared/model/collection.model';
 
 describe('Entities reducer tests', () => {
   function isEmpty(element): boolean {

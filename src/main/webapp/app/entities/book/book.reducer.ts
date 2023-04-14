@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { createAsyncThunk, isFulfilled, isPending, isRejected } from '@reduxjs/toolkit';
+import { createAsyncThunk, isFulfilled, isPending } from '@reduxjs/toolkit';
 
 import { cleanEntity } from 'app/shared/util/entity-utils';
-import { IQueryParams, createEntitySlice, EntityState, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
-import { IBook, defaultValue } from 'app/shared/model/book.model';
+import { createEntitySlice, EntityState, IQueryParams, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
+import { defaultValue, IBook } from 'app/shared/model/book.model';
 
 const initialState: EntityState<IBook> = {
   loading: false,

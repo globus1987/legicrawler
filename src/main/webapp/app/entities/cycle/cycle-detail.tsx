@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Row, Col } from 'reactstrap';
-import {} from 'react-jhipster';
+import { Col, Row } from 'reactstrap';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './cycle.reducer';
@@ -24,7 +23,7 @@ export const CycleDetail = () => {
         <DetailHeader id={entity.id} name={entity.name}></DetailHeader>
         <dl className="jh-entity-details">
           <dd className={'book-list'}>
-            {entity.books && [...entity.books].sort((a, b) => a.id - b.id).map(item => <BookCard book={item} />)}
+            {entity.books && [...entity.books].sort((a, b) => a.id - b.id).map(item => <BookCard key={item.id} book={item} />)}
           </dd>
         </dl>
         <GoBack to={'/cycle'} />

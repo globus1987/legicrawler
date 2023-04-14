@@ -67,13 +67,11 @@ export const YesNoMark = ({ condition }) => {
   return <FontAwesomeIcon style={condition ? { color: 'green' } : { color: 'red' }} icon={condition ? 'check' : 'xmark'} />;
 };
 
-export const RedirectToEntity = ({ url, name, id }) => {
+export const RedirectToEntity = ({ url, name }) => {
   const navigate = useNavigate();
-
   return (
-    <dd key={id}>
+    <dd>
       <Button
-        key={id}
         onClick={() => navigate(url)}
         color="light"
         onAuxClick={event => {
@@ -93,7 +91,6 @@ export const RedirectToEntity = ({ url, name, id }) => {
 RedirectToEntity.DetailHeader = {
   url: PropTypes.string.isRequired,
   name: PropTypes.bool.isRequired,
-  id: PropTypes.bool.isRequired,
 };
 
 YesNoMark.DetailHeader = {

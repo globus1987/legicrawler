@@ -42,7 +42,7 @@ export const BookDetail = () => {
       <Col style={{ minWidth: width }}>
         {entity.authors && <dt>Authors</dt>}
         {entity.authors?.map(item => (
-          <RedirectToEntity url={`/author/${item.id}`} name={item.name} id={item.id} />
+          <RedirectToEntity key={item.id} url={`/author/${item.id}`} name={item.name} />
         ))}
         <dt>
           <span id="category">Category</span>
@@ -53,10 +53,10 @@ export const BookDetail = () => {
             <span id="Cycle"> Cycle</span>
           </dt>
         )}
-        {entity.cycle && <RedirectToEntity url={`/cycle/${entity.cycle.id}`} name={entity.cycle.name} id={entity.cycle.id} />}
+        {entity.cycle && <RedirectToEntity url={`/cycle/${entity.cycle.id}`} name={entity.cycle.name} />}
         {entity.collections && <dt>Collections</dt>}
         {entity.collections?.map(item => (
-          <RedirectToEntity url={`/collection/${item.id}`} name={item.name} id={item.id} />
+          <RedirectToEntity key={item.id} url={`/collection/${item.id}`} name={item.name} />
         ))}
         <dd></dd>
       </Col>

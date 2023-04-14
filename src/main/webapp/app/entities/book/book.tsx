@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Col, Row, Table } from 'reactstrap';
-import { TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { Button, Col, FormGroup, Label, Row, Table } from 'reactstrap';
+import { getSortState, JhiItemCount, JhiPagination, ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
-
-import { getEntities, reload, reloadCycles, reloadCollections } from './book.reducer';
+import { getEntities, reload, reloadCollections, reloadCycles } from './book.reducer';
 import SyncLoader from 'react-spinners/SyncLoader';
 import { ButtonGroup } from '@mui/material';
 import { loginAdmin } from 'app/modules/login/login';
@@ -222,13 +218,17 @@ export const Book = () => {
             </a>
           </td>
           <td>
-            {book.authors?.map(item => (
-              <tr key={item.id}>
-                <td>
-                  <Link to={`/author/${item.id}`}>{item.name}</Link>
-                </td>
-              </tr>
-            ))}
+            <table>
+              <tbody>
+                {book.authors?.map(item => (
+                  <tr key={item.id}>
+                    <td>
+                      <Link to={`/author/${item.id}`}>{item.name}</Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </td>
           <td>{book.category}</td>
           <td>
@@ -238,13 +238,17 @@ export const Book = () => {
           </td>
           <td>{book.cycle ? <Link to={`/cycle/${book.cycle.id}`}>{book.cycle.name}</Link> : ''}</td>
           <td>
-            {book.collections?.map(item => (
-              <tr key={item.id}>
-                <td>
-                  <Link to={`/collection/${item.id}`}>{item.name}</Link>
-                </td>
-              </tr>
-            ))}
+            <table>
+              <tbody>
+                {book.collections?.map(item => (
+                  <tr key={item.id}>
+                    <td>
+                      <Link to={`/collection/${item.id}`}>{item.name}</Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </td>
         </tr>
       ));
@@ -257,13 +261,17 @@ export const Book = () => {
             </a>
           </td>
           <td>
-            {book.authors?.map(item => (
-              <tr key={item.id}>
-                <td>
-                  <Link to={`/author/${item.id}`}>{item.name}</Link>
-                </td>
-              </tr>
-            ))}
+            <table>
+              <tbody>
+                {book.authors?.map(item => (
+                  <tr key={item.id}>
+                    <td>
+                      <Link to={`/author/${item.id}`}>{item.name}</Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </td>
           <td>{book.category}</td>
         </tr>

@@ -24,7 +24,8 @@ export const AuthorDetail = () => {
         <DetailHeader id={entity.id} name={entity.name}></DetailHeader>
         <dl className="jh-entity-details">
           <dd className={'book-list'}>
-            {entity.books && [...entity.books].sort((a, b) => a.title.localeCompare(b.title)).map(item => <BookCard book={item} />)}
+            {entity.books &&
+              [...entity.books].sort((a, b) => a.title.localeCompare(b.title)).map(item => <BookCard key={item.id} book={item} />)}
           </dd>
         </dl>
         <GoBack to={'/author'} />
