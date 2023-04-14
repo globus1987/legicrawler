@@ -1,13 +1,11 @@
 import './header.scss';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { Navbar, Nav, NavbarToggler, Collapse } from 'reactstrap';
+import { Navbar, NavbarToggler } from 'reactstrap';
 import LoadingBar from 'react-redux-loading-bar';
 
 import { Brand } from './header-components';
-import { AdminMenu, EntitiesMenu, AccountMenu } from '../menus';
-import { useAppDispatch } from 'app/config/store';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;

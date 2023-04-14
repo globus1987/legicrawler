@@ -12,7 +12,6 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities, reload, reloadCollections, reloadCycles } from './book.reducer';
 import SyncLoader from 'react-spinners/SyncLoader';
 import { ButtonGroup } from '@mui/material';
-import { loginAdmin } from 'app/modules/login/login';
 
 export const Book = () => {
   const dispatch = useAppDispatch();
