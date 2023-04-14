@@ -28,7 +28,7 @@ export const AuthorDetail = () => {
           </dd>
         </dl>
         <GoBack to={'/author'} />
-        <GoToLegimiButton href={entity.url} />
+        {entity.url && <GoToLegimiButton href={entity.url} />}
       </Col>
     </Row>
   );

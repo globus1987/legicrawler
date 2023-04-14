@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Col, Row } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useParams } from 'react-router-dom';
+import { ButtonGroup, Col, Row } from 'reactstrap';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './book.reducer';
-import GoToLegimiButton, { GoBack, RedirectToEntity, YesNoMark } from 'app/entities/ReusableComponents';
+import GoToLegimiButton, { DetailHeader, GoBack, RedirectToEntity, YesNoMark } from 'app/entities/ReusableComponents';
 
 export const BookDetail = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -22,14 +20,12 @@ export const BookDetail = () => {
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
-
   const entity = useAppSelector(state => state.book.entity);
+  const width = entity.category ? Math.max(entity.category.length * 10, 200) : 10;
   return (
     <Row>
-      <Col md="8">
-        <h2 data-cy="bookDetailsHeading">
-          {entity.id} : {entity.title}
-        </h2>
+      <DetailHeader id={entity.id} name={entity.title}></DetailHeader>
+      <Col>
         <dl className="jh-entity-details">
           <dd>
             {!imageError && (
@@ -41,57 +37,65 @@ export const BookDetail = () => {
               />
             )}
           </dd>
-          {entity.authors && <dt>Authors</dt>}
-          {entity.authors?.map(item => (
-            <RedirectToEntity url={`/author/${item.id}`} name={item.name} />
-          ))}
-          <dt>
-            <span id="category">Category</span>
-          </dt>
-          <dd>{entity.category}</dd>
-          {entity.cycle && (
-            <dt>
-              <span id="Cycle"> Cycle</span>
-            </dt>
-          )}
-          {entity.cycle && <RedirectToEntity url={`/cycle/${entity.cycle.id}`} name={entity.cycle.name} />}
-          {entity.collections && <dt>Collections</dt>}
-          {entity.collections?.map(item => (
-            <RedirectToEntity url={`/collection/${item.id}`} name={item.name} />
-          ))}
-          <dd></dd>
-          <dt>
-            <YesNoMark condition={entity.ebook}></YesNoMark>
-            <span id="ebook">Ebook</span>
-          </dt>
-
-          <dt>
-            <YesNoMark condition={entity.audiobook}></YesNoMark>
-            <span id="audiobook">Audiobook</span>
-          </dt>
-          <dd></dd>
-
-          <dt>
-            <YesNoMark condition={entity.subscription}></YesNoMark>
-
-            <span id="subscription"> Subscription</span>
-          </dt>
-          <dt>
-            <YesNoMark condition={entity.kindleSubscription}></YesNoMark>
-            <span id="kindleSubscription"> Kindle Subscription</span>
-          </dt>
-          <dt>
-            <YesNoMark condition={entity.libraryPass}></YesNoMark>
-            <span id="libraryPass"> Library Pass</span>
-          </dt>
-          <dt>
-            <YesNoMark condition={entity.librarySubscription}></YesNoMark>
-            <span id="librarySubscription"> Library Subscription</span>
-          </dt>
         </dl>
-        <GoBack to={'/book'} />
-        <GoToLegimiButton href={entity.url} />
       </Col>
+      <Col style={{ minWidth: width }}>
+        {entity.authors && <dt>Authors</dt>}
+        {entity.authors?.map(item => (
+          <RedirectToEntity url={`/author/${item.id}`} name={item.name} id={item.id} />
+        ))}
+        <dt>
+          <span id="category">Category</span>
+        </dt>
+        <dd>{entity.category}</dd>
+        {entity.cycle && (
+          <dt>
+            <span id="Cycle"> Cycle</span>
+          </dt>
+        )}
+        {entity.cycle && <RedirectToEntity url={`/cycle/${entity.cycle.id}`} name={entity.cycle.name} id={entity.cycle.id} />}
+        {entity.collections && <dt>Collections</dt>}
+        {entity.collections?.map(item => (
+          <RedirectToEntity url={`/collection/${item.id}`} name={item.name} id={item.id} />
+        ))}
+        <dd></dd>
+      </Col>
+      <Col>
+        <dt>
+          <YesNoMark condition={entity.ebook}></YesNoMark>
+          <span id="ebook">Ebook</span>
+        </dt>
+
+        <dt>
+          <YesNoMark condition={entity.audiobook}></YesNoMark>
+          <span id="audiobook">Audiobook</span>
+        </dt>
+        <dd></dd>
+
+        <dt>
+          <YesNoMark condition={entity.subscription}></YesNoMark>
+
+          <span id="subscription"> Subscription</span>
+        </dt>
+        <dt>
+          <YesNoMark condition={entity.kindleSubscription}></YesNoMark>
+          <span id="kindleSubscription"> Kindle Subscription</span>
+        </dt>
+        <dt>
+          <YesNoMark condition={entity.libraryPass}></YesNoMark>
+          <span id="libraryPass"> Library Pass</span>
+        </dt>
+        <dt>
+          <YesNoMark condition={entity.librarySubscription}></YesNoMark>
+          <span id="librarySubscription"> Library Subscription</span>
+        </dt>
+      </Col>
+      {entity.url && (
+        <ButtonGroup>
+          <GoBack to={'/book'} />
+          <GoToLegimiButton href={entity.url} />
+        </ButtonGroup>
+      )}
     </Row>
   );
 };

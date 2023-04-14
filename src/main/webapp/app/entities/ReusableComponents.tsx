@@ -6,10 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IBook } from 'app/shared/model/book.model';
 
 const GoToLegimiButton = ({ href }) => {
-  const navigate = useNavigate();
-
   return (
-    <Button href={href} replace color="dark" data-cy="entityDetailsBackButton">
+    <Button href={href} color="dark" data-cy="entityDetailsBackButton">
       <span className="d-none d-md-inline">Go to Legimi </span>
       <FontAwesomeIcon icon="book" />
     </Button>
@@ -69,12 +67,13 @@ export const YesNoMark = ({ condition }) => {
   return <FontAwesomeIcon style={condition ? { color: 'green' } : { color: 'red' }} icon={condition ? 'check' : 'xmark'} />;
 };
 
-export const RedirectToEntity = ({ url, name }) => {
+export const RedirectToEntity = ({ url, name, id }) => {
   const navigate = useNavigate();
 
   return (
-    <dd>
+    <dd key={id}>
       <Button
+        key={id}
         onClick={() => navigate(url)}
         color="light"
         onAuxClick={event => {
@@ -94,6 +93,7 @@ export const RedirectToEntity = ({ url, name }) => {
 RedirectToEntity.DetailHeader = {
   url: PropTypes.string.isRequired,
   name: PropTypes.bool.isRequired,
+  id: PropTypes.bool.isRequired,
 };
 
 YesNoMark.DetailHeader = {

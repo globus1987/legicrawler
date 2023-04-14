@@ -26,7 +26,7 @@ export const CollectionDetail = () => {
           </dd>
         </dl>
         <GoBack to={'/collection'} />
-        <GoToLegimiButton href={entity.url} />
+        {entity.url && <GoToLegimiButton href={entity.url} />}
       </Col>
     </Row>
   );

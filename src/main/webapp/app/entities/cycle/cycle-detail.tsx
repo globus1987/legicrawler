@@ -28,7 +28,7 @@ export const CycleDetail = () => {
           </dd>
         </dl>
         <GoBack to={'/cycle'} />
-        <GoToLegimiButton href={entity.url} />
+        {entity.url && <GoToLegimiButton href={entity.url} />}
       </Col>
     </Row>
   );
