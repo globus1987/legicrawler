@@ -12,28 +12,11 @@ export const BrandIcon = props => (
 );
 
 export const Brand = () => (
-  <NavbarBrand tag={Link} to="/book" className="brand-logo">
+  <NavbarBrand tag={Link} to="/" className="brand-logo">
     <BrandIcon />
     <span className="brand-title"> Legicrawler</span>
     <span className="navbar-version">{VERSION}</span>
   </NavbarBrand>
-);
-
-export const Home = () => (
-  <NavItem>
-    <NavLink tag={Link} to="/" className="d-flex align-items-center">
-      <FontAwesomeIcon icon="home" />
-      <span>Home</span>
-    </NavLink>
-  </NavItem>
-);
-
-export const Authors = () => (
-  <NavItem>
-    <NavLink tag={Link} to="/author" className="d-flex align-items-center">
-      <span>Authors</span>
-    </NavLink>
-  </NavItem>
 );
 
 export const Books = () => (
@@ -44,30 +27,10 @@ export const Books = () => (
   </NavItem>
 );
 
-export const Cycles = () => (
-  <NavItem>
-    <NavLink tag={Link} to="/cycle" className="d-flex align-items-center">
-      <span>Cycles</span>
-    </NavLink>
-  </NavItem>
-);
-
 export const Collections = () => (
   <NavItem>
     <NavLink tag={Link} to="/collection" className="d-flex align-items-center">
       <span>Collections</span>
-    </NavLink>
-  </NavItem>
-);
-
-let reloadBooks = async () => {
-  // await axios.get("api/books/reload")
-};
-export const Reload = () => (
-  <NavItem>
-    <NavLink tag={Link} to="api/books/reload" className="d-flex align-items-center">
-      <FontAwesomeIcon icon="right-left" />
-      <span>Reload</span>
     </NavLink>
   </NavItem>
 );

@@ -48,9 +48,7 @@ export const Book = () => {
     const savedValue = window.localStorage.getItem('filter.added');
     return savedValue !== null ? new Date(savedValue) : undefined;
   });
-  useEffect(() => {
-    loginAdmin(dispatch);
-  }, []);
+
   useEffect(() => {
     window.localStorage.setItem('filter.title', filterTitle);
   }, [filterTitle]);
