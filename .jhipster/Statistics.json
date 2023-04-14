@@ -1,0 +1,24 @@
+{
+  "applications": "*",
+  "changelogDate": "20230414131916",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "statistics",
+  "fields": [
+    {
+      "fieldName": "added",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "count",
+      "fieldType": "Integer"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Statistics",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [],
+  "service": "no"
+}
