@@ -1,13 +1,13 @@
 import './header.scss';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Navbar, Nav, NavbarToggler, Collapse } from 'reactstrap';
 import LoadingBar from 'react-redux-loading-bar';
 
-import { Home, Brand, Reload, Authors, Books, Cycles, Collections } from './header-components';
+import { Brand } from './header-components';
 import { AdminMenu, EntitiesMenu, AccountMenu } from '../menus';
-import MenuItem from 'app/shared/layout/menus/menu-item';
+import { useAppDispatch } from 'app/config/store';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
@@ -19,7 +19,7 @@ export interface IHeaderProps {
 
 const Header = (props: IHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const dispatch = useAppDispatch();
   const renderDevRibbon = () =>
     props.isInProduction === false ? (
       <div className="ribbon dev">

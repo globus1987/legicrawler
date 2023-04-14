@@ -16,6 +16,7 @@ import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { getEntities, reload, reloadCycles, reloadCollections } from './book.reducer';
 import SyncLoader from 'react-spinners/SyncLoader';
 import { ButtonGroup } from '@mui/material';
+import { loginAdmin } from 'app/modules/login/login';
 
 export const Book = () => {
   const dispatch = useAppDispatch();
@@ -51,7 +52,9 @@ export const Book = () => {
     const savedValue = window.localStorage.getItem('filter.added');
     return savedValue !== null ? new Date(savedValue) : undefined;
   });
-
+  useEffect(() => {
+    loginAdmin(dispatch);
+  }, []);
   useEffect(() => {
     window.localStorage.setItem('filter.title', filterTitle);
   }, [filterTitle]);
@@ -351,7 +354,7 @@ export const Book = () => {
             </FormGroup>
           </Col>
           <Col md="6">
-            <ButtonGroup className="btn-container">
+            <ButtonGroup style={{ verticalAlign: 'bottom' }} className="btn-container">
               <Button onClick={handleFilter} className="me-2" color="success">
                 <FontAwesomeIcon icon="search" />
                 &nbsp; Search

@@ -7,16 +7,9 @@ import { Row, Col, Alert } from 'reactstrap';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { loginAdmin } from 'app/modules/login/login';
-import { getSession } from 'app/shared/reducers/authentication';
-import { getProfile } from 'app/shared/reducers/application-profile';
 
 export const Home = () => {
-  const dispatch = useAppDispatch();
-
   const account = useAppSelector(state => state.authentication.account);
-  useEffect(() => {
-    loginAdmin(dispatch);
-  }, []);
   return (
     <Row>
       <Col md="3" className="pad">

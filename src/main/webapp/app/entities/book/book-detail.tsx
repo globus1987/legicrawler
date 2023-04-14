@@ -30,7 +30,16 @@ export const BookDetail = () => {
           {bookEntity.id} : {bookEntity.title}
         </h2>
         <dl className="jh-entity-details">
-          <dd>{!imageError && <img src={bookEntity.imgsrc} alt="Book Cover" onError={handleImageError} />}</dd>
+          <dd>
+            {!imageError && (
+              <img
+                style={{ overflow: 'hidden', borderRadius: '5px', boxShadow: '5px 5px 4px rgba(0, 0, 0, 0.1)' }}
+                src={bookEntity.imgsrc}
+                alt="Book Cover"
+                onError={handleImageError}
+              />
+            )}
+          </dd>
           <dt>Authors</dt>
           <dd>
             {bookEntity.authors?.map(item => (
@@ -67,14 +76,6 @@ export const BookDetail = () => {
               </Button>
             ))}
           </dd>
-          <dt>
-            <span id="url">Url</span>
-          </dt>
-          <dt>
-            <a href={bookEntity.url} color="link">
-              {bookEntity.url}
-            </a>{' '}
-          </dt>
           <dd></dd>
           <dt>
             <FontAwesomeIcon style={bookEntity.ebook ? { color: 'green' } : { color: 'red' }} icon={bookEntity.ebook ? 'check' : 'xmark'} />
@@ -121,6 +122,10 @@ export const BookDetail = () => {
         </dl>
         <Button tag={Link} to="/book" onClick={() => navigate(-1)} replace color="dark" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
+        </Button>
+        <Button href={bookEntity.url} replace color="dark" data-cy="entityDetailsBackButton">
+          <span className="d-none d-md-inline">Go to Legimi </span>
+          <FontAwesomeIcon icon="book" />
         </Button>
       </Col>
     </Row>
