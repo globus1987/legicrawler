@@ -1,0 +1,4 @@
+entity Statistics {
+    added LocalDate
+    count Integer
+}
