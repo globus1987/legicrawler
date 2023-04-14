@@ -26,7 +26,6 @@ const Header = (props: IHeaderProps) => {
     <div id="app-header">
       <LoadingBar className="loading-bar" />
       <Navbar data-cy="navbar" dark expand="md" fixed="top" className="jh-navbar">
-        <NavbarToggler aria-label="Menu" onClick={toggleMenu} />
         <Brand />
       </Navbar>
     </div>
