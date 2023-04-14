@@ -138,9 +138,9 @@ public class BookServiceImpl implements BookService {
         String added
     ) {
         log.debug("Request to get all Books");
-        var bookspec = BookSpecification.filterByTitle(filterTitle); // filter by title
+        var bookspec = BookSpecification.filterByTitle(filterTitle); // filter.tsx by title
         if (!added.isEmpty()) {
-            bookspec = bookspec.and(BookSpecification.filterByAdded(LocalDate.parse(added, DateTimeFormatter.ofPattern("d/M/yyyy")))); // filter by added date
+            bookspec = bookspec.and(BookSpecification.filterByAdded(LocalDate.parse(added, DateTimeFormatter.ofPattern("d/M/yyyy")))); // filter.tsx by added date
         }
 
         if (authors != null) bookspec = bookspec.and(BookSpecification.filterByAuthors(authors));

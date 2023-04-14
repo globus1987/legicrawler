@@ -4,6 +4,8 @@ import { Button, Card, CardBody, CardImg, CardTitle } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { IBook } from 'app/shared/model/book.model';
+import { reload, reloadCollections, reloadCycles } from 'app/entities/book/book.reducer';
+import { useAppDispatch } from 'app/config/store';
 
 const GoToLegimiButton = ({ href }) => {
   return (
@@ -85,6 +87,34 @@ export const RedirectToEntity = ({ url, name }) => {
         {name}
       </Button>
     </dd>
+  );
+};
+export const ActionButtons = () => {
+  const dispatch = useAppDispatch();
+  const handleReloadBooks = () => {
+    dispatch(reload);
+  };
+  const handleReloadCycles = () => {
+    dispatch(reloadCycles);
+  };
+  const handleReloadCollections = () => {
+    dispatch(reloadCollections);
+  };
+  return (
+    <div className="d-flex justify-content-end">
+      <Button onClick={handleReloadBooks} className="me-2" color="warning">
+        <FontAwesomeIcon icon="right-left" />
+        &nbsp; Crawl
+      </Button>
+      <Button onClick={handleReloadCycles} className="me-2" disabled color="warning">
+        <FontAwesomeIcon icon="right-left" />
+        &nbsp; Update cycles
+      </Button>
+      <Button onClick={handleReloadCollections} className="me-2" disabled color="warning">
+        <FontAwesomeIcon icon="right-left" />
+        &nbsp; Update collections
+      </Button>
+    </div>
   );
 };
 
