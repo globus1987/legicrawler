@@ -14,9 +14,10 @@ interface IChartData {
 interface IChartProps {
   chartData: IChartData[];
   chartType: string;
+  onBarClick: (label: string, value: number) => void;
 }
 
-const BarChart: React.FC<IChartProps> = ({ chartData, chartType }) => {
+const BarChart: React.FC<IChartProps> = ({ chartData, chartType, onBarClick }) => {
   let data = chartData;
 
   if (chartType === 'week') {
@@ -54,9 +55,21 @@ const BarChart: React.FC<IChartProps> = ({ chartData, chartType }) => {
 
   // same logic for month
 
-  const labels = data.map(data => data.added);
-  const dataChart = data.map(data => data.count);
-  const loaded = labels.length > 0 && dataChart.length > 0;
+  const loaded = data.map(data => data.added).length > 0 && data.map(data => data.count).length > 0;
+
+  const dataChart = {
+    labels: chartData.map(data => data.added),
+    datasets: [
+      {
+        label: 'Books per ' + chartType,
+        data: chartData.map(data => data.count),
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
   const options = {
     responsive: true,
     plugins: {
@@ -76,9 +89,17 @@ const BarChart: React.FC<IChartProps> = ({ chartData, chartType }) => {
         },
       },
     },
+    onClick: (_, elements) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        const label = dataChart.labels[index];
+        const value = dataChart.datasets[0].data[index];
+        onBarClick(label, value);
+      }
+    },
   };
 
-  return <>{loaded && <Bar data={{ labels, datasets: [{ data: dataChart }] }} options={options} />}</>;
+  return <>{loaded && <Bar data={dataChart} options={options} />}</>;
 };
 
 export default BarChart;
