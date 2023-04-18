@@ -3,6 +3,7 @@ package com.arek.legicrawler.service.impl;
 import com.arek.legicrawler.domain.Author;
 import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.repository.BookRepository;
+import com.arek.legicrawler.repository.HistoryRepository;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
 import com.arek.legicrawler.service.CollectionService;
@@ -12,6 +13,7 @@ import com.google.gson.JsonObject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -161,7 +163,12 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void reload(CycleService cycleService, AuthorService authorService, CollectionService collectionService) {
+    public void reload(
+        CycleService cycleService,
+        AuthorService authorService,
+        CollectionService collectionService,
+        HistoryRepository historyRepository
+    ) {
         var restTemplate = new RestTemplateBuilder().build();
         var response = restTemplate.getForObject(
             "https://www.legimi.pl/api/catalogue?filters=[\"audiobooks\",\"ebooks\",\"epub\",\"mobi\",\"pdf\",\"synchrobooks\",\"unlimited\",\"unlimitedlegimi\"]&languages=[\"polish\"]&sort=latest&&&skip=0",
@@ -180,7 +187,10 @@ public class BookServiceImpl implements BookService {
         log.info("Fetching books");
         crawler.parse(idList, bookList);
         bookRepository.saveAll(bookList);
-        crawler.bookStats();
+        log.info("Cleaning books");
+        var idsToDelete = crawler.getExistingIds().stream().filter(e -> !idList.contains(e)).collect(Collectors.toList());
+        bookRepository.deleteAllById(idsToDelete);
+        crawler.bookStats(historyRepository, idList.size(), idsToDelete.size());
     }
 
     private Set<String> retrieveIdList(

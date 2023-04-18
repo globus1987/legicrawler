@@ -2,6 +2,7 @@ package com.arek.legicrawler.service;
 
 import com.arek.legicrawler.domain.Author;
 import com.arek.legicrawler.domain.Book;
+import com.arek.legicrawler.repository.HistoryRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,12 @@ public interface BookService {
      */
     void delete(String id);
 
-    void reload(CycleService cycleService, AuthorService authorService, CollectionService collectionService);
+    void reload(
+        CycleService cycleService,
+        AuthorService authorService,
+        CollectionService collectionService,
+        HistoryRepository historyRepository
+    );
     void reloadCycles(CycleService cycleService, AuthorService authorService);
     void reloadCollections(CollectionService collectionService, AuthorService authorService);
 }

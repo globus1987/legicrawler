@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { GoBack } from 'app/entities/ReusableComponents';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntities } from 'app/entities/statistics/statistics.reducer';
+import { getEntities as getStatistics } from 'app/entities/statistics/statistics.reducer';
+import { getEntities as getHistory } from 'app/entities/history/history.reducer';
 import Chart from 'app/entities/book/chart';
 import { useNavigate } from 'react-router-dom';
-import { Col, Row } from 'reactstrap';
+import { Col, Row, Table } from 'reactstrap';
 import { format, subDays } from 'date-fns';
 import { ValidatedField } from 'react-jhipster';
 
@@ -17,11 +18,12 @@ export const BookStats = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('');
   const [chartData, setChartData] = useState();
-
-  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+  const historyList = useAppSelector(state => state.history.entities);
+  const historyLoading = useAppSelector(state => state.history.loading);
 
   useEffect(() => {
-    dispatch(getEntities({}));
+    dispatch(getStatistics({}));
+    dispatch(getHistory({}));
   }, []);
 
   useEffect(() => {
@@ -56,6 +58,7 @@ export const BookStats = () => {
     <div>
       <Row>
         <Col>
+          {chartData && <Chart chartData={chartData} chartType="day" onBarClick={handleBarClick} color="#FFA552" />}
           <ValidatedField
             type="text"
             name="filter"
@@ -63,7 +66,6 @@ export const BookStats = () => {
             value={selectedFilter}
             onChange={e => handleFilterChange(e.target.value)}
           />
-          {chartData && <Chart chartData={chartData} chartType="day" onBarClick={handleBarClick} color="#FFA552" />}
         </Col>
         <Col>
           <Chart chartData={statisticsList} chartType="week" onBarClick={handleBarClick} color="#BA5624" />
@@ -71,6 +73,106 @@ export const BookStats = () => {
         <Col>
           <Chart chartData={statisticsList} chartType="month" onBarClick={handleBarClick} color="#381D2A" />
         </Col>
+      </Row>
+      <Row>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th>Time Stamp</th>
+              <th>Database</th>
+              <th>Parsed</th>
+              <th>New</th>
+              <th>Deleted</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {historyList.map((history, index) => (
+              <tr key={history.id}>
+                <td>{history.timeStamp}</td>
+                <td
+                  style={{
+                    color:
+                      index + 1 < historyList.length &&
+                      history.data?.find(data => data.key === 'previous')?.valueInt !==
+                        historyList[index + 1].data?.find(data => data.key === 'previous')?.valueInt
+                        ? 'red'
+                        : undefined,
+                    fontWeight:
+                      index + 1 < historyList.length &&
+                      history.data?.find(data => data.key === 'previous')?.valueInt !==
+                        historyList[index + 1].data?.find(data => data.key === 'previous')?.valueInt
+                        ? 'bold'
+                        : undefined,
+                  }}
+                >
+                  {history.data?.find(data => data.key === 'previous')?.valueInt}
+                </td>
+                <td
+                  style={{
+                    color:
+                      index + 1 < historyList.length &&
+                      history.data?.find(data => data.key === 'parsed')?.valueInt !==
+                        historyList[index + 1].data?.find(data => data.key === 'parsed')?.valueInt
+                        ? 'red'
+                        : undefined,
+                    fontWeight:
+                      index + 1 < historyList.length &&
+                      history.data?.find(data => data.key === 'parsed')?.valueInt !==
+                        historyList[index + 1].data?.find(data => data.key === 'parsed')?.valueInt
+                        ? 'bold'
+                        : undefined,
+                  }}
+                >
+                  {history.data?.find(data => data.key === 'parsed')?.valueInt}
+                </td>
+                <td
+                  style={{
+                    color:
+                      index + 1 < historyList.length && history.data?.find(data => data.key === 'new')?.valueInt !== 0 ? 'red' : undefined,
+                    fontWeight:
+                      index + 1 < historyList.length && history.data?.find(data => data.key === 'new')?.valueInt !== 0 ? 'bold' : undefined,
+                  }}
+                >
+                  {history.data?.find(data => data.key === 'new')?.valueInt}
+                </td>
+
+                <td
+                  style={{
+                    color:
+                      index + 1 < historyList.length && history.data?.find(data => data.key === 'deleted')?.valueInt !== 0
+                        ? 'red'
+                        : undefined,
+                    fontWeight:
+                      index + 1 < historyList.length && history.data?.find(data => data.key === 'deleted')?.valueInt !== 0
+                        ? 'bold'
+                        : undefined,
+                  }}
+                >
+                  {history.data?.find(data => data.key === 'deleted')?.valueInt}
+                </td>
+                <td
+                  style={{
+                    color:
+                      index + 1 < historyList.length &&
+                      history.data?.find(data => data.key === 'error')?.valueInt !==
+                        historyList[index + 1].data?.find(data => data.key === 'error')?.valueInt
+                        ? 'red'
+                        : undefined,
+                    fontWeight:
+                      index + 1 < historyList.length &&
+                      history.data?.find(data => data.key === 'error')?.valueInt !==
+                        historyList[index + 1].data?.find(data => data.key === 'error')?.valueInt
+                        ? 'bold'
+                        : undefined,
+                  }}
+                >
+                  {history.data?.find(data => data.key === 'error')?.valueInt}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </Row>
       <GoBack to={'/book'} />
     </div>

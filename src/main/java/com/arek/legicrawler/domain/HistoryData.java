@@ -60,8 +60,9 @@ public class HistoryData implements Serializable, Persistable<String> {
         return this;
     }
 
-    public void setKey(String key) {
+    public HistoryData setKey(String key) {
         this.key = key;
+        return this;
     }
 
     public String getValueString() {

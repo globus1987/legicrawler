@@ -5,9 +5,11 @@ import com.arek.legicrawler.repository.HistoryRepository;
 import com.arek.legicrawler.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -146,7 +148,11 @@ public class HistoryResource {
     @GetMapping("/histories")
     public List<History> getAllHistories() {
         log.debug("REST request to get all Histories");
-        return historyRepository.findAll();
+        return historyRepository
+            .findAll()
+            .stream()
+            .sorted(Comparator.comparing(History::getTimeStamp).reversed())
+            .collect(Collectors.toList());
     }
 
     /**

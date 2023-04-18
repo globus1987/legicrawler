@@ -6,6 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.domain.Persistable;
 
 /**
@@ -24,12 +25,13 @@ public class History implements Serializable, Persistable<String> {
     private String id;
 
     @Column(name = "time_stamp")
+    @CreationTimestamp
     private ZonedDateTime timeStamp;
 
     @Transient
     private boolean isPersisted;
 
-    @OneToMany(mappedBy = "history")
+    @OneToMany(mappedBy = "history", cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties(value = { "history" }, allowSetters = true)
     private Set<HistoryData> data = new HashSet<>();
 
