@@ -27,6 +27,21 @@ entity Cycle {
     name String
     url String maxlength(5000)
 }
+
+entity History {
+    id String
+    timeStamp ZonedDateTime
+}
+
+entity HistoryData{
+    id String
+    key String
+    valueString String
+    valueInt Integer
+}
+relationship OneToMany {
+    History{data} to HistoryData{history}
+}
 relationship ManyToOne {
     Book{cycle} to Cycle{books}
 }
