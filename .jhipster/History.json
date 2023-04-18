@@ -1,0 +1,31 @@
+{
+  "applications": "*",
+  "changelogDate": "20230418091201",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "history",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "timeStamp",
+      "fieldType": "ZonedDateTime"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "History",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "historyData",
+      "otherEntityRelationshipName": "history",
+      "relationshipName": "data",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "no"
+}
