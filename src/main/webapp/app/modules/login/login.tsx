@@ -24,7 +24,7 @@ export const Login = () => {
 
   const handleClose = () => {
     setShowModal(false);
-    navigate('/book');
+    navigate('/book?page=1&sort=id,asc');
   };
 
   const { from } = (location.state as any) || { from: { pathname: '/', search: location.search } };

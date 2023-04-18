@@ -1,8 +1,7 @@
 package com.arek.legicrawler.service.impl;
 
-import com.arek.legicrawler.domain.Author;
-import com.arek.legicrawler.domain.Book;
-import com.arek.legicrawler.domain.Cycle;
+import com.arek.legicrawler.domain.*;
+import com.arek.legicrawler.repository.HistoryRepository;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
 import com.arek.legicrawler.service.CollectionService;
@@ -41,6 +40,7 @@ public class Crawler {
     private static final String legimiUrl = "https://www.legimi.pl";
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private AtomicInteger counter;
+    private AtomicInteger errorCounter;
     private List<String> existingIds;
     private CycleService cycleService;
     private BookService bookService;
@@ -55,6 +55,10 @@ public class Crawler {
     private List<String> existingAuthors;
     private List<String> existingCycles;
     private List<String> existingCollections;
+
+    public List<String> getExistingIds() {
+        return existingIds;
+    }
 
     public Crawler(BookService bookService, AuthorService authorService, CycleService cycleService, CollectionService collectionService) {
         this.cycleService = cycleService;
@@ -76,6 +80,7 @@ public class Crawler {
     public Crawler setExistingIds(List<String> existingIds) {
         this.existingIds = existingIds;
         this.counter = new AtomicInteger(0);
+        this.errorCounter = new AtomicInteger(0);
         return this;
     }
 
@@ -116,6 +121,7 @@ public class Crawler {
             if (bookDetailsJson.isJsonNull()) return;
             if (!bookDetailsJson.has("book")) return;
             var book = bookDetailsJson.get("book");
+            if (book.isJsonNull()) return;
             var bookDetails = book.getAsJsonObject();
             if (!bookDetails.has("audiobook") && bookDetails.has("ebook")) return;
             var audiobookFormat = bookDetails.get("audiobook") != null && bookDetails.get("audiobook").isJsonObject();
@@ -146,6 +152,7 @@ public class Crawler {
             bookList.add(newBook);
         } catch (Exception e) {
             logger.error("Cannot parse book {}", id, e);
+            errorCounter.getAndIncrement();
         }
     }
 
@@ -256,12 +263,15 @@ public class Crawler {
         }
     }
 
-    public void bookStats() {
-        logger.info("Existing in database: " + existingIds.size());
-        logger.info("Books parsed: " + bookList.size());
-        var parsedIds = bookList.stream().map(Book::getId).collect(Collectors.toList());
+    public void bookStats(HistoryRepository historyRepository, int parsed, int deleted) {
         var newBooks = bookList.stream().filter(e -> !existingIds.contains(e.getId())).collect(Collectors.toList());
-        logger.info("New books: " + newBooks.size());
+        var history = new History().id(UUID.randomUUID().toString());
+        history.addData(new HistoryData().id(UUID.randomUUID().toString()).key("new").valueInt(newBooks.size()));
+        history.addData(new HistoryData().id(UUID.randomUUID().toString()).key("parsed").valueInt(parsed));
+        history.addData(new HistoryData().id(UUID.randomUUID().toString()).key("previous").valueInt(existingIds.size()));
+        history.addData(new HistoryData().id(UUID.randomUUID().toString()).key("error").valueInt(errorCounter.get()));
+        history.addData(new HistoryData().id(UUID.randomUUID().toString()).key("deleted").valueInt(deleted));
+        historyRepository.save(history);
     }
 
     public void reloadCycles(List<String> bookIds) {

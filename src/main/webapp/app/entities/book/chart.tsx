@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { format, startOfWeek, startOfMonth } from 'date-fns';
 
@@ -14,12 +14,34 @@ interface IChartData {
 interface IChartProps {
   chartData: IChartData[];
   chartType: string;
+  color: string;
   onBarClick: (label: string, value: number) => void;
 }
 
-const BarChart: React.FC<IChartProps> = ({ chartData, chartType, onBarClick }) => {
+const BarChart: React.FC<IChartProps> = ({ chartData, chartType, onBarClick, color }) => {
+  const [timePeriod, setTimePeriod] = useState<'day' | 'lastWeek' | 'lastTwoWeeks' | 'lastMonth'>('day');
+
   let data = chartData;
 
+  if (timePeriod !== 'day') {
+    let startDate;
+
+    switch (timePeriod) {
+      case 'lastWeek':
+        startDate = subWeeks(new Date(), 1);
+        break;
+      case 'lastTwoWeeks':
+        startDate = subWeeks(new Date(), 2);
+        break;
+      case 'lastMonth':
+        startDate = subMonths(new Date(), 1);
+        break;
+      default:
+        break;
+    }
+
+    data = data.filter(d => new Date(d.added) >= startDate);
+  }
   if (chartType === 'week') {
     data = chartData.reduce((acc, curr) => {
       const date = new Date(curr.added);
@@ -58,14 +80,16 @@ const BarChart: React.FC<IChartProps> = ({ chartData, chartType, onBarClick }) =
   const loaded = data.map(data => data.added).length > 0 && data.map(data => data.count).length > 0;
 
   const dataChart = {
-    labels: chartData.map(data => data.added),
+    labels: data.map(data => data.added).sort(),
     datasets: [
       {
         label: 'Books per ' + chartType,
-        data: chartData.map(data => data.count),
-        backgroundColor: 'rgba(75,192,192,0.4)',
-        borderColor: 'rgba(75,192,192,1)',
+        data: data.map(data => data.count),
+        backgroundColor: color,
+        hoverBorderColor: 'black',
         borderWidth: 1,
+        borderRadius: 5,
+        pointStyle: 'star',
       },
     ],
   };
@@ -79,6 +103,14 @@ const BarChart: React.FC<IChartProps> = ({ chartData, chartType, onBarClick }) =
       title: {
         display: true,
         text: 'Books by ' + chartType,
+        padding: {
+          top: 10,
+          bottom: 30,
+        },
+        font: {
+          weight: 'bold',
+          size: 20,
+        },
       },
     },
     scale: {
@@ -90,7 +122,7 @@ const BarChart: React.FC<IChartProps> = ({ chartData, chartType, onBarClick }) =
       },
     },
     onClick: (_, elements) => {
-      if (elements.length > 0) {
+      if (elements.length > 0 && chartType === 'day') {
         const index = elements[0].index;
         const label = dataChart.labels[index];
         const value = dataChart.datasets[0].data[index];
@@ -103,3 +135,10 @@ const BarChart: React.FC<IChartProps> = ({ chartData, chartType, onBarClick }) =
 };
 
 export default BarChart;
+function subWeeks(arg0: Date, arg1: number): any {
+  throw new Error('Function not implemented.');
+}
+
+function subMonths(arg0: Date, arg1: number): any {
+  throw new Error('Function not implemented.');
+}

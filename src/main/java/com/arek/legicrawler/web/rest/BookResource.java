@@ -2,6 +2,7 @@ package com.arek.legicrawler.web.rest;
 
 import com.arek.legicrawler.domain.Book;
 import com.arek.legicrawler.repository.BookRepository;
+import com.arek.legicrawler.repository.HistoryRepository;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
 import com.arek.legicrawler.service.CollectionService;
@@ -51,19 +52,22 @@ public class BookResource {
     private final BookService bookService;
 
     private final BookRepository bookRepository;
+    private final HistoryRepository historyRepository;
 
     public BookResource(
         BookService bookService,
         BookRepository bookRepository,
         CycleService cycleService,
         AuthorService authorService,
-        CollectionService collectionService
+        CollectionService collectionService,
+        HistoryRepository historyRepository
     ) {
         this.bookService = bookService;
         this.bookRepository = bookRepository;
         this.cycleService = cycleService;
         this.authorService = authorService;
         this.collectionService = collectionService;
+        this.historyRepository = historyRepository;
     }
 
     /**
@@ -203,7 +207,7 @@ public class BookResource {
     @GetMapping("/books/reload")
     @Scheduled(cron = "0 0 * * * *")
     public ResponseEntity<String> reloadBooks() {
-        bookService.reload(cycleService, authorService, collectionService);
+        bookService.reload(cycleService, authorService, collectionService, historyRepository);
         return ResponseEntity.ok().body("Reloaded");
     }
 

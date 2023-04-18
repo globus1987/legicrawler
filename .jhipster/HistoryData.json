@@ -1,0 +1,39 @@
+{
+  "applications": "*",
+  "changelogDate": "20230418091202",
+  "dto": "no",
+  "embedded": false,
+  "entityTableName": "history_data",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "key",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "valueString",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "valueInt",
+      "fieldType": "Integer"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "HistoryData",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "history",
+      "otherEntityRelationshipName": "data",
+      "relationshipName": "history",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "no"
+}
