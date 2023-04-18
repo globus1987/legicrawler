@@ -12,14 +12,22 @@ import BookTable from 'app/entities/book/bookTable';
 import useLocalStorageState from './localStorage';
 import { ActionButtons } from 'app/entities/ReusableComponents';
 import BookFilter from 'app/entities/book/filter';
-
+const DEFAULT_PAGINATION_STATE = {
+  activePage: 1,
+  itemsPerPage: ITEMS_PER_PAGE,
+  sort: 'id',
+  order: ASC,
+};
 export const Book = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
+    overridePaginationStateWithQueryParams(
+      getSortState(location, DEFAULT_PAGINATION_STATE.itemsPerPage, DEFAULT_PAGINATION_STATE.sort),
+      location.search
+    )
   );
 
   const bookList = useAppSelector(state => state.book.entities);
@@ -71,7 +79,9 @@ export const Book = () => {
 
   const sortEntities = () => {
     getAllEntities();
-    const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
+    const endURL = `?page=${paginationState.activePage == 0 ? 1 : paginationState.activePage}&sort=${paginationState.sort},${
+      paginationState.order
+    }`;
     if (location.search !== endURL) {
       navigate(`${location.pathname}${endURL}`);
     }
