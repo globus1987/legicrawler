@@ -101,11 +101,12 @@ export const Book = () => {
     });
   };
 
-  const handlePagination = currentPage =>
+  const handlePagination = currentPage => {
     setPaginationState({
       ...paginationState,
       activePage: currentPage,
     });
+  };
 
   const handleFilter = () => {
     sortEntities();

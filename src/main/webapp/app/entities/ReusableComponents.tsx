@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Card, CardBody, CardImg, CardTitle } from 'reactstrap';
+import { Button, ButtonGroup, Card, CardBody, CardImg, CardTitle } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { IBook } from 'app/shared/model/book.model';
@@ -103,22 +103,24 @@ export const ActionButtons = () => {
   };
   return (
     <div className="d-flex justify-content-end">
-      <Button onClick={handleReloadBooks} className="me-2" color="warning">
-        <FontAwesomeIcon icon="right-left" />
-        &nbsp; Crawl
-      </Button>
-      <Button onClick={handleReloadCycles} className="me-2" disabled color="warning">
-        <FontAwesomeIcon icon="right-left" />
-        &nbsp; Update cycles
-      </Button>
-      <Button onClick={handleReloadCollections} className="me-2" disabled color="warning">
-        <FontAwesomeIcon icon="right-left" />
-        &nbsp; Update collections
-      </Button>
-      <Button onClick={() => navigate('/book/stats')} className="me-2" color="warning">
-        <FontAwesomeIcon icon="database" />
-        &nbsp; Statistics
-      </Button>
+      <ButtonGroup style={{ display: 'flex', flexWrap: 'wrap' }}>
+        <Button onClick={handleReloadBooks} className="me-2" color="warning">
+          <FontAwesomeIcon icon="right-left" />
+          &nbsp; Crawl
+        </Button>
+        <Button onClick={handleReloadCycles} className="me-2" disabled color="warning">
+          <FontAwesomeIcon icon="right-left" />
+          &nbsp; Update cycles
+        </Button>
+        <Button onClick={handleReloadCollections} className="me-2" disabled color="warning">
+          <FontAwesomeIcon icon="right-left" />
+          &nbsp; Update collections
+        </Button>
+        <Button onClick={() => navigate('/book/stats')} className="me-2" color="warning">
+          <FontAwesomeIcon icon="database" />
+          &nbsp; Statistics
+        </Button>
+      </ButtonGroup>
     </div>
   );
 };

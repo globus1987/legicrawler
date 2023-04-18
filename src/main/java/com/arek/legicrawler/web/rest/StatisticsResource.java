@@ -5,6 +5,7 @@ import com.arek.legicrawler.repository.BookRepository;
 import com.google.gson.Gson;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -53,6 +54,11 @@ public class StatisticsResource {
     @GetMapping("/statistics")
     public List<Statistics> getAllStatistics() {
         log.debug("REST request to get all Statistics");
-        return bookRepository.countBooksByDay().stream().filter(e -> e.getCount() < 50000).collect(Collectors.toList());
+        return bookRepository
+            .countBooksByDay()
+            .stream()
+            .filter(e -> e.getCount() < 50000)
+            .sorted(Comparator.comparing(Statistics::getAdded))
+            .collect(Collectors.toList());
     }
 }
