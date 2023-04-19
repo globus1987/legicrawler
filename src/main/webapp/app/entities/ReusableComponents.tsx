@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Card, CardBody, CardImg, CardTitle } from 'reactst
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { IBook } from 'app/shared/model/book.model';
-import { reload, reloadAuthors, reloadCollections, reloadCycles } from 'app/entities/book/book.reducer';
+import { reload, reloadAuthors, reloadCategories, reloadCollections, reloadCycles } from 'app/entities/book/book.reducer';
 import { useAppDispatch } from 'app/config/store';
 
 const GoToLegimiButton = ({ href }) => {
@@ -105,12 +105,20 @@ export const ActionButtons = () => {
   const handleReloadAuthors = () => {
     dispatch(reloadAuthors);
   };
+
+  const handleReloadCategories = () => {
+    dispatch(reloadCategories);
+  };
   return (
     <div className="d-flex justify-content-end">
       <ButtonGroup style={{ display: 'flex', flexWrap: 'wrap' }}>
         <Button style={{ borderRadius: '5px' }} onClick={handleReloadBooks} className="me-2" color="warning">
           <FontAwesomeIcon icon="right-left" />
           &nbsp; Crawl
+        </Button>
+        <Button style={{ borderRadius: '5px' }} onClick={handleReloadCategories} className="me-2" color="warning">
+          <FontAwesomeIcon icon="right-left" />
+          &nbsp; Update categories
         </Button>
         <Button style={{ borderRadius: '5px' }} onClick={handleReloadAuthors} className="me-2" color="warning">
           <FontAwesomeIcon icon="right-left" />

@@ -229,6 +229,12 @@ public class BookResource {
         return ResponseEntity.ok().body("Reloaded");
     }
 
+    @GetMapping("/books/reloadCategories")
+    public ResponseEntity<String> reloadCategories() {
+        bookService.reloadCategories();
+        return ResponseEntity.ok().body("Reloaded");
+    }
+
     /**
      * {@code DELETE  /books/:id} : delete the "id" book.
      *

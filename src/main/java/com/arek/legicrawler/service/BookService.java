@@ -76,4 +76,5 @@ public interface BookService {
     void reloadCycles(CycleService cycleService);
     void reloadCollections(CollectionService collectionService);
     void reloadAuthors(AuthorService authorService);
+    void reloadCategories();
 }

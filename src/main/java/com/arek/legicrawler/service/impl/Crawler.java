@@ -44,6 +44,7 @@ public class Crawler {
     private static final String BOOK_COLLECTIONS = "bookCollections";
     private static final String CYCLE = "cycle";
     private static final String AUTHORS = "authors";
+    private static final String PRIMARY_CATEGORY = "primaryCategory";
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private AtomicInteger counter;
     private AtomicInteger errorCounter;
@@ -185,8 +186,8 @@ public class Crawler {
         newBook.setAudiobook(audiobookFormat);
         newBook.setEbook(ebookFormat);
 
-        if (!bookDetails.get("primaryCategory").isJsonNull()) {
-            newBook.setCategory(bookDetails.get("primaryCategory").getAsJsonObject().get("name").getAsString());
+        if (!bookDetails.get(PRIMARY_CATEGORY).isJsonNull()) {
+            newBook.setCategory(bookDetails.get(PRIMARY_CATEGORY).getAsJsonObject().get("name").getAsString());
         }
         return newBook;
     }
@@ -287,6 +288,43 @@ public class Crawler {
         bookIds.parallelStream().forEach(this::reloadCycle);
     }
 
+    public void reloadCategories(List<String> bookIds) {
+        initializeStats(bookIds);
+        bookIds.parallelStream().forEach(this::reloadCategories);
+    }
+
+    private void reloadCategories(String id) {
+        try {
+            var bookDetailsJson = getBookDetails(WebClient.builder().build(), id);
+            if (bookDetailsJson.isJsonNull()) {
+                return;
+            }
+            if (!bookDetailsJson.has("book")) {
+                return;
+            }
+            var bookDetails = bookDetailsJson.get("book");
+            if (bookDetails.isJsonNull()) {
+                return;
+            }
+            var bookDetailsObject = bookDetailsJson.get("book").getAsJsonObject();
+            var bookDb = bookService.findOne(id);
+            var primaryCategory = bookDetailsObject.get(PRIMARY_CATEGORY);
+            if (bookDb.isPresent() && (primaryCategory != null && primaryCategory.isJsonObject())) {
+                var book = bookDb.get();
+                book.setCategory(primaryCategory.getAsJsonObject().get("name").getAsString());
+                bookService.save(book);
+            }
+        } catch (Exception exception) {
+            logger.error("Cannot update categories for book {}", id, exception);
+        } finally {
+            counter.getAndDecrement();
+            if ((processSize - counter.get()) % logInterval == 0) {
+                int progress = (counter.get() * 100) / processSize;
+                logger.info("{}% of entries left", progress);
+            }
+        }
+    }
+
     private void initializeStats(List<String> bookIds) {
         this.counter = new AtomicInteger(bookIds.size());
         this.processSize = bookIds.size();
@@ -331,7 +369,7 @@ public class Crawler {
             counter.getAndDecrement();
             if ((processSize - counter.get()) % logInterval == 0) {
                 int progress = (counter.get() * 100) / processSize;
-                logger.info(progress + "% of entries left");
+                logger.info("{}% of entries left", progress);
             }
         }
     }
@@ -361,7 +399,7 @@ public class Crawler {
             counter.getAndDecrement();
             if ((processSize - counter.get()) % logInterval == 0) {
                 int progress = (counter.get() * 100) / processSize;
-                logger.info(progress + "% of entries left");
+                logger.info("{}% of entries left", progress);
             }
         }
     }
@@ -395,7 +433,7 @@ public class Crawler {
             counter.getAndDecrement();
             if ((processSize - counter.get()) % logInterval == 0) {
                 int progress = (counter.get() * 100) / processSize;
-                logger.info(progress + "% of entries left");
+                logger.info("{}% of entries left", progress);
             }
         }
     }
@@ -525,7 +563,7 @@ public class Crawler {
     private Mono<String> fetchIds(String url) {
         parseUrlForId(url);
         counter.getAndDecrement();
-        if (counter.get() % 1000 == 0) logger.debug(counter.get() + " ids left to parse");
+        if (counter.get() % 1000 == 0) logger.debug("{} ids left to parse", counter.get());
         return Mono.just("test");
     }
 

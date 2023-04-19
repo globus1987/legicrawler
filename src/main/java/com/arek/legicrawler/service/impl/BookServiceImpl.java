@@ -231,6 +231,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public void reloadCategories() {
+        var bookIds = bookRepository.findAllIds();
+        var crawler = new Crawler(this, null, null, null);
+        crawler.setWebClient(webClient);
+        crawler.setExistingIds(bookRepository.findAllIds());
+        log.info("Updating categories");
+        crawler.reloadCategories(bookIds);
+        log.info("Finished updating categories");
+    }
+
+    @Override
     public void reloadAuthors(AuthorService authorService) {
         var bookIds = bookRepository.findAllIds();
         var crawler = new Crawler(this, authorService, null, null);
