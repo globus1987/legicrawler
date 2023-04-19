@@ -86,9 +86,7 @@ public class CycleServiceImpl implements CycleService {
     @Transactional(readOnly = true)
     public Optional<Cycle> findOne(String id) {
         log.debug("Request to get Cycle : {}", id);
-        Optional<Cycle> byId = cycleRepository.findById(id);
-        var cyc = byId.get();
-        return byId;
+        return cycleRepository.findById(id);
     }
 
     @Override

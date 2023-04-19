@@ -186,9 +186,6 @@ public class BookServiceImpl implements BookService {
         var crawler = new Crawler(this, authorService, cycleService, collectionService);
         crawler.setWebClient(webClient);
         crawler.setExistingIds(bookRepository.findAllIds());
-        crawler.setExistingAuthors(authorService.findAllIds());
-        crawler.setExistingCycles(cycleService.findAllIds());
-        crawler.setExistingCollections(collectionService.findAllIds());
         log.info("Fetching books");
         crawler.parse(idList, bookList);
         bookRepository.saveAll(bookList);
@@ -216,7 +213,6 @@ public class BookServiceImpl implements BookService {
         var bookIds = bookRepository.findAllIdsWithNullCycle();
         var crawler = new Crawler(this, null, cycleService, null);
         crawler.setWebClient(webClient);
-        crawler.setExistingCycles(cycleService.findAllIds());
         log.info("Looking for {} cycles", bookIds.size());
         crawler.reloadCycles(bookIds);
         if (crawler.getBookList().size() > 0) bookRepository.saveAll(crawler.getBookList());
@@ -228,7 +224,6 @@ public class BookServiceImpl implements BookService {
         var bookIds = bookRepository.findAllIds();
         var crawler = new Crawler(this, null, null, collectionService);
         crawler.setWebClient(webClient);
-        crawler.setExistingCollections(collectionService.findAllIds());
         crawler.setExistingIds(bookRepository.findAllIds());
         log.info("Updating collections");
         crawler.reloadCollections(bookIds);
@@ -240,7 +235,6 @@ public class BookServiceImpl implements BookService {
         var bookIds = bookRepository.findAllIds();
         var crawler = new Crawler(this, authorService, null, null);
         crawler.setWebClient(webClient);
-        crawler.setExistingAuthors(authorService.findAllIds());
         crawler.setExistingIds(bookRepository.findAllIds());
         log.info("Updating authors");
         crawler.reloadAuthors(bookIds);

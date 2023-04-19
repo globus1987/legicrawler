@@ -24,6 +24,6 @@ public interface CycleRepository extends JpaRepository<Cycle, String> {
     @Query("select id from Cycle")
     List<String> findAllIds();
 
-    @Query("select cycle from Cycle cycle JOIN FETCH cycle.books where cycle.id=:id")
+    @EntityGraph(attributePaths = { "books" })
     Optional<Cycle> findById(@Param("id") String id);
 }
