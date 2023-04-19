@@ -38,4 +38,7 @@ public interface CollectionRepository extends CollectionRepositoryWithBagRelatio
 
     @Query("select collection.id from Collection collection where  upper(collection.name) like %:query%")
     List<String> findIdsByName(@Param("query") String query);
+
+    @EntityGraph(attributePaths = { "books" })
+    List<Collection> findAllByIdIn(List<String> ids);
 }

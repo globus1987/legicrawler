@@ -213,13 +213,19 @@ public class BookResource {
 
     @GetMapping("/books/reloadCycles")
     public ResponseEntity<String> reloadCycles() {
-        bookService.reloadCycles(cycleService, authorService);
+        bookService.reloadCycles(cycleService);
         return ResponseEntity.ok().body("Reloaded");
     }
 
     @GetMapping("/books/reloadCollections")
     public ResponseEntity<String> reloadCollections() {
-        bookService.reloadCollections(collectionService, authorService);
+        bookService.reloadCollections(collectionService);
+        return ResponseEntity.ok().body("Reloaded");
+    }
+
+    @GetMapping("/books/reloadAuthors")
+    public ResponseEntity<String> reloadAuthors() {
+        bookService.reloadAuthors(authorService);
         return ResponseEntity.ok().body("Reloaded");
     }
 

@@ -42,7 +42,12 @@ export const reloadCycles = async () => {
 };
 
 export const reloadCollections = async () => {
-  const requestUrl = `${apiUrl}/reloadCycles`;
+  const requestUrl = `${apiUrl}/reloadCollections`;
+  axios.get<IBook[]>(requestUrl);
+};
+
+export const reloadAuthors = async () => {
+  const requestUrl = `${apiUrl}/reloadAuthors`;
   axios.get<IBook[]>(requestUrl);
 };
 

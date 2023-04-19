@@ -73,6 +73,13 @@ public class CollectionServiceImpl implements CollectionService {
         return collectionRepository.findAll();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Collection> findByIdIn(List<String> ids) {
+        log.debug("Request to get all Collections with id in");
+        return collectionRepository.findAllByIdIn(ids);
+    }
+
     public Page<Collection> findAllWithEagerRelationships(Pageable pageable) {
         return collectionRepository.findAllWithEagerRelationships(pageable);
     }

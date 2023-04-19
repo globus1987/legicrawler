@@ -1,6 +1,7 @@
 package com.arek.legicrawler.service.impl;
 
 import com.arek.legicrawler.domain.Author;
+import com.arek.legicrawler.domain.Collection;
 import com.arek.legicrawler.repository.AuthorRepository;
 import com.arek.legicrawler.service.AuthorService;
 import java.util.*;
@@ -30,6 +31,13 @@ public class AuthorServiceImpl implements AuthorService {
     public Author save(Author author) {
         log.debug("Request to save Author : {}", author);
         return authorRepository.save(author);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Author> findByIdIn(List<String> ids) {
+        log.debug("Request to get all Authors with id in");
+        return authorRepository.findAllByIdIn(ids);
     }
 
     @Override

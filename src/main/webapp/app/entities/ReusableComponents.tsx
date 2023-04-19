@@ -4,7 +4,7 @@ import { Button, ButtonGroup, Card, CardBody, CardImg, CardTitle } from 'reactst
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useNavigate } from 'react-router-dom';
 import { IBook } from 'app/shared/model/book.model';
-import { reload, reloadCollections, reloadCycles } from 'app/entities/book/book.reducer';
+import { reload, reloadAuthors, reloadCollections, reloadCycles } from 'app/entities/book/book.reducer';
 import { useAppDispatch } from 'app/config/store';
 
 const GoToLegimiButton = ({ href }) => {
@@ -44,6 +44,7 @@ export const BookCard = ({ book }: IBookCardProps) => {
         backgroundColor: '#bdbdbd',
         overflow: 'hidden',
         borderRadius: '5px',
+        width: '200px',
         boxShadow: '5px 5px 4px rgba(0, 0, 0, 0.1)',
       }}
     >
@@ -101,22 +102,29 @@ export const ActionButtons = () => {
   const handleReloadCollections = () => {
     dispatch(reloadCollections);
   };
+  const handleReloadAuthors = () => {
+    dispatch(reloadAuthors);
+  };
   return (
     <div className="d-flex justify-content-end">
       <ButtonGroup style={{ display: 'flex', flexWrap: 'wrap' }}>
-        <Button onClick={handleReloadBooks} className="me-2" color="warning">
+        <Button style={{ borderRadius: '5px' }} onClick={handleReloadBooks} className="me-2" color="warning">
           <FontAwesomeIcon icon="right-left" />
           &nbsp; Crawl
         </Button>
-        <Button onClick={handleReloadCycles} className="me-2" disabled color="warning">
+        <Button style={{ borderRadius: '5px' }} onClick={handleReloadAuthors} className="me-2" color="warning">
+          <FontAwesomeIcon icon="right-left" />
+          &nbsp; Update authors
+        </Button>
+        <Button style={{ borderRadius: '5px' }} onClick={handleReloadCycles} className="me-2" color="warning">
           <FontAwesomeIcon icon="right-left" />
           &nbsp; Update cycles
         </Button>
-        <Button onClick={handleReloadCollections} className="me-2" disabled color="warning">
+        <Button style={{ borderRadius: '5px' }} onClick={handleReloadCollections} className="me-2" color="warning">
           <FontAwesomeIcon icon="right-left" />
           &nbsp; Update collections
         </Button>
-        <Button onClick={() => navigate('/book/stats')} className="me-2" color="warning">
+        <Button style={{ borderRadius: '5px' }} onClick={() => navigate('/book/stats')} className="me-2" color="warning">
           <FontAwesomeIcon icon="database" />
           &nbsp; Statistics
         </Button>

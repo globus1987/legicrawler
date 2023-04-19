@@ -8,6 +8,7 @@ import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
 import com.arek.legicrawler.service.CollectionService;
 import com.arek.legicrawler.service.CycleService;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Service Implementation for managing {@link Book}.
@@ -33,9 +35,11 @@ public class BookServiceImpl implements BookService {
     private final Logger log = LoggerFactory.getLogger(BookServiceImpl.class);
 
     private final BookRepository bookRepository;
+    private final WebClient webClient;
 
-    public BookServiceImpl(BookRepository bookRepository) {
+    public BookServiceImpl(BookRepository bookRepository, WebClient webClient) {
         this.bookRepository = bookRepository;
+        this.webClient = webClient;
     }
 
     @Override
@@ -180,6 +184,7 @@ public class BookServiceImpl implements BookService {
         var idList = retrieveIdList(pageCount, authorService, cycleService, collectionService);
         var bookList = new ArrayList<Book>();
         var crawler = new Crawler(this, authorService, cycleService, collectionService);
+        crawler.setWebClient(webClient);
         crawler.setExistingIds(bookRepository.findAllIds());
         crawler.setExistingAuthors(authorService.findAllIds());
         crawler.setExistingCycles(cycleService.findAllIds());
@@ -190,6 +195,7 @@ public class BookServiceImpl implements BookService {
         log.info("Cleaning books");
         var idsToDelete = crawler.getExistingIds().stream().filter(e -> !idList.contains(e)).collect(Collectors.toList());
         bookRepository.deleteAllById(idsToDelete);
+        log.warn(new Gson().toJson(idsToDelete));
         crawler.bookStats(historyRepository, idList.size(), idsToDelete.size());
     }
 
@@ -201,18 +207,45 @@ public class BookServiceImpl implements BookService {
     ) {
         var idList = new HashSet<String>();
         var crawler = new Crawler(this, authorService, cycleService, collectionService);
+        crawler.setWebClient(webClient);
         return crawler.retrieveIdList(pageCount);
     }
 
     @Override
-    public void reloadCycles(CycleService cycleService, AuthorService authorService) {
+    public void reloadCycles(CycleService cycleService) {
         var bookIds = bookRepository.findAllIdsWithNullCycle();
         var crawler = new Crawler(this, null, cycleService, null);
+        crawler.setWebClient(webClient);
+        crawler.setExistingCycles(cycleService.findAllIds());
+        log.info("Looking for {} cycles", bookIds.size());
         crawler.reloadCycles(bookIds);
+        if (crawler.getBookList().size() > 0) bookRepository.saveAll(crawler.getBookList());
+        log.info("Finished updating cycles");
     }
 
     @Override
-    public void reloadCollections(CollectionService collectionService, AuthorService authorService) {}
+    public void reloadCollections(CollectionService collectionService) {
+        var bookIds = bookRepository.findAllIds();
+        var crawler = new Crawler(this, null, null, collectionService);
+        crawler.setWebClient(webClient);
+        crawler.setExistingCollections(collectionService.findAllIds());
+        crawler.setExistingIds(bookRepository.findAllIds());
+        log.info("Updating collections");
+        crawler.reloadCollections(bookIds);
+        log.info("Finished updating collections");
+    }
+
+    @Override
+    public void reloadAuthors(AuthorService authorService) {
+        var bookIds = bookRepository.findAllIds();
+        var crawler = new Crawler(this, authorService, null, null);
+        crawler.setWebClient(webClient);
+        crawler.setExistingAuthors(authorService.findAllIds());
+        crawler.setExistingIds(bookRepository.findAllIds());
+        log.info("Updating authors");
+        crawler.reloadAuthors(bookIds);
+        log.info("Finished updating authors");
+    }
 
     @Override
     public boolean existsByIdAndCycleIsNull(String id) {

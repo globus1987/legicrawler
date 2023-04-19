@@ -73,6 +73,7 @@ public interface BookService {
         CollectionService collectionService,
         HistoryRepository historyRepository
     );
-    void reloadCycles(CycleService cycleService, AuthorService authorService);
-    void reloadCollections(CollectionService collectionService, AuthorService authorService);
+    void reloadCycles(CycleService cycleService);
+    void reloadCollections(CollectionService collectionService);
+    void reloadAuthors(AuthorService authorService);
 }

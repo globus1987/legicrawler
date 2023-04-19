@@ -1,6 +1,7 @@
 package com.arek.legicrawler.service;
 
 import com.arek.legicrawler.domain.Author;
+import com.arek.legicrawler.domain.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ public interface AuthorService {
      * @return the persisted entity.
      */
     Author update(Author author);
+    List<Author> findByIdIn(List<String> ids);
 
     /**
      * Partially updates a author.

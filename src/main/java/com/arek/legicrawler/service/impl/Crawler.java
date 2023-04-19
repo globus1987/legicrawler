@@ -1,6 +1,8 @@
 package com.arek.legicrawler.service.impl;
 
 import com.arek.legicrawler.domain.*;
+import com.arek.legicrawler.domain.Collection;
+import com.arek.legicrawler.repository.BookRepositoryWithBagRelationships;
 import com.arek.legicrawler.repository.HistoryRepository;
 import com.arek.legicrawler.service.AuthorService;
 import com.arek.legicrawler.service.BookService;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -46,25 +49,39 @@ public class Crawler {
     private BookService bookService;
     private AuthorService authorService;
     private CollectionService collectionService;
-    private WebClient webClient = WebClient.builder().build();
+    private WebClient webClient;
     private Map<String, com.arek.legicrawler.domain.Collection> collectionList = new HashMap<>();
     private Map<String, com.arek.legicrawler.domain.Author> authorList = new HashMap<>();
     private Map<String, com.arek.legicrawler.domain.Cycle> cycleList = new HashMap<>();
-    private List<Book> bookList;
+    private List<Book> bookList = new ArrayList<>();
     private Set<String> idList = new ConcurrentSkipListSet<>();
     private List<String> existingAuthors;
     private List<String> existingCycles;
     private List<String> existingCollections;
-
-    public List<String> getExistingIds() {
-        return existingIds;
-    }
+    private int processSize;
+    private int logInterval;
 
     public Crawler(BookService bookService, AuthorService authorService, CycleService cycleService, CollectionService collectionService) {
         this.cycleService = cycleService;
         this.bookService = bookService;
         this.authorService = authorService;
         this.collectionService = collectionService;
+    }
+
+    public List<String> getExistingIds() {
+        return existingIds;
+    }
+
+    public Crawler setExistingIds(List<String> existingIds) {
+        this.existingIds = existingIds;
+        this.counter = new AtomicInteger(0);
+        this.errorCounter = new AtomicInteger(0);
+        return this;
+    }
+
+    public Crawler setWebClient(WebClient webClient) {
+        this.webClient = webClient;
+        return this;
     }
 
     public Crawler setExistingCollections(List<String> existingCollections) {
@@ -74,13 +91,6 @@ public class Crawler {
 
     public Crawler setExistingCycles(List<String> existingCycles) {
         this.existingCycles = existingCycles;
-        return this;
-    }
-
-    public Crawler setExistingIds(List<String> existingIds) {
-        this.existingIds = existingIds;
-        this.counter = new AtomicInteger(0);
-        this.errorCounter = new AtomicInteger(0);
         return this;
     }
 
@@ -111,13 +121,11 @@ public class Crawler {
 
     @Transactional
     public void parseUrl(String id) {
-        var client = WebClient.builder().build();
-        var gson = new GsonBuilder().create();
         if (existingIds.contains(id)) {
             return;
         }
         try {
-            var bookDetailsJson = getBookDetails(client, id);
+            var bookDetailsJson = getBookDetails(webClient, id);
             if (bookDetailsJson.isJsonNull()) return;
             if (!bookDetailsJson.has("book")) return;
             var book = bookDetailsJson.get("book");
@@ -227,8 +235,9 @@ public class Crawler {
             for (var authorElement : authors) {
                 var authorObject = authorElement.getAsJsonObject();
                 var authorId = authorObject.get("id").getAsString();
-                var author = existingAuthors.contains(authorId)
-                    ? authorService.findOne(authorId).get()
+                var authorDB = authorService.findOne(authorId);
+                var author = authorDB.isPresent()
+                    ? authorDB.get()
                     : authorList.containsKey(authorId)
                         ? authorList.get(authorId)
                         : new Author(authorId, authorObject.get("name").getAsString(), legimiUrl + authorObject.get("url").getAsString());
@@ -276,38 +285,215 @@ public class Crawler {
 
     public void reloadCycles(List<String> bookIds) {
         this.counter = new AtomicInteger(bookIds.size());
-        Flux
-            .fromIterable(bookIds)
-            //            .parallel()
-            //            .runOn(Schedulers.boundedElastic())
-            .flatMap(this::fetchBooksById)
-            //            .ordered(String::compareTo)
-            .toStream()
-            .collect(Collectors.toList());
+        this.processSize = bookIds.size();
+        bookIds.parallelStream().forEach(this::reloadCycle);
     }
 
-    private Mono<String> fetchBooksById(String id) {
-        parseId(id);
+    private void reloadCycle(String id) {
+        var bookDetailsJson = getBookDetails(WebClient.builder().build(), id);
+        if (bookDetailsJson.isJsonNull()) {
+            counter.getAndDecrement();
+            return;
+        }
+        if (!bookDetailsJson.has("book")) {
+            counter.getAndDecrement();
+            return;
+        }
+        var bookDetails = bookDetailsJson.get("book");
+        if (bookDetails.isJsonNull()) {
+            counter.getAndDecrement();
+            return;
+        }
+        var bookDetailsObject = bookDetailsJson.get("book").getAsJsonObject();
+        if (bookDetailsObject.get("cycle") != null) {
+            var cycleObject = bookDetailsObject.get("cycle").getAsJsonObject();
+            var cycleId = cycleObject.get("id").getAsString();
+            Cycle cycle = existingCycles.contains(cycleId)
+                ? cycleService.findOne(cycleId).get()
+                : cycleList.containsKey(cycleId)
+                    ? cycleList.get(cycleId)
+                    : new Cycle(cycleId, cycleObject.get("name").getAsString(), legimiUrl + cycleObject.get("url").getAsString());
+            if (!cycleList.containsKey(cycleId)) {
+                cycleList.put(cycleId, cycle);
+                cycleService.save(cycle);
+            }
+            var book = bookService.findOne(id).get();
+            cycle.addBooks(book);
+            bookList.add(book);
+            logger.info("Book {}: Cycle {}", book.getId(), cycle.getId());
+        }
         counter.getAndDecrement();
-        if (counter.get() % 1000 == 0) logger.info(counter.get() + " left to parse");
-        return Mono.just("test");
+        int progress = ((processSize - counter.get()) * 100) / processSize;
+        if (progress % 10 == 0) {
+            logger.info(progress + "% of entries processed");
+        }
+        if (counter.get() % 1000 == 0) logger.debug(counter.get() + " left to parse");
     }
 
-    private boolean parseId(String id) {
-        //        webClient = WebClient.builder().build();
-        var client = webClient;
+    public void reloadCollections(List<String> bookIds) {
+        this.counter = new AtomicInteger(bookIds.size());
+        this.processSize = bookIds.size();
+        logInterval = this.processSize / 10;
+        bookIds.parallelStream().forEach(this::reloadCollections);
+    }
 
-        var bookDetails = getBookDetails(client, id);
+    public void reloadAuthors(List<String> bookIds) {
+        this.counter = new AtomicInteger(bookIds.size());
+        this.processSize = bookIds.size();
+        logInterval = this.processSize / 10;
+        bookIds.parallelStream().forEach(this::reloadAuthors);
+    }
 
-        if (bookDetails.get("cycle").isJsonNull()) return true;
-        logger.info("2");
-        var book = bookService.findOne(id);
-        logger.info("3");
-        if (book.isEmpty()) return false;
-        var bookDb = book.get();
-        logger.info("4");
-        setCycle(bookDetails, bookDb);
-        return true;
+    private void reloadCollections(String id) {
+        try {
+            var bookDetails = getBookDetails(WebClient.builder().build(), id);
+            if (bookDetails.get("bookCollections") == null || !bookDetails.get("bookCollections").isJsonArray()) {
+                counter.getAndDecrement();
+                return;
+            }
+            var collections = bookDetails.getAsJsonArray("bookCollections");
+            updateCollections(collections, bookService.findOne(id).get());
+        } catch (Exception exception) {
+            logger.error("Cannot update collections for book {}", id, exception);
+        } finally {
+            counter.getAndDecrement();
+            if ((processSize - counter.get()) % logInterval == 0) {
+                int progress = (processSize - counter.get() * 100) / processSize;
+                logger.info(progress + "% of entries left");
+            }
+        }
+    }
+
+    private void reloadAuthors(String id) {
+        try {
+            var bookDetailsJson = getBookDetails(WebClient.builder().build(), id);
+            if (bookDetailsJson.isJsonNull()) {
+                counter.getAndDecrement();
+                return;
+            }
+            if (!bookDetailsJson.has("book")) {
+                counter.getAndDecrement();
+                return;
+            }
+            var bookDetails = bookDetailsJson.get("book");
+            if (bookDetails.isJsonNull()) {
+                counter.getAndDecrement();
+                return;
+            }
+            var bookDetailsObject = bookDetailsJson.get("book").getAsJsonObject();
+            if (bookDetailsObject.get("authors") == null || !bookDetailsObject.get("authors").isJsonArray()) {
+                counter.getAndDecrement();
+                return;
+            }
+            var authors = bookDetailsObject.getAsJsonArray("authors");
+            updateAuthors(authors, bookService.findOne(id).get());
+        } catch (Exception exception) {
+            logger.error("Cannot update authors for book {}", id, exception);
+        } finally {
+            counter.getAndDecrement();
+            if ((processSize - counter.get()) % logInterval == 0) {
+                int progress = (counter.get() * 100) / processSize;
+                logger.info(progress + "% of entries left");
+            }
+        }
+    }
+
+    private void updateAuthors(JsonArray authors, Book bookDb) {
+        var bookAuthors = bookDb.getAuthors().stream().map(Author::getId).collect(Collectors.toList());
+        var currentAuthors = authors.asList().stream().map(e -> e.getAsJsonObject().get("id").getAsString()).collect(Collectors.toList());
+        var authorsToDelete = bookAuthors.stream().filter(e -> !currentAuthors.contains(e)).collect(Collectors.toList());
+        if (!authorsToDelete.isEmpty()) {
+            logger.debug("{} deleted from authors {}", bookDb.getId(), authorsToDelete);
+            var authorsToDeleteObjects = authorService.findByIdIn(authorsToDelete);
+            for (var toDelete : authorsToDeleteObjects) {
+                bookDb.removeAuthors(toDelete);
+            }
+            bookService.save(bookDb);
+        }
+        if (authors.isEmpty()) return;
+        var authorList = new HashMap<String, com.arek.legicrawler.domain.Author>();
+        var newAuthors = authors
+            .asList()
+            .parallelStream()
+            .map(JsonElement::getAsJsonObject)
+            .filter(c -> !bookAuthors.contains(c.get("id").getAsString()))
+            .map(c -> {
+                var authorId = c.get("id").getAsString();
+                var authorName = c.get("name").getAsString();
+                var authorUrl = legimiUrl + c.get("url").getAsString();
+                var authorDB = authorService.findOne(authorId);
+                if (authorDB.isPresent()) {
+                    return authorDB.get();
+                } else if (authorList.containsKey(authorId)) {
+                    return authorList.get(authorId);
+                } else {
+                    var newAuthor = new Author(authorId, authorName, authorUrl);
+                    authorList.put(authorId, newAuthor);
+                    return newAuthor;
+                }
+            })
+            .collect(Collectors.toList());
+
+        newAuthors.forEach(author -> {
+            author.addBooks(bookDb);
+            if (!authorList.containsKey(author.getId())) {
+                authorService.save(author);
+            }
+        });
+        bookService.save(bookDb);
+    }
+
+    private void updateCollections(JsonArray collections, Book bookDb) {
+        var bookCollections = bookDb.getCollections().stream().map(Collection::getId).collect(Collectors.toList());
+        var currentCollections = collections
+            .asList()
+            .stream()
+            .map(e -> e.getAsJsonObject().get("id").getAsString())
+            .collect(Collectors.toList());
+        var collectionsToDelete = bookCollections.stream().filter(e -> !currentCollections.contains(e)).collect(Collectors.toList());
+        if (!collectionsToDelete.isEmpty()) {
+            logger.debug("{} deleted from collections {}", bookDb.getId(), collectionsToDelete);
+            var collectionsToDeleteObjects = collectionService.findByIdIn(collectionsToDelete);
+            for (var toDelete : collectionsToDeleteObjects) {
+                bookDb.removeCollections(toDelete);
+            }
+            bookService.save(bookDb);
+        }
+        if (collections.isEmpty()) return;
+        var collectionList = new HashMap<String, com.arek.legicrawler.domain.Collection>();
+        var newCollections = collections
+            .asList()
+            .parallelStream()
+            .map(JsonElement::getAsJsonObject)
+            .filter(c -> !bookCollections.contains(c.get("id").getAsString()))
+            .map(c -> {
+                var collectionId = c.get("id").getAsString();
+                var collectionName = c.get("name").getAsString();
+                var collectionUrl = legimiUrl + c.get("url").getAsString();
+                var collectionDb = collectionService.findOne(collectionId);
+                if (collectionDb.isPresent()) {
+                    return collectionDb.get();
+                } else if (collectionList.containsKey(collectionId)) {
+                    return collectionList.get(collectionId);
+                } else {
+                    var newCollection = new com.arek.legicrawler.domain.Collection(collectionId, collectionName, collectionUrl);
+                    collectionList.put(collectionId, newCollection);
+                    return newCollection;
+                }
+            })
+            .collect(Collectors.toList());
+
+        newCollections.forEach(collection -> {
+            collection.addBooks(bookDb);
+            if (!collectionList.containsKey(collection.getId())) {
+                collectionService.save(collection);
+            }
+        });
+        bookService.save(bookDb);
+    }
+
+    public List<Book> getBookList() {
+        return bookList;
     }
 
     public Set<String> retrieveIdList(int pageCount) {
@@ -342,9 +528,7 @@ public class Crawler {
     }
 
     private void parseUrlForId(String url) {
-        var client = WebClient.builder().build();
-        var gson = new GsonBuilder().create();
-        var response = client.get().uri(url).retrieve().bodyToMono(String.class).block();
+        var response = webClient.get().uri(url).retrieve().bodyToMono(String.class).block();
         var gsonValue = gson.fromJson(response, JsonObject.class);
         var books = gsonValue.get("bookList").getAsJsonObject().get("books").getAsJsonArray();
         idList.addAll(

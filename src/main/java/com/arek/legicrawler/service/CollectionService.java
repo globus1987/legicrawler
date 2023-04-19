@@ -58,6 +58,7 @@ public interface CollectionService {
      * @return the entity.
      */
     Optional<Collection> findOne(String id);
+    List<Collection> findByIdIn(List<String> ids);
 
     /**
      * Delete the "id" collection.

@@ -1,12 +1,14 @@
 package com.arek.legicrawler.repository;
 
 import com.arek.legicrawler.domain.Author;
-import com.arek.legicrawler.domain.Cycle;
+import com.arek.legicrawler.domain.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -41,4 +43,7 @@ public interface AuthorRepository extends AuthorRepositoryWithBagRelationships, 
 
     @Query("select author from Author author JOIN FETCH author.books where author.id=:id")
     Optional<Author> findById(@Param("id") String id);
+
+    @EntityGraph(attributePaths = { "books" })
+    List<Author> findAllByIdIn(List<String> ids);
 }
