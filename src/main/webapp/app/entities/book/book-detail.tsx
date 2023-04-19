@@ -54,7 +54,7 @@ export const BookDetail = () => {
           </dt>
         )}
         {entity.cycle && <RedirectToEntity url={`/cycle/${entity.cycle.id}`} name={entity.cycle.name} />}
-        {entity.collections && <dt>Collections</dt>}
+        {entity.collections && entity.collections.length > 0 && <dt>Collections</dt>}
         {entity.collections?.map(item => (
           <RedirectToEntity key={item.id} url={`/collection/${item.id}`} name={item.name} />
         ))}

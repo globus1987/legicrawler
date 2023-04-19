@@ -323,7 +323,6 @@ public class Crawler {
                     }
                     cycle.addBooks(book);
                     bookService.save(book);
-                    logger.info("Book {}: Cycle {}", book.getId(), cycle.getId());
                 }
             }
         } catch (Exception exception) {
